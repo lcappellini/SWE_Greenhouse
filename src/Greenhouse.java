@@ -1,14 +1,13 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Greenhouse {
-    Map<Integer, Plant> plants;
-    Map<ParameterType, Sensor> sensorMap;
+    Map<Integer, Pianta> plants;
+    Map<ParameterType, Sensore> sensorMap;
 
 
-    public void addPlant(Plant plant){
-        plants.put(plant.getId(), plant);
+    public void addPlant(Pianta pianta){
+        plants.put(pianta.getId(), pianta);
     }
     public void removePlant(int plantId){
         plants.remove(plantId);
@@ -24,8 +23,8 @@ public class Greenhouse {
 
     public Map<Integer, Map<ParameterType, Float>> getAllPlantsSensorData(){
         Map<Integer, Map<ParameterType, Float>> dataMap = new HashMap<>();
-        for (Plant plant : plants.values()){
-            dataMap.put(plant.getId(), plant.getAllSensorData());
+        for (Pianta pianta : plants.values()){
+            dataMap.put(pianta.getId(), pianta.getAllSensorData());
         }
         return dataMap;
     }

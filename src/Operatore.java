@@ -1,7 +1,6 @@
-public class CO2Sensor extends Sensor {
+public class Operatore extends Attuatore {
     public float getData(){
         //...
         return 0;
     }
 }
-

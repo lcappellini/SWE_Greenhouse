@@ -1,6 +1,7 @@
-public class TemperatureSensor extends Sensor {
+public class IgrometroTerra extends Igrometro {
     public float getData(){
         //...
         return 0;
     }
 }
+

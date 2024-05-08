@@ -1,4 +1,4 @@
-public class AirHumiditySensor extends HumiditySensor {
+public class IgrometroAria extends Igrometro {
     public float getData(){
         //...
         return 0;

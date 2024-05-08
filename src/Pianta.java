@@ -1,15 +1,15 @@
 import java.util.*;
 
-public class Plant {
+public class Pianta {
     private int name;
     private int id;
     private Map<ParameterType, RequiredParameter> requiredParameterMap;
-    private Map<ParameterType, Sensor> sensorMap;
+    private Map<ParameterType, Sensore> sensorMap;
 
-    public Plant(){
+    public Pianta(){
         this.sensorMap = Map.of(
-                ParameterType.cameraValuation, new CameraSensor(),
-                ParameterType.terrainHumidity, new TerrainHumiditySensor()
+                ParameterType.cameraValuation, new Operatore(),
+                ParameterType.terrainHumidity, new IgrometroTerra()
         );
         this.requiredParameterMap = Map.of(
                 ParameterType.cameraValuation, new RequiredParameter(), //TODO get data from DB
