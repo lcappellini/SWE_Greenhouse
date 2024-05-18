@@ -1,6 +1,7 @@
 package main;
 
 import main.java.DomainModel.Ordine;
+import main.java.ORM.PosizionamentoDAO;
 
 
 public class GestionePosizionamenti {
@@ -9,8 +10,10 @@ public class GestionePosizionamenti {
     public GestionePosizionamenti() {
 
     }
-    public boolean creaPoisizionamento(Ordine c){
-        for()
+    public void creaPoisizionamento(Ordine c, Operatore operatore){
+        PosizionamentoDAO pdao = new PosizionamentoDAO();
+
+        pdao.creaPosizionamento(c);
     }
 
 }

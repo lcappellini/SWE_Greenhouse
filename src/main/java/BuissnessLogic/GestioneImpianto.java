@@ -5,9 +5,12 @@ import main.java.ORM.ImpiantoDAO;
 
 public class GestioneImpianto {
 
-    public static boolean richiediOrdine(Ordine o){
+    public boolean veriificaDisponibilita(int nPiante){
         ImpiantoDAO impiantoDAO = new ImpiantoDAO();
 
+        return impiantoDAO.verificaDisponibilita(nPiante);
+    }
+    public void assegnaPosizionamento(Operatore operatore){
 
     }
 }

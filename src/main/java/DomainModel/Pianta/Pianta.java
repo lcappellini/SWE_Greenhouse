@@ -1,8 +1,19 @@
-import java.util.*;
+package main.java.DomainModel.Pianta;
 
 public class Pianta {
-    private int name;
-    private int id;
+    private String tipoPianta;
+    private int minTemp;
+    private int maxTemp;
+    private int oreLuce;
+    private int minAcqua;
+    private int maxAcqua;
+
+    public String getTipoPianta() {
+        return tipoPianta;
+    }
+
+
+    /*
     private Map<ParameterType, RequiredParameter> requiredParameterMap;
     private Map<ParameterType, Sensore> sensorMap;
 
@@ -36,5 +47,5 @@ public class Pianta {
         }
         return sensorData;
     }
-
+    */
 }
