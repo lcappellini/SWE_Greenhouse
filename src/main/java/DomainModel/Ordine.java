@@ -107,7 +107,4 @@ public class Ordine {
         this.cliente = cliente;
     }
 
-    public void setCliente(String cliente) {
-        this.cliente = new Cliente(cliente,"");
-    }
 }

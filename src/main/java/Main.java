@@ -72,12 +72,16 @@ public class Main {
                 case "1" -> {
                     Scanner scanner1 = new Scanner(System.in);
 
+                    System.out.println("\nNome: ");
+                    String nome = scanner1.nextLine();
+                    System.out.println("Cognome: ");
+                    String cognome = scanner1.nextLine();
                     System.out.println("\nEmail: ");
                     String email = scanner1.nextLine();
                     System.out.println("Password: ");
                     String password = scanner1.nextLine();
 
-                    Cliente cliente = gestioneCliente.registraCliente(email, password);
+                    Cliente cliente = gestioneCliente.registraCliente(nome, cognome, email, password);
 
                     if (cliente != null)
                         handleClientAction(cliente);

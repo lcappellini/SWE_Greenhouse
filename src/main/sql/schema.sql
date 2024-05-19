@@ -2,29 +2,32 @@
 
 CREATE TABLE IF NOT EXISTS "Pianta" (
     tipo VARCHAR(50) PRIMARY KEY,
-    descrizione varchar(200)
+    descrizione VARCHAR(200)
     );
 
 CREATE TABLE IF NOT EXISTS "Ordine" (
     id SERIAL PRIMARY KEY,
-    cliente VARCHAR(50),
+    idCliente INT,
     dataConsegna VARCHAR(50),
     tipoPianta VARCHAR(50),
     quantità INT,
-    descrizione varchar(100),
-    totale decimal(6,2),
+    descrizione VARCHAR(100),
+    totale DECIMAL(6,2),
     stato VARCHAR(50)
     );
 
 
 CREATE TABLE IF NOT EXISTS "Cliente" (
-    email VARCHAR(100) UNIQUE PRIMARY KEY ,
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100),
+    cognome VARCHAR(100),
+    email VARCHAR(100),
     password VARCHAR(100)
     );
 
 CREATE TABLE IF NOT EXISTS "Spazio" (
     id SERIAL PRIMARY KEY,
-    posizione int
+    posizione INT
     );
 
 CREATE TABLE IF NOT EXISTS "Posizione" (
@@ -41,5 +44,5 @@ CREATE TABLE IF NOT EXISTS "Posizionamento" (
     pianta VARCHAR(50),
     posizione INT,
     ordine INT,
-    operatore int
+    operatore INT
     );
