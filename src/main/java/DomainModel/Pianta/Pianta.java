@@ -12,8 +12,10 @@ public class Pianta {
         return tipoPianta;
     }
 
-
-    /*
+    public Pianta(String tipoPianta) {
+        this.tipoPianta = tipoPianta;
+    }
+/*
     private Map<ParameterType, RequiredParameter> requiredParameterMap;
     private Map<ParameterType, Sensore> sensorMap;
 

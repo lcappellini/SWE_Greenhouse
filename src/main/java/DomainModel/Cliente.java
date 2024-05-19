@@ -1,14 +1,14 @@
 package main.java.DomainModel;
 
 public class Cliente {
-    private String name;
-    private String cognome;
+    private String email;
+    private String password;
 
-    public Cliente(String name, String cognome) {
-        this.name = name;
-        this.cognome = cognome;
+    public Cliente(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
-    public String getName() {return name;}
-    public String getCognome() {return cognome;}
+    public String getEmail() {return email;}
+    public String getPassword() {return password;}
 }

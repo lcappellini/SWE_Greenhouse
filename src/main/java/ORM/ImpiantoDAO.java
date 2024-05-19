@@ -1,5 +1,6 @@
 package main.java.ORM;
 
+import main.java.DomainModel.Impianto.Operatore;
 import main.java.DomainModel.Ordine;
 import main.java.DomainModel.Pianta.Pianta;
 
@@ -17,7 +18,7 @@ public class ImpiantoDAO {
 
         try {
             this.connection = ConnectionManager.getInstance().getConnection();
-        } catch (SQLException | ClassNotFoundException | SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             System.err.println("Error: " + e.getMessage());
         }
 
@@ -39,7 +40,7 @@ public class ImpiantoDAO {
     }
 
     public void assegnaPosizionamento(Operatore operatore){
-        String query = "SELECT "
+        //String query = "SELECT "
     }
 
 

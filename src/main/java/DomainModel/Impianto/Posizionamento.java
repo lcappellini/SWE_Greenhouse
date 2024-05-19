@@ -1,3 +1,7 @@
+package main.java.DomainModel.Impianto;
+
+import main.java.DomainModel.Pianta.Pianta;
+
 public class Posizionamento {
     private Posizione posizione;
     private Pianta pianta;

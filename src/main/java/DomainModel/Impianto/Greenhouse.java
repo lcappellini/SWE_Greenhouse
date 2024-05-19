@@ -1,7 +1,10 @@
+package main.java.DomainModel.Impianto;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Greenhouse {
+    /*
     Map<Integer, Pianta> plants;
     Map<ParameterType, Sensore> sensorMap;
 
@@ -36,5 +39,5 @@ public class Greenhouse {
         }
         return sensorData;
     }
-
+*/
 }

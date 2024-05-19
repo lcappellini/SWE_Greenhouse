@@ -1,5 +1,6 @@
 package main.java.BuissnessLogic;
 
+import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Ordine;
 import main.java.ORM.ImpiantoDAO;
 import main.java.ORM.OrdineDAO;
@@ -9,6 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class GestioneOrdini {
+
+    public GestioneOrdini() {}
 
     public int richiediNuovoOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
 
@@ -25,4 +28,14 @@ public class GestioneOrdini {
         }
     }
 
+    public ArrayList<Ordine> vediOrdini(Cliente cliente){
+        OrdineDAO ordineDAO = new OrdineDAO();
+
+        return  ordineDAO.vediOrdini(cliente);
+    }
+
+    public void completaOrdine(Cliente cliente) {
+        OrdineDAO ordineDAO = new OrdineDAO();
+        ordineDAO.completaOrdine(cliente);
+    }
 }

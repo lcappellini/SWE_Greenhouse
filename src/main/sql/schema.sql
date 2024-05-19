@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS "Ordine" (
     cliente VARCHAR(50),
     dataConsegna VARCHAR(50),
     tipoPianta VARCHAR(50),
-    quantità varchar(50),
+    quantità INT,
     descrizione varchar(100),
     totale decimal(6,2),
     stato VARCHAR(50)
@@ -18,9 +18,8 @@ CREATE TABLE IF NOT EXISTS "Ordine" (
 
 
 CREATE TABLE IF NOT EXISTS "Cliente" (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(50),
-    cognome VARCHAR(50)
+    email VARCHAR(100) UNIQUE PRIMARY KEY ,
+    password VARCHAR(100)
     );
 
 CREATE TABLE IF NOT EXISTS "Spazio" (

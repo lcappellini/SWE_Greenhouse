@@ -1,5 +1,7 @@
 package main;
 
+import main.java.DomainModel.Impianto.Ambiente;
+import main.java.DomainModel.Impianto.Operatore;
 import main.java.DomainModel.Ordine;
 import main.java.ORM.PosizionamentoDAO;
 
@@ -10,10 +12,8 @@ public class GestionePosizionamenti {
     public GestionePosizionamenti() {
 
     }
-    public void creaPoisizionamento(Ordine c, Operatore operatore){
-        PosizionamentoDAO pdao = new PosizionamentoDAO();
+    public void creaPoisizionamento(){
 
-        pdao.creaPosizionamento(c);
     }
 
 }

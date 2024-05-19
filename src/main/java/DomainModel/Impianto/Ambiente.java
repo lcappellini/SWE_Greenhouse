@@ -1,8 +1,7 @@
 
 
-package main.java.;
+package main.java.DomainModel.Impianto;
 import main.java.DomainModel.Ordine;
-import main.java.DomainModel.Impianto.Spazio;
 
 import java.util.ArrayList;
 

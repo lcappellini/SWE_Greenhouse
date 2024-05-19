@@ -1,6 +1,5 @@
 package main.java.DomainModel.Impianto;
 
-import main.java.DomainModel.Impianto.Posizione;
 
 import java.util.ArrayList;
 
@@ -26,8 +25,10 @@ public class Spazio {
     }
 
     public ArrayList<Posizione> getPosizioni() { return posizioni; }
+
     public int getTemperatura(){
-        return termometro.chiedi();
+        //FIXME int i = termometro.chiedi();
+        return 0;
     }
 
     public boolean eDisponibile(int nPosti){

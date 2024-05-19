@@ -1,5 +1,6 @@
 package main.java.BuissnessLogic;
 
+import main.java.DomainModel.Impianto.Operatore;
 import main.java.DomainModel.Ordine;
 import main.java.ORM.ImpiantoDAO;
 
