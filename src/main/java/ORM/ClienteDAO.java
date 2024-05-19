@@ -17,23 +17,23 @@ public class ClienteDAO {
         }
     }
 
-    public Cliente registraCliente(String email, String password) {
-        String query = "INSERT INTO Cliente (email, password) VALUES (?, ?)";
+    public Cliente registraCliente(String nome, String cognome) {
+        String query = "INSERT INTO Cliente (nome, cognome) VALUES (?, ?) RETURNING id";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, email);
-            statement.setString(2, password);
+            statement.setString(1, nome);
+            statement.setString(2, cognome);
 
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Nuovo cliente registrato con successo.");
-                return new Cliente(email, password); // Ritorna l'oggetto Cliente appena registrato
+                return new Cliente(id, nome, cognome); // Ritorna l'oggetto Cliente appena registrato
             } else {
                 System.out.println("Errore durante la registrazione del cliente.");
                 return null; // Potresti voler gestire questo caso in modo diverso
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            // Gestisci il caso in cui l'email è duplicata nel database
+            // Gestisci il caso in cui l'nome è duplicata nel database
             System.err.println("Errore: Email già registrata.");
             return null;
         } catch (SQLException e) {
