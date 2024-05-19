@@ -1,8 +1,8 @@
 package main.java.DomainModel.Impianto;
 
 public class Operatore extends Attuatore {
-    public float getData(){
-        //...
+    @Override
+    public float command() {
         return 0;
     }
 }

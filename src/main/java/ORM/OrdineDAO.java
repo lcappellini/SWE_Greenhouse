@@ -23,8 +23,7 @@ public class OrdineDAO {
     }
 
     public int addOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO \"Ordine\" (idCliente, dataConsegna, tipoPianta, quantità, stato) " +
-                "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"Ordine\" (cliente, dataConsegna, tipoPianta, quantità, stato) VALUES (?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
         ResultSet generatedKeys = null;
@@ -67,23 +66,23 @@ public class OrdineDAO {
         return id; // Restituisci l'ID dell'ordine appena inserito
     }
 
-    public ArrayList<Ordine> vediOrdini(Cliente cliente) {
+    public ArrayList<Ordine> ottieniOrdini(Cliente cliente) {
         ArrayList<Ordine> ordini = new ArrayList<>();
         String query = "SELECT * FROM Ordine WHERE cliente = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, cliente.getEmail());
+            statement.setInt(1, cliente.getId());
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
                     // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
                     Ordine ordine = new Ordine();
-                    ordine.setId(resultSet.getInt("id"));
+                    ordine.setId(rs.getInt("id"));
                     ordine.setCliente(cliente);
-                    ordine.setPianteDalTipo(resultSet.getString("tipoPianta"),
-                            resultSet.getInt("quantità"));
-                    ordine.setStato(resultSet.getString("stato"));
-                    ordine.setDataConsegna(resultSet.getString("dataConsegna"));
+                    ordine.setPianteDalTipo(rs.getString("tipoPianta"),
+                            rs.getInt("quantità"));
+                    ordine.setStato(rs.getString("stato"));
+                    ordine.setDataConsegna(rs.getString("dataConsegna"));
 
                     ordini.add(ordine);
                 }
@@ -99,7 +98,7 @@ public class OrdineDAO {
         String query = "UPDATE Ordine SET stato = 'venduto' WHERE cliente = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, cliente.getEmail());
+            statement.setInt(1, cliente.getId());
 
             int rowsUpdated = statement.executeUpdate();
 

@@ -14,7 +14,6 @@ public class GestioneOrdini {
     public GestioneOrdini() {}
 
     public int richiediNuovoOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
-
         ImpiantoDAO impiantoDAO = new ImpiantoDAO();
 
         if(impiantoDAO.verificaDisponibilita(ordine.getnPiante())){
@@ -30,8 +29,7 @@ public class GestioneOrdini {
 
     public ArrayList<Ordine> vediOrdini(Cliente cliente){
         OrdineDAO ordineDAO = new OrdineDAO();
-
-        return  ordineDAO.vediOrdini(cliente);
+        return ordineDAO.ottieniOrdini(cliente);
     }
 
     public void completaOrdine(Cliente cliente) {

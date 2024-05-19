@@ -28,7 +28,6 @@ public class ImpiantoDAO {
         String query = "SELECT COUNT(*) FROM Posizioni WHERE assegnata = 0";
         try (PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
-
             if (resultSet.next()) {
                 int posizioniNonAssegnate = resultSet.getInt(1);
                 return nPiante <= posizioniNonAssegnate;

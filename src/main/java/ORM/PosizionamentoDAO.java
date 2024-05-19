@@ -1,5 +1,7 @@
 package main.java.ORM;
 
+import main.java.DomainModel.Impianto.Posizionamento;
+import main.java.DomainModel.Impianto.Posizione;
 import main.java.DomainModel.Ordine;
 import main.java.DomainModel.Pianta.Pianta;
 
@@ -22,7 +24,7 @@ public class PosizionamentoDAO {
 
     }
 
-    public void creaPosizionamento(Ordine ordine) {
+    public void creaPosizionamenti(Ordine ordine) {
         try {
             // Trova il tipoPianta dall'ordine utilizzando l'id dell'ordine
             String tipoPianta = null;
@@ -49,16 +51,18 @@ public class PosizionamentoDAO {
             // Controlla che ci siano abbastanza posizioni disponibili per tutte le piante nell'ordine
             if (tipoPianta != null && !posizioniDisponibili.isEmpty() && posizioniDisponibili.size() >= ordine.getnPiante()) {
                 // Aggiungi un posizionamento per ogni pianta nell'ordine
-                String queryInserimento = "INSERT INTO Posizionamento (pianta, posizione, ordine) VALUES (?, ?, ?)";
+                String queryInserimento = "INSERT INTO Posizionamento (pianta, posizione, ordine) VALUES (?, ?, ?) RETURNING id";
                 try (PreparedStatement statementInserimento = connection.prepareStatement(queryInserimento)) {
                     for (int i = 0; i < ordine.getnPiante(); i++) {
+                        int idPosizione = posizioniDisponibili.get(i);
                         statementInserimento.setString(1, tipoPianta);
-                        statementInserimento.setInt(2, posizioniDisponibili.get(i));
+                        statementInserimento.setInt(2, idPosizione);
                         statementInserimento.setInt(3, ordine.getId());
                         statementInserimento.executeUpdate();
                     }
                     System.out.println("Posizionamenti creati con successo!");
                 }
+
             } else {
                 System.out.println("Impossibile creare i posizionamenti: tipoPianta non trovato o posizioni insufficienti.");
             }
@@ -67,5 +71,37 @@ public class PosizionamentoDAO {
         }
     }
 
+    public void rimuoviPosizionamentoId(int idPosizionamento) {
+        String query = "DELETE FROM Posizionamento WHERE id = ?";
 
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, idPosizionamento);
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Posizionamento rimosso con successo.");
+            } else {
+                System.out.println("Errore durante la rimozione del posizionamento. Nessun posizionamento trovato.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante la rimozione del posizionamento: " + e.getMessage());
+        }
+    }
+
+    public void rimuoviPosizionamentoPosizione(int idPosizione) {
+        String query = "DELETE FROM Posizionamento WHERE posizione = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, idPosizione);
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Posizionamento rimosso con successo.");
+            } else {
+                System.out.println("Errore durante la rimozione del posizionamento. Nessun posizionamento trovato.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante la rimozione del posizionamento: " + e.getMessage());
+        }
+    }
 }

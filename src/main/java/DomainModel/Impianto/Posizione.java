@@ -1,7 +1,6 @@
 package main.java.DomainModel.Impianto;
 
 public class Posizione {
-
     private int id;
     private Irrigatore irriqatore;
     private IgrometroTerra igrometroTerra;

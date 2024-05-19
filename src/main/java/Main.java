@@ -75,7 +75,7 @@ public class Main {
 
                     System.out.println("\nNome: ");
                     String nome = scanner1.nextLine();
-                    System.out.println("Cognome: ");
+                    System.out.println("\nCognome: ");
                     String cognome = scanner1.nextLine();
                     System.out.println("\nEmail: ");
                     String email = scanner1.nextLine();

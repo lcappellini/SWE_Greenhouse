@@ -56,7 +56,12 @@ public class ClienteDAO {
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     // Estrai i dati del cliente dal result set e costruisci un oggetto Cliente
-                    Cliente cliente = new Cliente(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getString("email"), rs.getString("password"));
+                    Cliente cliente = new Cliente(
+                            rs.getInt("id"),
+                            rs.getString("nome"),
+                            rs.getString("cognome"),
+                            rs.getString("email"),
+                            rs.getString("password"));
                     return cliente;
                 }
             }
