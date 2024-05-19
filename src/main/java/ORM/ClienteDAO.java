@@ -17,17 +17,20 @@ public class ClienteDAO {
         }
     }
 
-    public Cliente registraCliente(String nome, String cognome) {
-        String query = "INSERT INTO Cliente (nome, cognome) VALUES (?, ?) RETURNING id";
+    public Cliente registraCliente(String nome, String cognome, String email, String password) {
+        String query = "INSERT INTO Cliente (nome, cognome, email, password) VALUES (?, ?, ?, ?) RETURNING id";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, nome);
             statement.setString(2, cognome);
+            statement.setString(3, email);
+            statement.setString(4, password);
 
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
                 System.out.println("Nuovo cliente registrato con successo.");
-                return new Cliente(id, nome, cognome); // Ritorna l'oggetto Cliente appena registrato
+                int idCliente = rs.getInt("id");
+                return new Cliente(idCliente, nome, cognome, email, password); // Ritorna l'oggetto Cliente appena registrato
             } else {
                 System.out.println("Errore durante la registrazione del cliente.");
                 return null; // Potresti voler gestire questo caso in modo diverso
@@ -50,12 +53,10 @@ public class ClienteDAO {
             statement.setString(1, email);
             statement.setString(2, password);
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
                     // Estrai i dati del cliente dal result set e costruisci un oggetto Cliente
-                    Cliente cliente = new Cliente(resultSet.getString("email"), resultSet.getString("password"));
-                    // Altre colonne del cliente...
-
+                    Cliente cliente = new Cliente(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getString("email"), rs.getString("password"));
                     return cliente;
                 }
             }

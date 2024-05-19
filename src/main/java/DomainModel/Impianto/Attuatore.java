@@ -1,4 +1,5 @@
 package main.java.DomainModel.Impianto;
 
-public class Attuatore extends Dispositivo{
+public abstract class Attuatore extends Dispositivo{
+    public abstract float command();
 }

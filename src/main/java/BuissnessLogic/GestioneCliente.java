@@ -8,9 +8,9 @@ public class GestioneCliente {
 
     public GestioneCliente() {}
 
-    public Cliente registraCliente(String email, String password) {
+    public Cliente registraCliente(String nome, String cognome, String email, String password) {
         ClienteDAO clienteDAO = new ClienteDAO();
-        return clienteDAO.registraCliente(email, password);
+        return clienteDAO.registraCliente(nome, cognome, email, password);
     }
 
     public Cliente accedi(String email, String password) {
