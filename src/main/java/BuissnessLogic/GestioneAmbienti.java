@@ -11,8 +11,17 @@ public class GestioneAmbienti {
         ambienteDAO.creaAmbiente(nome, descrizione);
     }
 
-    public void rimuoviAmbiente(){
+    public void rimuoviAmbiente(String nome){
         AmbienteDAO ambienteDAO = new AmbienteDAO();
-        ambienteDAO.rimuoviAmbiente();
+        ambienteDAO.rimuoviAmbiente(nome);
+    }
+
+    public void visualizzaAmbienti() {
+        AmbienteDAO ambienteDAO = new AmbienteDAO();
+        ambienteDAO.visualizzaAmbienti();
+    }
+    public int getNSpaziMaxByIdAmbiente(int idAmbiente) {
+        AmbienteDAO ambienteDAO = new AmbienteDAO();
+        return ambienteDAO.getNSpaziMaxByIdAmbiente(idAmbiente);
     }
 }

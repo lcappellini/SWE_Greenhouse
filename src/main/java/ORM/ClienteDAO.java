@@ -36,7 +36,7 @@ public class ClienteDAO {
                 return null; // Potresti voler gestire questo caso in modo diverso
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            // Gestisci il caso in cui l'email è duplicata nel database
+            // Gestisci il caso in cui l'nome è duplicata nel database
             System.err.println("Errore: Email già registrata.");
             return null;
         } catch (SQLException e) {

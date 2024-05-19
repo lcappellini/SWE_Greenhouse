@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS "Spazio" (
 
 CREATE TABLE IF NOT EXISTS "Posizione" (
     id SERIAL PRIMARY KEY,
-    assegnata BOOLEAN
+    nome VARCHAR(50) ,
+    cognome VARCHAR(50)
     );
 
 CREATE TABLE IF NOT EXISTS "Operatore"(
@@ -45,4 +46,28 @@ CREATE TABLE IF NOT EXISTS "Posizionamento" (
     posizione INT,
     ordine INT,
     operatore INT
+    FOREIGN KEY (pianta) REFERENCES "Pianta"(tipo),
+    FOREIGN KEY (posizione) REFERENCES  "Posizione"(id),
+    FOREIGN KEY (ordine) REFERENCES  "Ordine"(id)
     );
+
+CREATE TABLE IF NOT EXISTS "Ambiente" (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    descrizione VARCHAR(200),
+    nSpaziMax INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "Spazio" (
+    id SERIAL PRIMARY KEY,
+    ambiente_id INT,
+    nPosizioniMax INT NOT NULL
+    FOREIGN KEY (ambiente_id) REFERENCES "Ambiente"(id)
+);
+
+CREATE TABLE IF NOT EXISTS "Posizione" (
+    id SERIAL PRIMARY KEY,
+    assegnata BOOLEAN,
+    spazio_id INT,
+    FOREIGN KEY (spazio_id) REFERENCES  "Spazio"(id)
+);

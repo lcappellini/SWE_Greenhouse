@@ -3,6 +3,7 @@ package main.java;
 import main.java.BuissnessLogic.GestioneAmbienti;
 import main.java.BuissnessLogic.GestioneCliente;
 import main.java.BuissnessLogic.GestioneOrdini;
+import main.java.BuissnessLogic.GestioneSpazi;
 import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Ordine;
 
@@ -315,6 +316,10 @@ public class Main {
         } while (true);
     }
 
+    private static void handlePosizioni() {
+
+    }
+
     private static void handleAmbienti() {
         Scanner scanner = new Scanner(System.in);
         String input;
@@ -345,9 +350,14 @@ public class Main {
                     gestioneAmbienti.creaAmbiente(nome, descrizione);
                 }
                 case "2" -> {
-
+                    Scanner scanner1 = new Scanner(System.in);
+                    System.out.println("\nNome Ambiente da eliminare: ");
+                    String nome = scanner1.nextLine();
+                    gestioneAmbienti.rimuoviAmbiente(nome);
                 }
-                case "3" -> {}
+                case "3" -> {
+                    gestioneAmbienti.visualizzaAmbienti();
+                }
                 case "4" -> {return;}
                 case "5" -> System.exit(0);
                 default -> System.out.println("Input invalido, si prega di riprovare.");
@@ -355,7 +365,57 @@ public class Main {
 
         } while (true);
     }
+    private static void handleSpazi() {
+        Scanner scanner = new Scanner(System.in);
+        String input;
+        GestioneAmbienti gestioneAmbienti = new GestioneAmbienti();
+        GestioneSpazi gestioneSpazi = new GestioneSpazi();
+        do {
 
+            System.out.println(
+                    """
+                    \s
+                     GESTIONE SPAZI
+                     1. Registra Spazio
+                     2. Elimina Spazio
+                     3. Visualizza Spazi
+                     4. Monitora Spazi
+                     5. Indietro
+                     6. Esci
+                   \s"""
+            );
+
+            input = scanner.nextLine();
+
+            switch (input) {
+                case "1" -> {
+                    Scanner scanner1 = new Scanner(System.in);
+                    System.out.println("\nNome Spazio: ");
+                    String nome = scanner1.nextLine();
+                    System.out.println("In quale ambiente si trova? (digitare l'id dell'ambiente)");
+                    gestioneAmbienti.visualizzaAmbienti();
+                    int idAmbiente = Integer.parseInt(scanner1.nextLine());
+                    int nSpaziMax = gestioneAmbienti.getNSpaziMaxByIdAmbiente(idAmbiente);
+                    System.out.println("Quante posizioni contiene al più?");
+                    int nPosizioniMax = Integer.parseInt(scanner1.nextLine());
+                    gestioneSpazi.creaSpazio(idAmbiente, nPosizioniMax, nSpaziMax);
+                }
+                case "2" -> {
+                    Scanner scanner1 = new Scanner(System.in);
+                    System.out.println("\nNome Spazio da eliminare: ");
+                    String nome = scanner1.nextLine();
+                    gestioneAmbienti.rimuoviAmbiente(nome);
+                }
+                case "3" -> {
+                    gestioneAmbienti.visualizzaAmbienti();
+                }
+                case "4" -> {return;}
+                case "5" -> System.exit(0);
+                default -> System.out.println("Input invalido, si prega di riprovare.");
+            }
+
+        } while (true);
+    }
     public static void handlePosizionamenti() {
         Scanner scanner = new Scanner(System.in);
         String input;
