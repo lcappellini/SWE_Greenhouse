@@ -1,12 +1,9 @@
 package main.java.ORM;
 
+import main.java.DomainModel.Impianto.Posizione;
 import main.java.DomainModel.Ordine;
-import main.java.DomainModel.Pianta.Pianta;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class PosizionamentoDAO {
@@ -22,50 +19,91 @@ public class PosizionamentoDAO {
 
     }
 
-    public void creaPosizionamento(Ordine ordine) {
+    public void creaPosizionamento(Ordine ordine, ArrayList<Posizione> posizioni) throws SQLException, ClassNotFoundException {
         try {
-            // Trova il tipoPianta dall'ordine utilizzando l'id dell'ordine
-            String tipoPianta = null;
-            String queryTipoPianta = "SELECT tipoPianta FROM Ordine WHERE id = ?";
-            try (PreparedStatement statementTipoPianta = connection.prepareStatement(queryTipoPianta)) {
-                statementTipoPianta.setInt(1, ordine.getId());
-                try (ResultSet resultSetTipoPianta = statementTipoPianta.executeQuery()) {
-                    if (resultSetTipoPianta.next()) {
-                        tipoPianta = resultSetTipoPianta.getString("tipoPianta");
-                    }
-                }
-            }
-
-            // Trova posizioni disponibili dalla tabella Posizioni che abbiano l'attributo assegnato a false
-            ArrayList<Integer> posizioniDisponibili = new ArrayList<>();
-            String queryPosizione = "SELECT id FROM Posizione WHERE assegnato = false";
-            try (PreparedStatement statementPosizione = connection.prepareStatement(queryPosizione);
-                 ResultSet resultSetPosizione = statementPosizione.executeQuery()) {
-                while (resultSetPosizione.next()) {
-                    posizioniDisponibili.add(resultSetPosizione.getInt("id"));
-                }
-            }
-
-            // Controlla che ci siano abbastanza posizioni disponibili per tutte le piante nell'ordine
-            if (tipoPianta != null && !posizioniDisponibili.isEmpty() && posizioniDisponibili.size() >= ordine.getnPiante()) {
                 // Aggiungi un posizionamento per ogni pianta nell'ordine
                 String queryInserimento = "INSERT INTO Posizionamento (pianta, posizione, ordine) VALUES (?, ?, ?)";
                 try (PreparedStatement statementInserimento = connection.prepareStatement(queryInserimento)) {
-                    for (int i = 0; i < ordine.getnPiante(); i++) {
-                        statementInserimento.setString(1, tipoPianta);
-                        statementInserimento.setInt(2, posizioniDisponibili.get(i));
+                    for (Posizione posizione : posizioni) {
+                        statementInserimento.setString(1, ordine.getTipoPiante());
+                        statementInserimento.setInt(2, posizione.getId());
                         statementInserimento.setInt(3, ordine.getId());
                         statementInserimento.executeUpdate();
                     }
                     System.out.println("Posizionamenti creati con successo!");
                 }
-            } else {
-                System.out.println("Impossibile creare i posizionamenti: tipoPianta non trovato o posizioni insufficienti.");
-            }
+
         } catch (SQLException e) {
             System.err.println("Errore durante la creazione dei posizionamenti: " + e.getMessage());
         }
     }
 
 
+    public ArrayList<Posizione> liberaPosizionamenti(int idOrdine) {
+        ArrayList<Posizione> posizioniLiberate = new ArrayList<>();
+
+        String selectQuery = "SELECT posizione FROM \"Posizionamento\" WHERE ordine = ?";
+        String deleteQuery = "DELETE FROM \"Posizionamento\" WHERE ordine = ?";
+
+        try (PreparedStatement selectStmt = connection.prepareStatement(selectQuery)) {
+            selectStmt.setInt(1, idOrdine);
+            ResultSet rs = selectStmt.executeQuery();
+
+            while (rs.next()) {
+                int idPosizione = rs.getInt("posizione");
+                Posizione posizione = new Posizione(idPosizione);
+                posizioniLiberate.add(posizione);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try (PreparedStatement deleteStmt = connection.prepareStatement(deleteQuery)) {
+            deleteStmt.setInt(1, idOrdine);
+            int affectedRows = deleteStmt.executeUpdate();
+            if (affectedRows > 0) {
+                //System.out.println("Righe eliminate con successo: " + affectedRows);
+            } else {
+                System.out.println("Nessuna riga trovata con l'id_Ordine specificato.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return posizioniLiberate;
+    }
+
+    public void visualizzaPosizionamenti(int idOridne) {
+        String query = "SELECT * FROM \"Posizionamento\" WHERE ordine = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, idOridne);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            // Stampiamo l'intestazione
+            System.out.println("+--------+------------+-------------------+");
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.printf("| %-10s ", metaData.getColumnName(i));
+            }
+            System.out.println("|");
+            System.out.println("+--------+------------+-------------------+");
+
+            // Stampiamo le righe
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.printf("| %-10s ", resultSet.getString(i));
+                }
+                System.out.println("|");
+            }
+            System.out.println("+--------+------------+-------------------+");
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante la visualizzazione delle posizioni: " + e.getMessage());
+        }
+    }
 }

@@ -16,7 +16,9 @@ public class Posizione {
         this.assegnata = assegnata;
     }
 
-
+    public Posizione(int id) {
+        this.id = id;
+    }
     //setters
 
     //getters

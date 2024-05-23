@@ -14,7 +14,7 @@ public class GestioneOrdini {
     public GestioneOrdini() {}
 
     public int richiediNuovoOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
-
+        //FIXME non sarebbe megio controllare a parte?
         ImpiantoDAO impiantoDAO = new ImpiantoDAO();
 
         if(impiantoDAO.verificaDisponibilita(ordine.getnPiante())){
@@ -27,15 +27,25 @@ public class GestioneOrdini {
             return -1;
         }
     }
-
+    public Ordine getOrdineDaPosizionare(int idOrdine){
+        OrdineDAO ordineDAO = new OrdineDAO();
+        return ordineDAO.getOrdineDaPosizionare(idOrdine);
+    }
     public ArrayList<Ordine> vediOrdini(Cliente cliente){
         OrdineDAO ordineDAO = new OrdineDAO();
 
         return  ordineDAO.vediOrdini(cliente);
     }
 
-    public void completaOrdine(Cliente cliente) {
+    public void paga_e_ritira_Ordine(Cliente cliente, int idOrdine) {
         OrdineDAO ordineDAO = new OrdineDAO();
-        ordineDAO.completaOrdine(cliente);
+        ordineDAO.paga_e_ritira_Ordine(cliente,idOrdine);
     }
+
+    public void visualizzaOrdini() {
+        OrdineDAO ordineDAO = new OrdineDAO();
+        ordineDAO.visualizzaOrdini();
+    }
+
+
 }

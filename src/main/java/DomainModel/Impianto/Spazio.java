@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class Spazio {
 
     private int id;
+    private int nPosizioniMax;
     private ArrayList<Posizione> posizioni;
     private Climatizzazione climatizzazione;
     private Lampada lampada;
@@ -24,6 +25,18 @@ public class Spazio {
         this.igrometroAria = igrometroAria;
     }
 
+
+    public Spazio(int idSpazio, int nPosMax) {
+        this.id = id;
+        this.nPosizioniMax = nPosMax;
+    }
+
+
+
+    public int getnPosizioniMax() {
+        return nPosizioniMax;
+    }
+
     public ArrayList<Posizione> getPosizioni() { return posizioni; }
 
     public int getTemperatura(){
@@ -39,5 +52,13 @@ public class Spazio {
             }
         }
         return i == nPosti;
+    }
+
+    public void setPosizioni(ArrayList<Posizione> posizioni) {
+        this.posizioni = posizioni;
+    }
+
+    public int getId() {
+        return id;
     }
 }
