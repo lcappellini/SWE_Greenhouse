@@ -69,10 +69,10 @@ public class OrdineDAO {
 
     public ArrayList<Ordine> vediOrdini(Cliente cliente) {
         ArrayList<Ordine> ordini = new ArrayList<>();
-        String query = "SELECT * FROM Ordine WHERE cliente = ?";
+        String query = "SELECT * FROM \"Ordine\" WHERE cliente = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, cliente.getEmail());
+            statement.setInt(1, cliente.getId());
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -95,18 +95,84 @@ public class OrdineDAO {
         return ordini;
     }
 
-    public void completaOrdine(Cliente cliente) {
-        String query = "UPDATE Ordine SET stato = 'venduto' WHERE cliente = ?";
+    public void paga_e_ritira_Ordine(Cliente cliente, int idOrdine) {
+        String query = "UPDATE \"Ordine\" SET stato = 'venduto e ritirato' WHERE (id, ordine )= (?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, cliente.getEmail());
+            statement.setInt(1, idOrdine);
+            statement.setInt(2, cliente.getId());
 
-            int rowsUpdated = statement.executeUpdate();
+            statement.executeUpdate();
 
-            System.out.println(rowsUpdated + " ordini completati per il cliente " + cliente.getEmail());
+            System.out.println("Pagamento effettuato correttemente. Può ritirare l'ordine.");
+
         } catch (SQLException e) {
-            System.err.println("Errore durante il completamento degli ordini: " + e.getMessage());
+            System.err.println("Errore durante il pagamenti dell'ordine: " + e.getMessage());
         }
     }
 
+    public void visualizzaOrdini() {
+        String query = "SELECT * FROM \"Ordine\" ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+
+            ResultSet resultSet = statement.executeQuery();
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            // Stampiamo l'intestazione
+            System.out.println("+--------+------------+-------------------+");
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.printf("| %-10s ", metaData.getColumnName(i));
+            }
+            System.out.println("|");
+            System.out.println("+--------+------------+-------------------+");
+
+            // Stampiamo le righe
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.printf("| %-10s ", resultSet.getString(i));
+                }
+                System.out.println("|");
+            }
+            System.out.println("+--------+------------+-------------------+");
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante la visualizzazione degli ordini: " + e.getMessage());
+        }
+
+    }
+
+
+    public void ritiraOrdine(Cliente cliente, int idOrdine) {
+
+
+    }
+
+    public Ordine getOrdineDaPosizionare(int idOrdine) {
+        String query = "SELECT * FROM \"Ordine\" WHERE (stato, id) = (?,?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, "da posizionare");
+            statement.setInt(2, idOrdine);
+
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
+                Ordine ordine = new Ordine();
+                ordine.setId(resultSet.getInt("id"));
+                ordine.setCliente(resultSet.getInt("cliente"));
+                ordine.setPianteDalTipo(resultSet.getString("tipoPianta"),
+                        resultSet.getInt("quantità"));
+                ordine.setStato(resultSet.getString("stato"));
+                ordine.setDataConsegna(resultSet.getString("dataConsegna"));
+                return ordine;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante il pagamenti dell'ordine: " + e.getMessage());
+        }
+        return null;
+    }
 }

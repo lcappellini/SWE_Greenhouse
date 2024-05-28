@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import main.java.DomainModel.Impianto.Ambiente;
 
 public class AmbienteDAO {
 
@@ -17,12 +18,13 @@ public class AmbienteDAO {
         }
     }
 
-    public void creaAmbiente(String nome, String descrizione) {
-        String query = "INSERT INTO Ambiente (nome, descrizione) VALUES (?, ?)";
+    public void creaAmbiente(String nome, String descrizione, int nSpaziMax) {
+        String query = "INSERT INTO \"Ambiente\" (nome, descrizione, nSpaziMax) VALUES (?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, nome);
             statement.setString(2, descrizione);
+            statement.setInt(3, nSpaziMax);
 
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
@@ -35,11 +37,11 @@ public class AmbienteDAO {
         }
     }
 
-    public void rimuoviAmbiente(String nome) {
-        String query = "DELETE FROM Ambiente WHERE nome = ?";
+    public void rimuoviAmbiente(int idAmbiente) {
+        String query = "DELETE FROM \"Ambiente\" WHERE id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, nome);
+            statement.setInt(1, idAmbiente);
 
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
@@ -53,7 +55,7 @@ public class AmbienteDAO {
     }
 
     public void visualizzaAmbienti() {
-        String query = "SELECT * FROM Ambiente";
+        String query = "SELECT * FROM \"Ambiente\"";
 
         try (PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
@@ -73,7 +75,7 @@ public class AmbienteDAO {
     }
     public int getNSpaziMaxByIdAmbiente(int idAmbiente) {
         int nSpaziMax = 0;
-        String query = "SELECT nSpaziMax FROM Ambiente WHERE id = ?";
+        String query = "SELECT nSpaziMax FROM \"Ambiente\" WHERE id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, idAmbiente);
@@ -88,4 +90,28 @@ public class AmbienteDAO {
 
         return nSpaziMax;
     }
+
+    public Ambiente getAmbiente(int idAmbiente) {
+        String query = "SELECT * FROM \"Ambiente\" WHERE id = ?";
+        Ambiente ambiente = null;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, idAmbiente);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String nome = resultSet.getString("nome");
+                String descrizione = resultSet.getString("descrizione");
+                int nSpaziMax = resultSet.getInt("nSpaziMax");
+
+                ambiente = new Ambiente(id, nome, descrizione, nSpaziMax);
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante il recupero dell'ambiente: " + e.getMessage());
+        }
+
+        return ambiente;
+    }
+
 }

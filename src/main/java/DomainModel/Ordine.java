@@ -107,4 +107,8 @@ public class Ordine {
         this.cliente = cliente;
     }
 
+    public void setCliente(int idcliente) {
+        this.cliente = new Cliente(idcliente);
+    }
+
 }

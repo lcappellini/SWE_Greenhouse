@@ -18,7 +18,7 @@ public class ClienteDAO {
     }
 
     public Cliente registraCliente(String nome, String cognome, String email, String password) {
-        String query = "INSERT INTO Cliente (nome, cognome, email, password) VALUES (?, ?, ?, ?) RETURNING id";
+        String query = "INSERT INTO \"Cliente\" (nome, cognome, email, password) VALUES (?, ?, ?, ?) RETURNING id";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, nome);
@@ -26,17 +26,17 @@ public class ClienteDAO {
             statement.setString(3, email);
             statement.setString(4, password);
 
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()) {
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {  // Sposta il cursore alla prima riga
+                int id = resultSet.getInt("id");
                 System.out.println("Nuovo cliente registrato con successo.");
-                int idCliente = rs.getInt("id");
-                return new Cliente(idCliente, nome, cognome, email, password); // Ritorna l'oggetto Cliente appena registrato
+                return new Cliente(id, nome, cognome, email, password);  // Ritorna l'oggetto Cliente appena registrato
             } else {
                 System.out.println("Errore durante la registrazione del cliente.");
-                return null; // Potresti voler gestire questo caso in modo diverso
+                return null;  // Potresti voler gestire questo caso in modo diverso
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            // Gestisci il caso in cui l'nome è duplicata nel database
+            // Gestisci il caso in cui l'email è duplicata nel database
             System.err.println("Errore: Email già registrata.");
             return null;
         } catch (SQLException e) {
@@ -47,7 +47,7 @@ public class ClienteDAO {
 
 
     public Cliente accedi(String email, String password) {
-        String query = "SELECT * FROM Cliente WHERE email = ? AND password = ?";
+        String query = "SELECT * FROM \"Cliente\" WHERE email = ? AND password = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
