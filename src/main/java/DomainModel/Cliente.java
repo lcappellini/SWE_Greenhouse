@@ -7,10 +7,12 @@ public class Cliente {
     private String email;
     private String password;
 
-    public Cliente(int id, String email, String password) {
+    public Cliente(int id, String nome, String cognome, String email, String password) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.nome = nome;
+        this.cognome = cognome;
     }
     public Cliente( String email, String password) {
 
@@ -29,6 +31,12 @@ public class Cliente {
     public Cliente(int id) {
         this.id = id;
     }
+
+    public int getId() {
+        return id;
+    }
+    public String getNome() {return nome;}
+    public String getCognome() {return cognome;}
 
     public String getEmail() {return email;}
     public String getPassword() {return password;}

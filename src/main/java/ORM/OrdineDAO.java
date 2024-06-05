@@ -23,8 +23,8 @@ public class OrdineDAO {
     }
 
     public int addOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO \"Ordine\" (nome, cognome, dataConsegna, tipoPianta, quantità, stato) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"Ordine\" (idCliente, dataConsegna, tipoPianta, quantità, stato) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
         ResultSet generatedKeys = null;
@@ -32,12 +32,11 @@ public class OrdineDAO {
 
         try {
             preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, ordine.getCliente().getEmail());
-            preparedStatement.setString(2, ordine.getCliente().getPassword());
-            preparedStatement.setString(3, ordine.getDataConsegna());
-            preparedStatement.setString(4, ordine.getTipoPiante());
-            preparedStatement.setInt(5, ordine.getnPiante());
-            preparedStatement.setString(6, "da posizionare");
+            preparedStatement.setInt(1, ordine.getCliente().getId());
+            preparedStatement.setString(2, ordine.getDataConsegna());
+            preparedStatement.setString(3, ordine.getTipoPiante());
+            preparedStatement.setInt(4, ordine.getnPiante());
+            preparedStatement.setString(5, "da posizionare");
 
             int affectedRows = preparedStatement.executeUpdate();
 

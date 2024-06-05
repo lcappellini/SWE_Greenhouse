@@ -2,7 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS "Pianta" (
     tipo VARCHAR(50) PRIMARY KEY,
-    descrizione varchar(200)
+    descrizione VARCHAR(200)
     );
 
 
@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS "Ordine" (
     dataConsegna VARCHAR(50),
     tipoPianta VARCHAR(50),
     quantità INT,
-    descrizione varchar(100),
-    totale decimal(6,2),
+    descrizione VARCHAR(100),
+    totale DECIMAL(6,2),
     stato VARCHAR(50)
     );
 
@@ -71,7 +71,6 @@ CREATE TABLE IF NOT EXISTS "Cliente" (
 CREATE TABLE IF NOT EXISTS "Operatore"(
     id SERIAL PRIMARY KEY
     );
-
 
 
 CREATE TABLE IF NOT EXISTS "Ambiente" (
