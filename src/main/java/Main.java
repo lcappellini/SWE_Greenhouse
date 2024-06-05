@@ -4,11 +4,15 @@ import main.java.BuissnessLogic.*;
 import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Impianto.Ambiente;
 import main.java.DomainModel.Impianto.Posizione;
+import main.java.DomainModel.Impianto.Sensore;
 import main.java.DomainModel.Impianto.Spazio;
 import main.java.DomainModel.Ordine;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -408,7 +412,19 @@ public class Main {
                         Scanner scanner1 = new Scanner(System.in);
                         System.out.println("Quante posizioni contiene al più?");
                         int nPosizioniMax = Integer.parseInt(scanner1.nextLine());
-                        gestioneSpazi.creaSpazio(ambiente.getId(), nPosizioniMax);
+                        System.out.println("Id Termometro: ");
+                        int idTermometro = Integer.parseInt(scanner1.nextLine());
+                        System.out.println("Id Fotosensore: ");
+                        int idFotosensore = Integer.parseInt(scanner1.nextLine());
+                        System.out.println("Id IgrometroAria: ");
+                        int idIgrometroAria = Integer.parseInt(scanner1.nextLine());
+                        System.out.println("Id Climatizzazione: ");
+                        int idClimatizzazione = Integer.parseInt(scanner1.nextLine());
+                        System.out.println("Id Lampada: ");
+                        int idLampada = Integer.parseInt(scanner1.nextLine());
+                        gestioneSpazi.creaSpazio(ambiente.getId(), nPosizioniMax,
+                                idTermometro, idFotosensore, idIgrometroAria,
+                                idClimatizzazione, idLampada);
                     }else{
                         System.out.println("Impossibile aggiungere spazi: Ambiente pieno!");
                     }
@@ -427,7 +443,33 @@ public class Main {
                     Scanner scanner1 = new Scanner(System.in);
                     System.out.println("Inserire ID dello spazio da monitorare: ");
                     int idSpazio = Integer.parseInt(scanner1.nextLine());
-                    gestioneSpazi.monitoraSpazio(idSpazio);
+                    Spazio spazio = gestioneSpazi.getSpazio(idSpazio);
+                    if(spazio != null) {
+                        GestioneSensori gestioneSensori = new GestioneSensori();
+                        GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
+                        Scanner scanner2 = new Scanner(System.in);
+                        System.out.println("Premi Invio per interrompere il ciclo di monitoraggio...");
+                        LocalDateTime lt = LocalDateTime.now();
+                        long i = 0;
+                        Map<String, Boolean> accesi = new HashMap<>();
+                        accesi.put("Climatizzazione", false);
+                        accesi.put("Lampada", false);
+
+                        Thread monitoringThread = new Thread(() -> monitorSpazio(spazio, gestioneSpazi, gestioneSensori, gestioneAttuatori, accesi));
+
+
+                        monitoringThread.start();
+
+                        scanner2.nextLine(); // Aspetta che l'utente prema Invio
+                        monitoringThread.interrupt(); // Interrompe il thread di monitoraggio
+
+                        try {
+                            monitoringThread.join(); // Attende la terminazione del thread
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
                 case "5" ->{
                     Scanner scanner1 = new Scanner(System.in);
@@ -445,6 +487,44 @@ public class Main {
 
         } while (true);
     }
+    private static void monitorSpazio(Spazio spazio,GestioneSpazi gestioneSpazi, GestioneSensori gestioneSensori, GestioneAttuatori gestioneAttuatori, Map<String, Boolean> accesi) {
+        LocalDateTime lt = LocalDateTime.now();
+        long i = 0;
+
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                // Aggiorna la data/ora corrente
+                lt = LocalDateTime.now();
+
+                // Genera i valori dei sensori e aziona gli attuatori
+                gestioneSensori.registraMisura(spazio);
+                gestioneAttuatori.registraAzione(spazio);
+
+                // Registra i dati e monitora lo spazio
+                gestioneSensori.registraMisura(spazio);
+                gestioneAttuatori.registraAzione(spazio);
+                gestioneSpazi.monitoraSpazio(spazio.getId());
+
+                System.out.println("Data: " + lt);
+                System.out.println("Valori dei sensori e stato degli attuatori:");
+
+                for (Sensore s : spazio.getSensori()) {
+                    System.out.println(s.tipoSensore() + ": " + s.getValore());
+                }
+
+                for (Map.Entry<String, Boolean> entry : accesi.entrySet()) {
+                    System.out.println(entry.getKey() + ": " + (entry.getValue() ? "Acceso" : "Spento"));
+                }
+
+                Thread.sleep(2000); // Pausa di 2 secondi tra i cicli
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Reimposta lo stato di interruzione
+            }
+            i += 2;
+            lt = lt.plusHours(i);
+        }
+    }
+
     private static void handlePozioni(Spazio spazio) {
         Scanner scanner = new Scanner(System.in);
         String input;

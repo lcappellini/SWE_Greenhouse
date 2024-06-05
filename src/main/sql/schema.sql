@@ -7,37 +7,42 @@ CREATE TABLE IF NOT EXISTS "Pianta" (
 
 
 CREATE TABLE IF NOT EXISTS "Termometro" (
-    id SERIAL PRIMARY KEY,
-    temperatura INT
+    id INT PRIMARY KEY ,
+    temperatura INT,
+    data VARCHAR(50)
     );
 
 CREATE TABLE IF NOT EXISTS "IgrometroAria" (
-    id SERIAL PRIMARY KEY,
-    perc_acqua INT
+    id INT PRIMARY KEY ,
+    perc_acqua INT,
+    data VARCHAR(50)
+
 );
 CREATE TABLE IF NOT EXISTS "IgrometroTerreno" (
-    id SERIAL PRIMARY KEY,
-    perc_acqua INT
+    id INT PRIMARY KEY,
+    perc_acqua INT,
+    data VARCHAR(50)
+
 );
 CREATE TABLE IF NOT EXISTS "Irrigatore" (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY,
     acceso BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS "Fotosensore" (
-    id SERIAL PRIMARY KEY,
-    perc_luce INT
-    --data VARCHAR(50)
+    id INT PRIMARY KEY,
+    perc_luce INT,
+    data VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS "Lampada" (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY,
     acceso BOOLEAN
     --data VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS "Climatizzatore" (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY,
     acceso BOOLEAN,
     temperaturaRichiesta INT
     --data VARCHAR(50)
@@ -80,17 +85,12 @@ CREATE TABLE IF NOT EXISTS "Spazio" (
     id SERIAL PRIMARY KEY,
     ambiente_id INT,
     nPosizioniMax INT NOT NULL,
-    termometro INT,
-    fotosensore INT,
-    climatizzatore INT,
-    lampada INT,
-    igrometroAria INT,
-    FOREIGN KEY (ambiente_id) REFERENCES "Ambiente"(id),
-    FOREIGN KEY (termometro) REFERENCES "Termometro"(id),
-    FOREIGN KEY (fotosensore) REFERENCES "Fotosensore"(id),
-    FOREIGN KEY (climatizzatore) REFERENCES "Climatizzatore"(id),
-    FOREIGN KEY (lampada) REFERENCES "Lampada"(id),
-    FOREIGN KEY (igrometroAria) REFERENCES "IgrometroAria"(id)
+    termometro INT UNIQUE ,
+    fotosensore INT UNIQUE ,
+    climatizzazione INT UNIQUE ,
+    lampada INT UNIQUE ,
+    igrometroAria INT UNIQUE ,
+    FOREIGN KEY (ambiente_id) REFERENCES "Ambiente"(id)
 );
 
 CREATE TABLE IF NOT EXISTS "Posizione" (

@@ -8,9 +8,12 @@ import java.util.ArrayList;
 public class GestioneSpazi {
     public GestioneSpazi() {}
 
-    public void creaSpazio(int idAmbiente, int nPosizioniMax){
+    public void creaSpazio(int idAmbiente, int nPosizioniMax,
+                           int idTermometro, int idFotosensore, int idIgrometroAria,
+                           int idClimatizzazione, int idLampada){
         SpazioDAO spazioDAO = new SpazioDAO();
-        spazioDAO.creaSpazio(idAmbiente, nPosizioniMax);
+        spazioDAO.creaSpazio(idAmbiente, nPosizioniMax, idTermometro, idFotosensore,
+                idIgrometroAria, idClimatizzazione, idLampada);
     }
     public void rimuoviSpazio(int idSpazio) {
         SpazioDAO spazioDAO = new SpazioDAO();
