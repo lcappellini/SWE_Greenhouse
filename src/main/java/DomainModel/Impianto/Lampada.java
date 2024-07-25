@@ -10,11 +10,6 @@ public class Lampada extends Attuatore{
     }
 
     @Override
-    public void aziona() {
-        attivo = true;
-    }
-
-    @Override
     public String esegui(int i){
         String descrizione = "La Lampada "+this.id;
         if(i>=0){

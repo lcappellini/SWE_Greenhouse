@@ -2,7 +2,7 @@ package main.java.BuissnessLogic;
 
 import main.java.DomainModel.Impianto.Attuatore;
 import main.java.DomainModel.Impianto.Sensore;
-import main.java.DomainModel.Impianto.Spazio;
+import main.java.DomainModel.Impianto.Ambiente;
 import main.java.ORM.*;
 
 import java.util.Arrays;

@@ -195,7 +195,7 @@ public class Main {
                     System.out.println(operatore.esegui(-1)); // L'operatore torna libero
 
                     //L'ordine viene segnato come ritirato e viene concluso
-                    gestioneOrdini.paga_e_ritira_Ordine(cliente,idOrdine);
+                    gestioneOrdini.pagaERitiraOrdine(cliente,idOrdine);
                 }
                 case "4" -> {return;}
                 case "5" -> System.exit(0);
@@ -267,7 +267,7 @@ public class Main {
                     \s
                      PAGINA ADMIN
                      1. Gestione Ordini-Posizionamenti
-                     2. Gestione Ambienti-Spazi-Posizioni
+                     2. Gestione Spazi-Ambienti-Posizioni
                      4. Gestione Piante
                      5. Indietro
                      6. Esci
@@ -278,7 +278,7 @@ public class Main {
 
             switch (input) {
                 case "1" -> handleOrdini();
-                case "2" -> handleAmbienti();
+                case "2" -> handleSpazi();
                 case "3" -> handlePosizionamenti();
                 case "4" -> handlePiante();
                 case "5" -> {return;}
@@ -352,7 +352,7 @@ public class Main {
                     System.out.println(descrizione);
 
                     //Creazione posizionamento
-                    gestionePosizionamenti.creaPoisizionamento(ordine, posizioniOccupate, idOperatore);
+                    gestionePosizionamenti.creaPosizionamento(ordine, posizioniOccupate, idOperatore);
 
                     //Operatore Registra il Posizionamento
                     OperazioneDAO oDAO = new OperazioneDAO();
@@ -377,21 +377,21 @@ public class Main {
     }
 
 
-    private static void handleAmbienti() {
+    private static void handleSpazi() {
         Scanner scanner = new Scanner(System.in);
         String input;
-        GestioneAmbienti gestioneAmbienti = new GestioneAmbienti();
+        GestioneSpazi gestioneSpazi = new GestioneSpazi();
         do {
 
             System.out.println(
                     """
                     \s
                      GESTIONE AMBIENTI
-                     1. Registra Ambiente
-                     2. Elimina Ambiente
-                     3. Visualizza tutti gli Ambienti
-                     4. Visualizza Ambiente 
-                     5. Gestisci Spazi
+                     1. Registra Spazio
+                     2. Elimina Spazio
+                     3. Visualizza tutti gli Spazi
+                     4. Visualizza Spazio 
+                     5. Gestisci Ambienti
                      6. Indietro
                      7. Esci
                    \s"""
@@ -402,37 +402,37 @@ public class Main {
             switch (input) {
                 case "1" -> {
                     Scanner scanner1 = new Scanner(System.in);
-                    System.out.println("\nNome Ambiente: ");
+                    System.out.println("\nNome Spazio: ");
                     String nome = scanner1.nextLine();
-                    System.out.println("Descrizione Ambiente: ");
+                    System.out.println("Descrizione Spazio: ");
                     String descrizione = scanner1.nextLine();
-                    System.out.println("Numero di Spazi inseribili: ");
-                    int nSpaziMax = Integer.parseInt(scanner1.nextLine());
-                    gestioneAmbienti.creaAmbiente(nome, descrizione, nSpaziMax);
+                    System.out.println("Numero di Ambienti inseribili: ");
+                    int nAmbientiMax = Integer.parseInt(scanner1.nextLine());
+                    gestioneSpazi.creaSpazio(nome, descrizione, nAmbientiMax);
                 }
                 case "2" -> {
                     Scanner scanner1 = new Scanner(System.in);
-                    System.out.println("\nID Ambiente da eliminare: ");
-                    int idAmbiente = Integer.parseInt(scanner1.nextLine());
-                    gestioneAmbienti.rimuoviAmbiente(idAmbiente);
+                    System.out.println("\nID Spazio da eliminare: ");
+                    int idSpazio = Integer.parseInt(scanner1.nextLine());
+                    gestioneSpazi.rimuoviSpazio(idSpazio);
                 }
                 case "3" -> {
-                    gestioneAmbienti.visualizzaAmbienti();
+                    gestioneSpazi.visualizzaSpazi();
                 }
                 case "4" ->{
                     Scanner scanner1 = new Scanner(System.in);
-                    System.out.println("\nID Ambiente da visualizzare: ");
-                    int idAmbiente = Integer.parseInt(scanner1.nextLine());
-                    gestioneAmbienti.visualizzaAmbiente(idAmbiente);
+                    System.out.println("\nID Spazio da visualizzare: ");
+                    int idSpazio = Integer.parseInt(scanner1.nextLine());
+                    gestioneSpazi.visualizzaSpazio(idSpazio);
                 }
                 case "5" ->{
-                    gestioneAmbienti.visualizzaAmbienti();
-                    System.out.println("ID Ambiente del quale gestire gli spazi: ");
+                    gestioneSpazi.visualizzaSpazi();
+                    System.out.println("ID Spazio del quale gestire gli ambienti: ");
                     Scanner scanner1 = new Scanner(System.in);
-                    int idAmbiente = Integer.parseInt(scanner1.nextLine());
-                    Ambiente ambiente = gestioneAmbienti.getAmbiente(idAmbiente);
-                    if(ambiente != null) {
-                        handleSpazi(ambiente);
+                    int idSpazio = Integer.parseInt(scanner1.nextLine());
+                    Spazio spazio = gestioneSpazi.getSpazio(idSpazio);
+                    if(spazio != null) {
+                        handleAmbienti(spazio);
                     }
                 }
                 case "6" -> {return;}
@@ -442,21 +442,21 @@ public class Main {
 
         } while (true);
     }
-    private static void handleSpazi(Ambiente ambiente) {
+    private static void handleAmbienti(Spazio spazio) {
         Scanner scanner = new Scanner(System.in);
         String input;
-        GestioneSpazi gestioneSpazi = new GestioneSpazi();
-        ambiente.setSpazi(gestioneSpazi.completaAmbiente(ambiente.getId()));
+        GestioneAmbienti gestioneAmbienti = new GestioneAmbienti();
+        spazio.setAmbienti(gestioneAmbienti.completaSpazio(spazio.getId()));
         do {
 
             System.out.println(
                     """
                     \s
                      GESTIONE SPAZI
-                     1. Registra Spazio
-                     2. Elimina Spazio
-                     3. Visualizza Spazi dell'Ambiente
-                     4. Monitora Spazio
+                     1. Registra Ambiente
+                     2. Elimina Ambiente
+                     3. Visualizza Ambienti dell'Spazio
+                     4. Monitora Ambiente
                      5. Gestisci Posizioni
                      6. Indietro
                      7. Esci
@@ -467,7 +467,7 @@ public class Main {
 
             switch (input) {
                 case "1" -> {
-                    if(ambiente.getNSpaziMax() > ambiente.getSpazi().size() ){
+                    if(spazio.getNAmbientiMax() > spazio.getAmbienti().size() ){
                         Scanner scanner1 = new Scanner(System.in);
                         System.out.println("Quante posizioni contiene al più?");
                         int nPosizioniMax = Integer.parseInt(scanner1.nextLine());
@@ -481,29 +481,29 @@ public class Main {
                         int idClimatizzazione = Integer.parseInt(scanner1.nextLine());
                         System.out.println("Id Lampada: ");
                         int idLampada = Integer.parseInt(scanner1.nextLine());
-                        gestioneSpazi.creaSpazio(ambiente.getId(), nPosizioniMax,
+                        gestioneAmbienti.creaAmbiente(spazio.getId(), nPosizioniMax,
                                 idTermometro, idFotosensore, idIgrometroAria,
                                 idClimatizzazione, idLampada);
                     }else{
-                        System.out.println("Impossibile aggiungere spazi: Ambiente pieno!");
+                        System.out.println("Impossibile aggiungere ambienti: Spazio pieno!");
                     }
 
                 }
                 case "2" -> {
                     Scanner scanner1 = new Scanner(System.in);
-                    System.out.println("\nID Spazio da eliminare: ");
-                    int idSpazio = Integer.parseInt(scanner1.nextLine());
-                    gestioneSpazi.rimuoviSpazio(idSpazio);
+                    System.out.println("\nID Ambiente da eliminare: ");
+                    int idAmbiente = Integer.parseInt(scanner1.nextLine());
+                    gestioneAmbienti.rimuoviAmbiente(idAmbiente);
                 }
                 case "3" -> {
-                    gestioneSpazi.visualizzaSpazi(ambiente.getId());
+                    gestioneAmbienti.visualizzaAmbienti(spazio.getId());
                 }
                 case "4" -> {
                     Scanner scanner1 = new Scanner(System.in);
-                    System.out.println("Inserire ID dello spazio da monitorare: ");
-                    int idSpazio = Integer.parseInt(scanner1.nextLine());
-                    Spazio spazio = gestioneSpazi.getSpazio(idSpazio);
-                    if(spazio != null) {
+                    System.out.println("Inserire ID dello ambiente da monitorare: ");
+                    int idAmbiente = Integer.parseInt(scanner1.nextLine());
+                    Ambiente ambiente = gestioneAmbienti.getAmbiente(idAmbiente);
+                    if(ambiente != null) {
                         GestioneSensori gestioneSensori = new GestioneSensori();
                         GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
                         Scanner scanner2 = new Scanner(System.in);
@@ -514,7 +514,7 @@ public class Main {
                         accesi.put("Climatizzazione", false);
                         accesi.put("Lampada", false);
 
-                        Thread monitoringThread = new Thread(() -> monitorSpazio(spazio, gestioneSpazi, gestioneSensori, gestioneAttuatori, accesi));
+                        Thread monitoringThread = new Thread(() -> monitorAmbiente(ambiente, gestioneAmbienti, gestioneSensori, gestioneAttuatori, accesi));
 
 
                         monitoringThread.start();
@@ -532,11 +532,11 @@ public class Main {
                 }
                 case "5" ->{
                     Scanner scanner1 = new Scanner(System.in);
-                    System.out.println("ID Spazio del quale gestire le posizioni: ");
-                    int idSpazio = Integer.parseInt(scanner1.nextLine());
-                    Spazio spazio = gestioneSpazi.getSpazio(idSpazio);
-                    if(spazio != null) {
-                        handlePozioni(spazio);
+                    System.out.println("ID Ambiente del quale gestire le posizioni: ");
+                    int idAmbiente = Integer.parseInt(scanner1.nextLine());
+                    Ambiente ambiente = gestioneAmbienti.getAmbiente(idAmbiente);
+                    if(ambiente != null) {
+                        handlePozioni(ambiente);
                     }
                 }
                 case "6" -> {return;}
@@ -548,7 +548,7 @@ public class Main {
     }
 
     // FIXME Biomonitoring da revisionare:
-    private static void monitorSpazio(Spazio spazio,GestioneSpazi gestioneSpazi, GestioneSensori gestioneSensori, GestioneAttuatori gestioneAttuatori, Map<String, Boolean> accesi) {
+    private static void monitorAmbiente(Ambiente ambiente,GestioneAmbienti gestioneAmbienti, GestioneSensori gestioneSensori, GestioneAttuatori gestioneAttuatori, Map<String, Boolean> accesi) {
         LocalDateTime lt = LocalDateTime.now();
         long i = 0;
         Map<String, String> descrizioni = new HashMap<>();
@@ -556,34 +556,34 @@ public class Main {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 //vengono generati i valori dei sensori
-                spazio.misura(lt, accesi);
+                ambiente.misura(lt, accesi);
                 //vengono salvati gli attuatori che sono stati accesi
-                descrizioni = spazio.aziona();
+                descrizioni = ambiente.aziona();
 
-                // Registra i dati e monitora lo spazio
-                for(Sensore s : spazio.getSensori()){
+                // Registra i dati e monitora lo ambiente
+                for(Sensore s : ambiente.getSensori()){
                     gestioneSensori.registraMisura(s);
                 }
                 OperazioneDAO opDAO = new OperazioneDAO();
-                for(Attuatore a: spazio.getAttuatori()){
+                for(Attuatore a: ambiente.getAttuatori()){
                     opDAO.registraAzione(a, descrizioni.get(a.tipoAttuatore()), lt.toString());
                 }
-                //gestioneAttuatori.registraAzione(spazio);
-                //gestioneSpazi.monitoraSpazio(spazio.getId());
+                //gestioneAttuatori.registraAzione(ambiente);
+                //gestioneAmbienti.monitoraAmbiente(ambiente.getId());
 
                 System.out.println("+----------------------+");
                 System.out.println("| Parametro            | Valore                |");
                 System.out.println("+----------------------+-----------------------+");
-                System.out.printf("| Temperatura          | %-21f|\n", spazio.getSensore("Termometro").getValore());
-                System.out.printf("| Percentuale Acqua    | %-21f|\n", spazio.getSensore("IgrometroAria").getValore());
-                System.out.printf("| Percentuale Luce     | %-21f|\n", spazio.getSensore("Fotosensore").getValore());
+                System.out.printf("| Temperatura          | %-21f|\n", ambiente.getSensore("Termometro").getValore());
+                System.out.printf("| Percentuale Acqua    | %-21f|\n", ambiente.getSensore("IgrometroAria").getValore());
+                System.out.printf("| Percentuale Luce     | %-21f|\n", ambiente.getSensore("Fotosensore").getValore());
                 System.out.printf("| Climatizzazione Acceso| %-21s|\n", accesi.get("Climatizzazione") ? "Sì" : "No");
                 System.out.printf("| Lampada Accesa       | %-21s|\n", accesi.get("Lampada") ? "Sì" : "No");
                 System.out.println("+----------------------+-----------------------+");
 
                 Thread.sleep(2000); // Pausa di 2 secondi tra i cicli
 
-                accesi = spazio.getAttuatoriAccesi();
+                accesi = ambiente.getAttuatoriAccesi();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // Reimposta lo stato di interruzione
             }
@@ -592,11 +592,11 @@ public class Main {
         }
     }
 
-    private static void handlePozioni(Spazio spazio) {
+    private static void handlePozioni(Ambiente ambiente) {
         Scanner scanner = new Scanner(System.in);
         String input;
         GestionePosizioni gestionePosizioni = new GestionePosizioni();
-        spazio.setPosizioni(gestionePosizioni.completaSpazio(spazio.getId()));
+        ambiente.setPosizioni(gestionePosizioni.completaAmbiente(ambiente.getId()));
         do {
 
             System.out.println(
@@ -617,10 +617,10 @@ public class Main {
 
             switch (input) {
                 case "1" -> {
-                    if(spazio.getnPosizioniMax() > spazio.getPosizioni().size() ){
-                        gestionePosizioni.creaPosizione(spazio.getId());
+                    if(ambiente.getnPosizioniMax() > ambiente.getPosizioni().size() ){
+                        gestionePosizioni.creaPosizione(ambiente.getId());
                     }else{
-                        System.out.println("Impossibile aggiungere posizioni: Spazio pieno!");
+                        System.out.println("Impossibile aggiungere posizioni: Ambiente pieno!");
                     }
                 }
                 case "2" -> {
@@ -630,7 +630,7 @@ public class Main {
                     gestionePosizioni.rimuoviPosizione(idPosizione);
                 }
                 case "3" -> {
-                    gestionePosizioni.visualizzaPosizioni(spazio.getId());
+                    gestionePosizioni.visualizzaPosizioni(ambiente.getId());
                 }
                 case "4" -> {
                     Scanner scanner1 = new Scanner(System.in);
@@ -646,7 +646,7 @@ public class Main {
                     Scanner scanner2 = new Scanner(System.in);
                     StringBuilder queryBuilder = new StringBuilder("UPDATE \"Posizione\" SET ");
 
-                    System.out.println("Quale attributo vuoi modificare? (assegnata, spazio, irriatore, igrometroTerreno)");
+                    System.out.println("Quale attributo vuoi modificare? (assegnata, ambiente, irriatore, igrometroTerreno)");
                     String attributo = scanner2.nextLine();
 
                     System.out.println("Inserisci il nuovo valore:");
@@ -655,7 +655,7 @@ public class Main {
                     // Validate and format the value based on attribute type
                     if ("assegnata".equalsIgnoreCase(attributo)) {
                         queryBuilder.append(attributo).append(" = ? ");
-                    } else if ("spazio".equalsIgnoreCase(attributo) || "irriatore".equalsIgnoreCase(attributo) || "igrometroTerreno".equalsIgnoreCase(attributo)) {
+                    } else if ("ambiente".equalsIgnoreCase(attributo) || "irriatore".equalsIgnoreCase(attributo) || "igrometroTerreno".equalsIgnoreCase(attributo)) {
                         queryBuilder.append(attributo).append(" = ? ");
                     } else {
                         System.out.println("Attributo non valido.");
@@ -758,7 +758,7 @@ public class Main {
 
                     //L'operatore esegue 2 ( =controllo stato pianta)
                     String descrizione = "";
-                    if(pianta.controlla_stato()){
+                    if(pianta.controllaStato()){
                         descrizione = operatore.esegui(2);
                     }else{
                         descrizione = operatore.esegui(3);

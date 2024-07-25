@@ -1,7 +1,7 @@
 package main.java.ORM;
 
 import main.java.DomainModel.Impianto.Posizione;
-import main.java.DomainModel.Impianto.Spazio;
+import main.java.DomainModel.Impianto.Ambiente;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,12 +19,12 @@ public class PosizioneDAO {
         }
     }
 
-    public ArrayList<Posizione> getPosizioni(int idSpazio) {
+    public ArrayList<Posizione> getPosizioni(int idAmbiente) {
         ArrayList<Posizione> posizioni = new ArrayList<>();
-        String query = "SELECT * FROM \"Posizione\" WHERE spazio_id = ?";
+        String query = "SELECT * FROM \"Posizione\" WHERE ambiente_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, idSpazio);
+            statement.setInt(1, idAmbiente);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -33,19 +33,19 @@ public class PosizioneDAO {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Errore durante il completamento dello spazio: " + e.getMessage());
+            System.err.println("Errore durante il completamento dello ambiente: " + e.getMessage());
         }
 
         return posizioni;
     }
 
 
-    public void creaPosizione(int idSpazio) {
-        String query = "INSERT INTO \"Posizione\" (assegnata, spazio) VALUES (?, ?)";
+    public void creaPosizione(int idAmbiente) {
+        String query = "INSERT INTO \"Posizione\" (assegnata, ambiente) VALUES (?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setBoolean(1, false);
-            statement.setInt(2, idSpazio);
+            statement.setInt(2, idAmbiente);
             statement.executeUpdate();
             System.out.println("Posizione creata correttamente");
         } catch (SQLException e) {
@@ -70,11 +70,11 @@ public class PosizioneDAO {
         }
     }
 
-    public void visualizzaPosizioni(int idSpazio) {
-        String query = "SELECT * FROM \"Posizione\" WHERE spazio = ?";
+    public void visualizzaPosizioni(int idAmbiente) {
+        String query = "SELECT * FROM \"Posizione\" WHERE ambiente = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, idSpazio);
+            statement.setInt(1, idAmbiente);
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -168,6 +168,7 @@ public class PosizioneDAO {
         boolean posizioni = false;
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             posizioni = statement.execute();
+            //TODO
         } catch (SQLException e) {
             System.err.println("Errore durante la visualizzazione delle posizioni: " + e.getMessage());
         }

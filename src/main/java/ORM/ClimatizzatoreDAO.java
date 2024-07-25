@@ -1,16 +1,16 @@
 package main.java.ORM;
 
 import main.java.DomainModel.Impianto.Attuatore;
-import main.java.DomainModel.Impianto.Climatizzazione;
+import main.java.DomainModel.Impianto.Climatizzatore;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class ClimatizzazioneDAO extends AttuatoreDAO {
+public class ClimatizzatoreDAO extends AttuatoreDAO {
     private Connection connection;
 
-    public ClimatizzazioneDAO(){
+    public ClimatizzatoreDAO(){
 
         try {
             this.connection = ConnectionManager.getInstance().getConnection();
@@ -21,11 +21,11 @@ public class ClimatizzazioneDAO extends AttuatoreDAO {
     }
 
     @Override
-    public void registraAzione(Attuatore climatizzazione){
-        String query = "INSERT INTO \"Climatizzazione\" (id, acceso) VALUES (?, ?)";
+    public void registraAzione(Attuatore climatizzatore){
+        String query = "INSERT INTO \"Climatizzatore\" (id, acceso) VALUES (?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, climatizzazione.getId());
-            pstmt.setBoolean(2, climatizzazione.attivo());
+            pstmt.setInt(1, climatizzatore.getId());
+            pstmt.setBoolean(2, climatizzatore.attivo());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());

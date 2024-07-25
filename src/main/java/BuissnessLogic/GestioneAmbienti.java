@@ -3,27 +3,30 @@ package main.java.BuissnessLogic;
 import main.java.DomainModel.Impianto.Ambiente;
 import main.java.ORM.AmbienteDAO;
 
-public class GestioneAmbienti {
+import java.util.ArrayList;
 
+public class GestioneAmbienti {
     public GestioneAmbienti() {}
 
-    public void creaAmbiente(String nome, String descrizione, int nSpaziMax){
+    public void creaAmbiente(int idSpazio, int nPosizioniMax,
+                           int idTermometro, int idFotosensore, int idIgrometroAria,
+                           int idClimatizzazione, int idLampada){
         AmbienteDAO ambienteDAO = new AmbienteDAO();
-        ambienteDAO.creaAmbiente(nome, descrizione, nSpaziMax);
+        ambienteDAO.creaAmbiente(idSpazio, nPosizioniMax, idTermometro, idFotosensore,
+                idIgrometroAria, idClimatizzazione, idLampada);
     }
-
-    public void rimuoviAmbiente(int idAmbiente){
+    public void rimuoviAmbiente(int idAmbiente) {
         AmbienteDAO ambienteDAO = new AmbienteDAO();
         ambienteDAO.rimuoviAmbiente(idAmbiente);
     }
-
-    public void visualizzaAmbienti() {
+    public void visualizzaAmbienti(int idSpazio){
         AmbienteDAO ambienteDAO = new AmbienteDAO();
-        ambienteDAO.visualizzaAmbienti();
+        ambienteDAO.visualizzaAmbienti(idSpazio);
     }
-    public int getNSpaziMaxByIdAmbiente(int idAmbiente) {
+
+    public void monitoraAmbiente(int idAmbiente) {
         AmbienteDAO ambienteDAO = new AmbienteDAO();
-        return ambienteDAO.getNSpaziMaxByIdAmbiente(idAmbiente);
+        ambienteDAO.monitoraAmbiente(idAmbiente);
     }
 
     public Ambiente getAmbiente(int idAmbiente) {
@@ -31,7 +34,8 @@ public class GestioneAmbienti {
         return ambienteDAO.getAmbiente(idAmbiente);
     }
 
-    public void visualizzaAmbiente(int idAmbiente) {
-        //TODO
+    public ArrayList<Ambiente> completaSpazio(int idSpazio) {
+        AmbienteDAO ambienteDAO = new AmbienteDAO();
+        return ambienteDAO.completaSpazio(idSpazio);
     }
 }

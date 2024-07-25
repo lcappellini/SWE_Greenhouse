@@ -11,14 +11,14 @@ import java.util.Map;
 public class GestionePosizioni {
     public GestionePosizioni(){}
 
-    public ArrayList<Posizione> completaSpazio(int idSpazio){
+    public ArrayList<Posizione> completaAmbiente(int idAmbiente){
         PosizioneDAO posizioneDAO = new PosizioneDAO();
-        return  posizioneDAO.getPosizioni(idSpazio);
+        return  posizioneDAO.getPosizioni(idAmbiente);
     }
 
-    public void creaPosizione(int idSpazio) {
+    public void creaPosizione(int idAmbiente) {
         PosizioneDAO posizioneDAO = new PosizioneDAO();
-        posizioneDAO.creaPosizione(idSpazio);
+        posizioneDAO.creaPosizione(idAmbiente);
     }
 
     public void rimuoviPosizione(int idPosizione) {
@@ -26,9 +26,9 @@ public class GestionePosizioni {
         posizioneDAO.rimuoviPosizione(idPosizione);
     }
 
-    public void visualizzaPosizioni(int idSpazio) {
+    public void visualizzaPosizioni(int idAmbiente) {
         PosizioneDAO posizioneDAO = new PosizioneDAO();
-        posizioneDAO.visualizzaPosizioni(idSpazio);
+        posizioneDAO.visualizzaPosizioni(idAmbiente);
     }
 
     public void monitoraPosizone(int idPosizione) {
@@ -49,10 +49,10 @@ public class GestionePosizioni {
         PosizioneDAO posizioneDAO = new PosizioneDAO();
         return posizioneDAO.getNPosizioni(nPosizioni);
     }
-     public List<Integer> restituisci(Map<String, Object> criteri){
-         ObjectDAO objectDAO = new ObjectDAO();
-         return objectDAO.restituisci("Posizione", criteri);
-     }
+    public List<Integer> restituisci(Map<String, Object> criteri){
+        ObjectDAO objectDAO = new ObjectDAO();
+        return objectDAO.restituisci("Posizione", criteri);
+    }
 
     public List<Integer> occupa(int nPiante) {
         PosizioneDAO posizioneDAO = new PosizioneDAO();

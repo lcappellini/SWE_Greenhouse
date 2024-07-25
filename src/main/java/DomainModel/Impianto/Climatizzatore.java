@@ -1,13 +1,8 @@
 package main.java.DomainModel.Impianto;
 
-public class Climatizzazione extends Attuatore{
-    public Climatizzazione(int id) {
+public class Climatizzatore extends Attuatore{
+    public Climatizzatore(int id) {
         super(id); // Chiama il costruttore della classe Attuatore
-    }
-
-    @Override
-    public void aziona() {
-        attivo = true;
     }
 
     public String esegui(int value){
@@ -25,6 +20,6 @@ public class Climatizzazione extends Attuatore{
 
     @Override
     public String tipoAttuatore() {
-        return "Climatizzazione";
+        return "Climatizzatore";
     }
 }
