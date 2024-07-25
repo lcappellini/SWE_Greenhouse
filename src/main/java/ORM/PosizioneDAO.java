@@ -5,6 +5,7 @@ import main.java.DomainModel.Impianto.Spazio;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PosizioneDAO {
 
@@ -127,12 +128,12 @@ public class PosizioneDAO {
         }
     }
 
-    public void liberaPosizioni(ArrayList<Posizione> posizioni) {
+    public void liberaPosizioni(List<Integer> posizioni) {
         String updateQuery = "UPDATE \"Posizione\" SET assegnata = false WHERE id = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(updateQuery)) {
-            for (Posizione posizione : posizioni) {
-                pstmt.setInt(1, posizione.getId());
+            for (Integer posizione : posizioni) {
+                pstmt.setInt(1, posizione);
                 pstmt.executeUpdate();
             }
             //System.out.println("Posizioni aggiornate con successo.");
@@ -149,6 +150,7 @@ public class PosizioneDAO {
 
             ResultSet resultSet = statement.executeQuery();
             int i = 0;
+            //FIXME WTF i non viene incrementato
             while(resultSet.next() & i<nPosizioni) {
                 int id = resultSet.getInt("id");
                 posizioni.add(new Posizione(id));
@@ -156,6 +158,34 @@ public class PosizioneDAO {
 
         } catch (SQLException e) {
             System.err.println("Errore durante la visualizzazione delle posizioni: " + e.getMessage());
+        }
+        return posizioni;
+    }
+
+
+    public boolean riserva(int i) {
+        String query = "SELECT COUNT(*) FROM \"Posizione\" WHERE (assegnata) = false";
+        boolean posizioni = false;
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            posizioni = statement.execute();
+        } catch (SQLException e) {
+            System.err.println("Errore durante la visualizzazione delle posizioni: " + e.getMessage());
+        }
+        return posizioni;
+    }
+
+    public List<Integer> occupa(int nPiante) {
+        String query = "SELECT * FROM \"Posizione\" WHERE assegnata = false";
+        List<Integer> posizioni = new ArrayList<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next() & posizioni.size()<nPiante) {
+                int id = resultSet.getInt("id");
+                posizioni.add(id);
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante la sistemazione delle posizioni: " + e.getMessage());
         }
         return posizioni;
     }

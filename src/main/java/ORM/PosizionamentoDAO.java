@@ -5,6 +5,7 @@ import main.java.DomainModel.Ordine;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PosizionamentoDAO {
 
@@ -19,16 +20,19 @@ public class PosizionamentoDAO {
 
     }
 
-    public void creaPosizionamento(Ordine ordine, ArrayList<Posizione> posizioni) throws SQLException, ClassNotFoundException {
+    public void creaPosizionamento(Ordine ordine, List<Integer> posizioni, int idOperatore) throws SQLException, ClassNotFoundException {
         try {
                 // Aggiungi un posizionamento per ogni pianta nell'ordine
-                String queryInserimento = "INSERT INTO Posizionamento (pianta, posizione, ordine) VALUES (?, ?, ?)";
+                String queryInserimento = "INSERT INTO \"Posizionamento\" (pianta, posizione, ordine, operatore) VALUES (?, ?, ?)";
                 try (PreparedStatement statementInserimento = connection.prepareStatement(queryInserimento)) {
-                    for (Posizione posizione : posizioni) {
-                        statementInserimento.setString(1, ordine.getTipoPiante());
-                        statementInserimento.setInt(2, posizione.getId());
+                    int i = 0;
+                    for (Integer posizione : posizioni) {
+                        statementInserimento.setString(1, ordine.getTipoPianta(0));
+                        statementInserimento.setInt(2, posizione);
                         statementInserimento.setInt(3, ordine.getId());
+                        statementInserimento.setInt(4, idOperatore);
                         statementInserimento.executeUpdate();
+                        i++;
                     }
                     System.out.println("Posizionamenti creati con successo!");
                 }
@@ -39,8 +43,8 @@ public class PosizionamentoDAO {
     }
 
 
-    public ArrayList<Posizione> liberaPosizionamenti(int idOrdine) {
-        ArrayList<Posizione> posizioniLiberate = new ArrayList<>();
+    public List<Integer> liberaPosizionamenti(int idOrdine) {
+        List<Integer> posizioniLiberate = new ArrayList<>();
 
         String selectQuery = "SELECT posizione FROM \"Posizionamento\" WHERE ordine = ?";
         String deleteQuery = "DELETE FROM \"Posizionamento\" WHERE ordine = ?";
@@ -51,8 +55,7 @@ public class PosizionamentoDAO {
 
             while (rs.next()) {
                 int idPosizione = rs.getInt("posizione");
-                Posizione posizione = new Posizione(idPosizione);
-                posizioniLiberate.add(posizione);
+                posizioniLiberate.add(idPosizione);
             }
 
         } catch (SQLException e) {

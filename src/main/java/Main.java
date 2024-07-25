@@ -2,14 +2,15 @@ package main.java;
 
 import main.java.BuissnessLogic.*;
 import main.java.DomainModel.Cliente;
-import main.java.DomainModel.Impianto.Ambiente;
-import main.java.DomainModel.Impianto.Posizione;
-import main.java.DomainModel.Impianto.Spazio;
+import main.java.DomainModel.Impianto.*;
 import main.java.DomainModel.Ordine;
+import main.java.DomainModel.Pianta.Pianta;
+import main.java.ORM.AttuatoreDAO;
+import main.java.ORM.OperazioneDAO;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -113,6 +114,7 @@ public class Main {
         GestioneOrdini gestioneOrdini = new GestioneOrdini();
         GestionePosizionamenti gestionePosizionamenti = new GestionePosizionamenti();
         GestionePosizioni gestionePosizioni = new GestionePosizioni();
+        GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
         String input;
 
         do {
@@ -163,13 +165,37 @@ public class Main {
 
                 }
                 case "3" -> {
+                    //Ricerca dell'ordine da pagare
                     Scanner scanner1 = new Scanner(System.in);
+                    Map<String, Object> criteria = new HashMap<>();
+                    criteria.put("cliente",cliente.getId());
+                    criteria.put("stato","pronto");
+                    gestioneOrdini.visualizzaOrdini(criteria);
                     System.out.println("Inserire ID dell'ordine da pagare: ");
                     int idOrdine = Integer.parseInt(scanner1.nextLine());
-                    gestioneOrdini.paga_e_ritira_Ordine(cliente,idOrdine);
-                    ArrayList<Posizione> posizioni = gestionePosizionamenti.liberaPosizionamenti(idOrdine);
+
+                    //Ricerca del primo operatore libero
+                    Map<String, Object> criterio = new HashMap<>();
+                    criterio.put("occupato", false);
+                    int idOperatore = gestioneAttuatori.restituisci("Operatore", criterio).get(0);
+                    Operatore operatore = new Operatore(idOperatore);
+
+                    //L'operatore esegue 1 ( = liberazione del posizionamento)
+                    String descrizione = operatore.esegui(1);
+                    System.out.println(descrizione);
+
+                    //Il posizionamento viene eliminato e restituisce una lista di posizioni da liberare
+                    List<Integer> posizioni = gestionePosizionamenti.liberaPosizionamenti(idOrdine);
                     gestionePosizioni.liberaPosizioni(posizioni);
 
+                    //Viene registrata l'operazione su DB
+                    OperazioneDAO oDAO = new OperazioneDAO();
+                    String data = " "; //FIXME aggiungere logica per le date
+                    oDAO.registraAzione(operatore, descrizione, data);
+                    System.out.println(operatore.esegui(-1)); // L'operatore torna libero
+
+                    //L'ordine viene segnato come ritirato e viene concluso
+                    gestioneOrdini.paga_e_ritira_Ordine(cliente,idOrdine);
                 }
                 case "4" -> {return;}
                 case "5" -> System.exit(0);
@@ -223,6 +249,9 @@ public class Main {
         int nPiante = Integer.parseInt(scanner1.nextLine());
         System.out.println("Per quando? (gg-mm-aa): ");
         String dataConsegna = scanner1.nextLine();
+        /*
+        System.out.println("Vuoi aggiungere altre piante? (S/N)");
+        String risposta = scanner1.nextLine();*/
         return new Ordine(cliente, tipoPianta, nPiante, dataConsegna);
     }
 
@@ -265,6 +294,7 @@ public class Main {
         GestioneOrdini gestioneOrdini = new GestioneOrdini();
         GestionePosizionamenti gestionePosizionamenti = new GestionePosizionamenti();
         GestionePosizioni gestionePosizioni = new GestionePosizioni();
+        GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
         String input;
         //FIXME PLz
         do {
@@ -286,18 +316,51 @@ public class Main {
 
             switch (input) {
                 case "1" -> {
-                    gestioneOrdini.visualizzaOrdini();
+                    gestioneOrdini.visualizzaOrdini(new HashMap<>());
                 }
                 case "2" -> {
                     //TODO modifica dei parametri dell'ordine
                 }
                 case "3" -> {
+                    //FIXME da implementare : l'operatore deve mettere le piante dell'ordine in posizioni libere
+
+                    //Ricerca Ordine da posizionare
                     Scanner scanner1 = new Scanner(System.in);
+                    Map<String, Object> criteri = new HashMap<>();
+                    criteri.put("stato", "da posizionare");
+                    gestioneOrdini.visualizzaOrdini(criteri);
                     System.out.println("Inserire ID dell'ordine da posizionare: ");
-                    int idOridne = Integer.parseInt(scanner1.nextLine());
-                    Ordine ordine = gestioneOrdini.getOrdineDaPosizionare(idOridne);
-                    ArrayList<Posizione> posizioni = gestionePosizioni.getNPosizioni(ordine.getnPiante());
-                    gestionePosizionamenti.creaPoisizionamento(ordine, posizioni);
+                    int idOrdine = Integer.parseInt(scanner1.nextLine());
+                    Ordine ordine = gestioneOrdini.getOrdineDaPosizionare(idOrdine);
+
+                    //Ricerca Operatore libero
+                    Scanner scanner2 = new Scanner(System.in);
+                    Map<String, Object> criteri2 = new HashMap<>();
+                    criteri2.put("occupato", false);
+                    gestioneAttuatori.visualizza("Operatore", criteri2);
+                    System.out.println("Indicare un operatore libero: (ID) ");
+                    int idOperatore = Integer.parseInt(scanner2.nextLine());
+                    Operatore operatore = new Operatore(idOperatore);
+
+                    //Occupa Posizioni libere
+                    Map<String, Object> criter3 = new HashMap<>();
+                    criter3.put("assegnata", false);
+                    List<Integer> posizioniOccupate = gestionePosizioni.occupa(ordine.getnPiante());
+
+                    //L'operatore esegue la procedura di posizionamento (0)
+                    String descrizione = operatore.esegui(0);
+                    System.out.println(descrizione);
+
+                    //Creazione posizionamento
+                    gestionePosizionamenti.creaPoisizionamento(ordine, posizioniOccupate, idOperatore);
+
+                    //Operatore Registra il Posizionamento
+                    OperazioneDAO oDAO = new OperazioneDAO();
+                    String data = " "; //FIXME aggiungere logica per le date
+                    oDAO.registraAzione(operatore, descrizione, data);
+                    System.out.println(operatore.esegui(-1)); // L'operatore torna libero
+
+
                 }
                 case "4" -> {
                     Scanner scanner1 = new Scanner(System.in);
@@ -408,7 +471,19 @@ public class Main {
                         Scanner scanner1 = new Scanner(System.in);
                         System.out.println("Quante posizioni contiene al più?");
                         int nPosizioniMax = Integer.parseInt(scanner1.nextLine());
-                        gestioneSpazi.creaSpazio(ambiente.getId(), nPosizioniMax);
+                        System.out.println("Id Termometro: ");
+                        int idTermometro = Integer.parseInt(scanner1.nextLine());
+                        System.out.println("Id Fotosensore: ");
+                        int idFotosensore = Integer.parseInt(scanner1.nextLine());
+                        System.out.println("Id IgrometroAria: ");
+                        int idIgrometroAria = Integer.parseInt(scanner1.nextLine());
+                        System.out.println("Id Climatizzazione: ");
+                        int idClimatizzazione = Integer.parseInt(scanner1.nextLine());
+                        System.out.println("Id Lampada: ");
+                        int idLampada = Integer.parseInt(scanner1.nextLine());
+                        gestioneSpazi.creaSpazio(ambiente.getId(), nPosizioniMax,
+                                idTermometro, idFotosensore, idIgrometroAria,
+                                idClimatizzazione, idLampada);
                     }else{
                         System.out.println("Impossibile aggiungere spazi: Ambiente pieno!");
                     }
@@ -427,7 +502,33 @@ public class Main {
                     Scanner scanner1 = new Scanner(System.in);
                     System.out.println("Inserire ID dello spazio da monitorare: ");
                     int idSpazio = Integer.parseInt(scanner1.nextLine());
-                    gestioneSpazi.monitoraSpazio(idSpazio);
+                    Spazio spazio = gestioneSpazi.getSpazio(idSpazio);
+                    if(spazio != null) {
+                        GestioneSensori gestioneSensori = new GestioneSensori();
+                        GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
+                        Scanner scanner2 = new Scanner(System.in);
+                        System.out.println("Premi Invio per interrompere il ciclo di monitoraggio...");
+                        LocalDateTime lt = LocalDateTime.now();
+                        long i = 0;
+                        Map<String, Boolean> accesi = new HashMap<>();
+                        accesi.put("Climatizzazione", false);
+                        accesi.put("Lampada", false);
+
+                        Thread monitoringThread = new Thread(() -> monitorSpazio(spazio, gestioneSpazi, gestioneSensori, gestioneAttuatori, accesi));
+
+
+                        monitoringThread.start();
+
+                        scanner2.nextLine(); // Aspetta che l'utente prema Invio
+                        monitoringThread.interrupt(); // Interrompe il thread di monitoraggio
+
+                        try {
+                            monitoringThread.join(); // Attende la terminazione del thread
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
                 case "5" ->{
                     Scanner scanner1 = new Scanner(System.in);
@@ -445,6 +546,52 @@ public class Main {
 
         } while (true);
     }
+
+    // FIXME Biomonitoring da revisionare:
+    private static void monitorSpazio(Spazio spazio,GestioneSpazi gestioneSpazi, GestioneSensori gestioneSensori, GestioneAttuatori gestioneAttuatori, Map<String, Boolean> accesi) {
+        LocalDateTime lt = LocalDateTime.now();
+        long i = 0;
+        Map<String, String> descrizioni = new HashMap<>();
+
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                //vengono generati i valori dei sensori
+                spazio.misura(lt, accesi);
+                //vengono salvati gli attuatori che sono stati accesi
+                descrizioni = spazio.aziona();
+
+                // Registra i dati e monitora lo spazio
+                for(Sensore s : spazio.getSensori()){
+                    gestioneSensori.registraMisura(s);
+                }
+                OperazioneDAO opDAO = new OperazioneDAO();
+                for(Attuatore a: spazio.getAttuatori()){
+                    opDAO.registraAzione(a, descrizioni.get(a.tipoAttuatore()), lt.toString());
+                }
+                //gestioneAttuatori.registraAzione(spazio);
+                //gestioneSpazi.monitoraSpazio(spazio.getId());
+
+                System.out.println("+----------------------+");
+                System.out.println("| Parametro            | Valore                |");
+                System.out.println("+----------------------+-----------------------+");
+                System.out.printf("| Temperatura          | %-21f|\n", spazio.getSensore("Termometro").getValore());
+                System.out.printf("| Percentuale Acqua    | %-21f|\n", spazio.getSensore("IgrometroAria").getValore());
+                System.out.printf("| Percentuale Luce     | %-21f|\n", spazio.getSensore("Fotosensore").getValore());
+                System.out.printf("| Climatizzazione Acceso| %-21s|\n", accesi.get("Climatizzazione") ? "Sì" : "No");
+                System.out.printf("| Lampada Accesa       | %-21s|\n", accesi.get("Lampada") ? "Sì" : "No");
+                System.out.println("+----------------------+-----------------------+");
+
+                Thread.sleep(2000); // Pausa di 2 secondi tra i cicli
+
+                accesi = spazio.getAttuatoriAccesi();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Reimposta lo stato di interruzione
+            }
+            i += 2;
+            lt = lt.plusHours(i);
+        }
+    }
+
     private static void handlePozioni(Spazio spazio) {
         Scanner scanner = new Scanner(System.in);
         String input;
@@ -570,6 +717,8 @@ public class Main {
     public static void handlePiante() throws Exception {
         Scanner scanner = new Scanner(System.in);
         String input;
+        GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
+        GestionePiante gestionePiante = new GestionePiante();
 
         do {
 
@@ -588,7 +737,43 @@ public class Main {
             input = scanner.nextLine();
 
             switch (input) {
-                case "1" -> handleOrdini();
+                case "1" -> {
+                    //FIXME
+                    //Ricerca Operatore libero
+                    Scanner scanner2 = new Scanner(System.in);
+                    Map<String, Object> criteri2 = new HashMap<>();
+                    criteri2.put("occupato", false);
+                    gestioneAttuatori.visualizza("Operatore", criteri2);
+                    System.out.println("Indicare un operatore libero: (ID) ");
+                    int idOperatore = Integer.parseInt(scanner2.nextLine());
+                    Operatore operatore = new Operatore(idOperatore);
+
+                    //Ricerca della pianta da controllare
+                    Map<String, Object> criteriP = new HashMap<>();
+                    gestionePiante.visualizza(criteriP);
+                    Scanner scanner3 = new Scanner(System.in);
+                    System.out.println("Inserire l'ID della pianta: ");
+                    int idPianta = Integer.parseInt(scanner3.nextLine());
+                    Pianta pianta =  gestionePiante.restituisciPianta(idPianta);
+
+                    //L'operatore esegue 2 ( =controllo stato pianta)
+                    String descrizione = "";
+                    if(pianta.controlla_stato()){
+                        descrizione = operatore.esegui(2);
+                    }else{
+                        descrizione = operatore.esegui(3);
+                    }
+                    System.out.println(descrizione);
+
+                    //Viene registrata l'operazione su DB
+                    OperazioneDAO oDAO = new OperazioneDAO();
+                    String data = " "; //FIXME aggiungere logica per le date
+                    oDAO.registraAzione(operatore, descrizione, data);
+                    System.out.println(operatore.esegui(-1)); // L'operatore torna libero
+
+
+
+                }
                 case "2" -> {}
                 case "3" -> handlePosizionamenti();
                 case "4" -> {return;}

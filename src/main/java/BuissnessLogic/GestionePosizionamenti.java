@@ -7,6 +7,7 @@ import main.java.DomainModel.Ordine;
 import main.java.ORM.PosizionamentoDAO;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class GestionePosizionamenti {
@@ -15,12 +16,12 @@ public class GestionePosizionamenti {
     public GestionePosizionamenti() {
 
     }
-    public void creaPoisizionamento(Ordine ordine, ArrayList<Posizione> posizioni) throws Exception {
+    public void creaPoisizionamento(Ordine ordine, List<Integer> posizioniLibere, int idOperatore) throws Exception {
         PosizionamentoDAO posizionamentoDAO = new PosizionamentoDAO();
-        posizionamentoDAO.creaPosizionamento(ordine, posizioni);
+        posizionamentoDAO.creaPosizionamento(ordine, posizioniLibere, idOperatore);
     }
 
-    public ArrayList<Posizione> liberaPosizionamenti(int idOrdine) {
+    public List<Integer> liberaPosizionamenti(int idOrdine) {
         PosizionamentoDAO posizionamentoDAO = new PosizionamentoDAO();
         return posizionamentoDAO.liberaPosizionamenti(idOrdine);
     }

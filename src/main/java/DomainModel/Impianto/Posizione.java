@@ -23,7 +23,6 @@ public class Posizione {
 
     //getters
     public int getId() { return id; }
-    //public Spazio getArea() { return spazio; }
     public Irrigatore getIrriqatore() { return irriqatore; }
     public IgrometroTerra getIgrometroTerra() { return igrometroTerra; }
     public boolean eAssegnata() { return assegnata; }
