@@ -3,11 +3,14 @@ package main.java.BuissnessLogic;
 import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Ordine;
 import main.java.ORM.ImpiantoDAO;
+import main.java.ORM.ObjectDAO;
 import main.java.ORM.OrdineDAO;
+import main.java.ORM.PosizioneDAO;
 
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class GestioneOrdini {
 
@@ -16,12 +19,12 @@ public class GestioneOrdini {
     public int richiediNuovoOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
         //FIXME non sarebbe megio controllare a parte?
         ImpiantoDAO impiantoDAO = new ImpiantoDAO();
+        PosizioneDAO posizioneDAO = new PosizioneDAO();
 
-        if(impiantoDAO.verificaDisponibilita(ordine.getnPiante())){
+        if(posizioneDAO.riserva(ordine.getnPiante())){
             System.out.println("Ordine accettato.");
             OrdineDAO ordineDAO = new OrdineDAO();
             return ordineDAO.addOrdine(ordine);
-            //impiantoDAO.creaPosizionamento(ordine);
         }else {
             System.out.println("Ordine non accettato");
             return -1;
@@ -42,10 +45,9 @@ public class GestioneOrdini {
         ordineDAO.paga_e_ritira_Ordine(cliente,idOrdine);
     }
 
-    public void visualizzaOrdini() {
-        OrdineDAO ordineDAO = new OrdineDAO();
-        ordineDAO.visualizzaOrdini();
+    public void visualizzaOrdini(Map<String, Object> criteri) {
+        ObjectDAO objectDAO = new ObjectDAO();
+        objectDAO.visualizza("Ordine", criteri);
     }
-
 
 }

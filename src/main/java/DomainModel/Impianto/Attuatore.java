@@ -19,7 +19,7 @@ public abstract class Attuatore extends Dispositivo{
     public int getId() {
         return id;
     }
-
+    public abstract String esegui(int value);
     public abstract String tipoAttuatore();
 
     public boolean attivo() {

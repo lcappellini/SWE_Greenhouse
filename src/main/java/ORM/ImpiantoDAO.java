@@ -38,7 +38,6 @@ public class ImpiantoDAO {
         }
         return false; // In caso di errore o se non ci sono risultati
     }
-
     public void assegnaPosizionamento(Operatore operatore){
         //String query = "SELECT "
     }

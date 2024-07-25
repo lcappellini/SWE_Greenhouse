@@ -53,8 +53,8 @@ public class Ordine {
     public ArrayList<Pianta> getPiante() {
         return piante;
     }
-    public String getTipoPiante(){
-        return piante.get(0).getTipoPianta();
+    public String getTipoPianta(int index){
+        return piante.get(index).getTipoPianta();
     }
 
     public String getDataConsegna() {
@@ -111,4 +111,13 @@ public class Ordine {
         this.cliente = new Cliente(idcliente);
     }
 
+    public String getTipoPiante() {
+        String tipoPiante = piante.get(0).getTipoPianta();
+        for(Pianta p : piante){
+            if(!p.getTipoPianta().contains(tipoPiante)){
+                tipoPiante += ", " +p.getTipoPianta();
+            }
+        }
+        return tipoPiante;
+    }
 }

@@ -15,6 +15,18 @@ public class Lampada extends Attuatore{
     }
 
     @Override
+    public String esegui(int i){
+        String descrizione = "La Lampada "+this.id;
+        if(i>=0){
+            descrizione = descrizione+" è accesa.";
+            attivo = true;
+        }else{
+            descrizione = descrizione+" è spenta.";
+            attivo = false;
+        }
+        return descrizione;
+    }
+    @Override
     public String tipoAttuatore(){
         return "Lampada";
     }

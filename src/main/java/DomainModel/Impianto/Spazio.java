@@ -4,6 +4,7 @@ package main.java.DomainModel.Impianto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Spazio {
@@ -14,6 +15,7 @@ public class Spazio {
     private ArrayList<Sensore> sensori;
     private ArrayList<Attuatore> attuatori;
     private Map<String, Float> misure;
+    private Map<String, Boolean> accesi;
     private Climatizzazione climatizzazione;
     private Lampada lampada;
     private Fotosensore fotosensore;
@@ -112,40 +114,55 @@ public class Spazio {
         }
     }
 
-    public Map<String, Boolean> aziona(){
-        Map<String, Boolean> accesi = new HashMap<>();
+    public Map<String, String> aziona(){
+        Map<String, String> descrizioni = new HashMap<>();
+        accesi.clear();
         for(Attuatore a : attuatori){
             if(a.tipoAttuatore().equals("Climatizzazione")){
                 if(((misure.get("Termometro")<15.0 || misure.get("Termometro")>30.0)
                         || misure.get("IgrometroAria")<30)) {
                     if (!a.attivo()) {
-                        a.aziona();
+                        descrizioni.put(a.tipoAttuatore(), a.esegui(1));
                         accesi.put("Climatizzazione",true);
+
                     }
                 }else if(a.attivo()){
-                    a.spegni();
+                    descrizioni.put(a.tipoAttuatore(),a.esegui(-1));
                     accesi.put("Climatizzazione",false);
                 }
 
             }else if(a.tipoAttuatore().equals("Lampada")){
                 if(misure.get("Fotosensore")<200 ){
                     if(!a.attivo()){
-                        a.aziona();
+                        descrizioni.put(a.tipoAttuatore(),a.esegui(1));
                         accesi.put("Lampada",true);
                     }
                 }else if(a.attivo()){
-                    a.spegni();
+                    descrizioni.put(a.tipoAttuatore(),a.esegui(-1));
                     accesi.put("Lampada",false);
                 }
             }
 
         }
+        return descrizioni;
+    }
+
+    public Map<String, Boolean> getAttuatoriAccesi() {
         return accesi;
     }
 
-
     public ArrayList<Sensore> getSensori() {
         return sensori;
+    }
+
+    public Sensore getSensore(String tipoSensore) {
+        Sensore sensore = null;
+        for(Sensore s : sensori){
+            if(s.tipoSensore().equals(tipoSensore)){
+                sensore = s;
+            }
+        }
+        return sensore;
     }
 
     public ArrayList<Attuatore> getAttuatori() {

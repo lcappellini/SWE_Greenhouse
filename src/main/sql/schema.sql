@@ -1,7 +1,8 @@
 -- table generation
 
 CREATE TABLE IF NOT EXISTS "Pianta" (
-    tipo VARCHAR(50) PRIMARY KEY,
+    id INT PRIMARY KEY ,
+    tipo VARCHAR(50),
     descrizione VARCHAR(200)
     );
 
@@ -38,14 +39,12 @@ CREATE TABLE IF NOT EXISTS "Fotosensore" (
 CREATE TABLE IF NOT EXISTS "Lampada" (
     id INT PRIMARY KEY,
     acceso BOOLEAN
-    --data VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS "Climatizzatore" (
     id INT PRIMARY KEY,
     acceso BOOLEAN,
     temperaturaRichiesta INT
-    --data VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS "Ordine" (
@@ -57,7 +56,7 @@ CREATE TABLE IF NOT EXISTS "Ordine" (
     descrizione VARCHAR(100),
     totale DECIMAL(6,2),
     stato VARCHAR(50)
-    );
+);
 
 
 CREATE TABLE IF NOT EXISTS "Cliente" (
@@ -69,7 +68,8 @@ CREATE TABLE IF NOT EXISTS "Cliente" (
     );
 
 CREATE TABLE IF NOT EXISTS "Operatore"(
-    id SERIAL PRIMARY KEY
+    id SERIAL PRIMARY KEY,
+    occupato BOOLEAN
     );
 
 
@@ -84,12 +84,17 @@ CREATE TABLE IF NOT EXISTS "Spazio" (
     id SERIAL PRIMARY KEY,
     ambiente_id INT,
     nPosizioniMax INT NOT NULL,
-    termometro INT UNIQUE ,
-    fotosensore INT UNIQUE ,
-    climatizzazione INT UNIQUE ,
-    lampada INT UNIQUE ,
-    igrometroAria INT UNIQUE ,
-    FOREIGN KEY (ambiente_id) REFERENCES "Ambiente"(id)
+    termometro INT,
+    fotosensore INT,
+    climatizzazione INT,
+    lampada INT,
+    igrometroAria INT,
+    FOREIGN KEY (ambiente_id) REFERENCES "Ambiente"(id),
+    FOREIGN KEY (termometro) REFERENCES  "Termometro"(id),
+    FOREIGN KEY (fotosensore) REFERENCES "Fotosensore"(id),
+    FOREIGN KEY (climatizzazione) REFERENCES  "Climatizzatore"(id),
+    FOREIGN KEY (lampada) REFERENCES "Lampada"(id),
+    FOREIGN KEY (igrometroAria) REFERENCES "IgrometroAria"(id)
 );
 
 CREATE TABLE IF NOT EXISTS "Posizione" (
@@ -115,3 +120,10 @@ CREATE TABLE IF NOT EXISTS "Posizionamento" (
     FOREIGN KEY (operatore) REFERENCES  "Operatore"(id)
 );
 
+CREATE TABLE IF NOT EXISTS "Operazione" (
+    id SERIAL PRIMARY KEY,
+    tipoAttuatore VARCHAR(50),
+    idAttuatore INT,
+    descrizione VARCHAR(100),
+    data VARCHAR(50)
+);

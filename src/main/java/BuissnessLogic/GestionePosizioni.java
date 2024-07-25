@@ -1,9 +1,12 @@
 package main.java.BuissnessLogic;
 
 import main.java.DomainModel.Impianto.Posizione;
+import main.java.ORM.ObjectDAO;
 import main.java.ORM.PosizioneDAO;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class GestionePosizioni {
     public GestionePosizioni(){}
@@ -37,7 +40,7 @@ public class GestionePosizioni {
         posizioneDAO.modificaPosizione(idPosizione, query, valore, attributo);
     }
 
-    public void liberaPosizioni(ArrayList<Posizione> posizioni) {
+    public void liberaPosizioni(List<Integer> posizioni) {
         PosizioneDAO posizioneDAO = new PosizioneDAO();
         posizioneDAO.liberaPosizioni(posizioni);
     }
@@ -45,5 +48,14 @@ public class GestionePosizioni {
     public ArrayList<Posizione> getNPosizioni(int nPosizioni) {
         PosizioneDAO posizioneDAO = new PosizioneDAO();
         return posizioneDAO.getNPosizioni(nPosizioni);
+    }
+     public List<Integer> restituisci(Map<String, Object> criteri){
+         ObjectDAO objectDAO = new ObjectDAO();
+         return objectDAO.restituisci("Posizione", criteri);
+     }
+
+    public List<Integer> occupa(int nPiante) {
+        PosizioneDAO posizioneDAO = new PosizioneDAO();
+        return  posizioneDAO.occupa(nPiante);
     }
 }

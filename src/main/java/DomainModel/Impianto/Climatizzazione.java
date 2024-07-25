@@ -10,6 +10,19 @@ public class Climatizzazione extends Attuatore{
         attivo = true;
     }
 
+    public String esegui(int value){
+        String descrizione = "Il climatizzatore "+this.id;
+        if(value >= 0){
+            descrizione += " è accesso.";
+            attivo = true;
+        }else{
+            descrizione += " ha terminato.";
+            attivo = false;
+        }
+        return descrizione;
+    }
+
+
     @Override
     public String tipoAttuatore() {
         return "Climatizzazione";

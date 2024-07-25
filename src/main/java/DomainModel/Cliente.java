@@ -15,18 +15,10 @@ public class Cliente {
         this.cognome = cognome;
     }
     public Cliente( String email, String password) {
-
         this.email = email;
         this.password = password;
     }
 
-    public Cliente(int id, String nome, String cognome, String email, String password) {
-        this.id = id;
-        this.nome = nome;
-        this.cognome = cognome;
-        this.email = email;
-        this.password = password;
-    }
 
     public Cliente(int id) {
         this.id = id;
@@ -41,7 +33,5 @@ public class Cliente {
     public String getEmail() {return email;}
     public String getPassword() {return password;}
 
-    public int getId() {
-        return this.id;
-    }
+
 }

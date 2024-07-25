@@ -6,9 +6,12 @@ import main.java.DomainModel.Ordine;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Map;
+import main.java.ORM.ObjectDAO;
 
 
-public class OrdineDAO {
+
+public class OrdineDAO  {
 
     private Connection connection;
 
@@ -23,7 +26,7 @@ public class OrdineDAO {
     }
 
     public int addOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO \"Ordine\" (idCliente, dataConsegna, tipoPianta, quantità, stato) " +
+        String sql = "INSERT INTO \"Ordine\" (cliente, dataConsegna, tipoPianta, quantità, stato) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
@@ -96,7 +99,7 @@ public class OrdineDAO {
     }
 
     public void paga_e_ritira_Ordine(Cliente cliente, int idOrdine) {
-        String query = "UPDATE \"Ordine\" SET stato = 'venduto e ritirato' WHERE (id, ordine )= (?, ?)";
+        String query = "UPDATE \"Ordine\" SET stato = 'ritirato' WHERE (id, ordine)= (?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, idOrdine);
@@ -111,39 +114,10 @@ public class OrdineDAO {
         }
     }
 
-    public void visualizzaOrdini() {
-        String query = "SELECT * FROM \"Ordine\" ";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-
-            ResultSet resultSet = statement.executeQuery();
-
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            // Stampiamo l'intestazione
-            System.out.println("+--------+------------+-------------------+");
-            for (int i = 1; i <= columnCount; i++) {
-                System.out.printf("| %-10s ", metaData.getColumnName(i));
-            }
-            System.out.println("|");
-            System.out.println("+--------+------------+-------------------+");
-
-            // Stampiamo le righe
-            while (resultSet.next()) {
-                for (int i = 1; i <= columnCount; i++) {
-                    System.out.printf("| %-10s ", resultSet.getString(i));
-                }
-                System.out.println("|");
-            }
-            System.out.println("+--------+------------+-------------------+");
-
-        } catch (SQLException e) {
-            System.err.println("Errore durante la visualizzazione degli ordini: " + e.getMessage());
-        }
-
+    public void visualizza(Map<String, Object> criteri) {
+        ObjectDAO objectDAO = new ObjectDAO();
+        objectDAO.visualizza("Ordine", criteri);
     }
-
 
     public void ritiraOrdine(Cliente cliente, int idOrdine) {
 
@@ -171,8 +145,12 @@ public class OrdineDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Errore durante il pagamenti dell'ordine: " + e.getMessage());
+            System.err.println("Errore durante la ricerca dell'ordine: " + e.getMessage());
         }
         return null;
     }
+
+
+
+
 }
