@@ -30,19 +30,20 @@ public class GestioneOrdini {
             return -1;
         }
     }
+
     public Ordine getOrdineDaPosizionare(int idOrdine){
         OrdineDAO ordineDAO = new OrdineDAO();
         return ordineDAO.getOrdineDaPosizionare(idOrdine);
     }
+
     public ArrayList<Ordine> vediOrdini(Cliente cliente){
         OrdineDAO ordineDAO = new OrdineDAO();
-
         return  ordineDAO.vediOrdini(cliente);
     }
 
-    public void paga_e_ritira_Ordine(Cliente cliente, int idOrdine) {
+    public void pagaERitiraOrdine(Cliente cliente, int idOrdine) {
         OrdineDAO ordineDAO = new OrdineDAO();
-        ordineDAO.paga_e_ritira_Ordine(cliente,idOrdine);
+        ordineDAO.pagaERitiraOrdine(cliente,idOrdine);
     }
 
     public void visualizzaOrdini(Map<String, Object> criteri) {

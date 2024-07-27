@@ -3,31 +3,27 @@ package main.java.BuissnessLogic;
 import main.java.DomainModel.Impianto.Spazio;
 import main.java.ORM.SpazioDAO;
 
-import java.util.ArrayList;
-
 public class GestioneSpazi {
+
     public GestioneSpazi() {}
 
-    public void creaSpazio(int idAmbiente, int nPosizioniMax,
-                           int idTermometro, int idFotosensore, int idIgrometroAria,
-                           int idClimatizzazione, int idLampada){
+    public void creaSpazio(String nome, String descrizione, int nAmbientiMax){
         SpazioDAO spazioDAO = new SpazioDAO();
-        spazioDAO.creaSpazio(idAmbiente, nPosizioniMax, idTermometro, idFotosensore,
-                idIgrometroAria, idClimatizzazione, idLampada);
+        spazioDAO.creaSpazio(nome, descrizione, nAmbientiMax);
     }
-    public void rimuoviSpazio(int idSpazio) {
+
+    public void rimuoviSpazio(int idSpazio){
         SpazioDAO spazioDAO = new SpazioDAO();
         spazioDAO.rimuoviSpazio(idSpazio);
     }
-    public void visualizzaSpazi(int idAmbiente){
+
+    public void visualizzaSpazi() {
         SpazioDAO spazioDAO = new SpazioDAO();
-        spazioDAO.visualizzaSpazi(idAmbiente);
+        spazioDAO.visualizzaSpazi();
     }
-
-
-    public void monitoraSpazio(int idSpazio) {
+    public int getNAmbientiMaxByIdSpazio(int idSpazio) {
         SpazioDAO spazioDAO = new SpazioDAO();
-        spazioDAO.monitoraSpazio(idSpazio);
+        return spazioDAO.getNAmbientiMaxByIdSpazio(idSpazio);
     }
 
     public Spazio getSpazio(int idSpazio) {
@@ -35,8 +31,9 @@ public class GestioneSpazi {
         return spazioDAO.getSpazio(idSpazio);
     }
 
-    public ArrayList<Spazio> completaAmbiente(int idAmbiente) {
+    public void visualizzaSpazio(int idSpazio) {
+        //DONE
         SpazioDAO spazioDAO = new SpazioDAO();
-        return spazioDAO.completaAmbiente(idAmbiente);
+        spazioDAO.visualizzaSpazio(idSpazio);
     }
 }

@@ -1,7 +1,7 @@
 package main.java.ORM;
 
 import main.java.DomainModel.Impianto.Attuatore;
-import main.java.DomainModel.Impianto.Spazio;
+import main.java.DomainModel.Impianto.Ambiente;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

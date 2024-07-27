@@ -6,10 +6,6 @@ public class Irrigatore extends Attuatore{
     }
 
     @Override
-    public void aziona() {
-        attivo = true;
-    }
-    @Override
     public String esegui(int i){
         String descrizione = "L'irrigatore "+this.id;
         if(i>=0){

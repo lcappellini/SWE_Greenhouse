@@ -98,7 +98,7 @@ public class OrdineDAO  {
         return ordini;
     }
 
-    public void paga_e_ritira_Ordine(Cliente cliente, int idOrdine) {
+    public void pagaERitiraOrdine(Cliente cliente, int idOrdine) {
         String query = "UPDATE \"Ordine\" SET stato = 'ritirato' WHERE (id, ordine)= (?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -120,7 +120,6 @@ public class OrdineDAO  {
     }
 
     public void ritiraOrdine(Cliente cliente, int idOrdine) {
-
 
     }
 

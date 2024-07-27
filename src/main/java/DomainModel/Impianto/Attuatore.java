@@ -9,9 +9,6 @@ public abstract class Attuatore extends Dispositivo{
         this.id = id;
     }
 
-    public void aziona() {
-
-    }
     public void spegni(){
         this.attivo = false;
     }
