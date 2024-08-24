@@ -1,6 +1,7 @@
 package main.java;
 
 import main.java.BuissnessLogic.*;
+import main.java.DomainModel.Admin;
 import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Impianto.*;
 import main.java.DomainModel.Ordine;
@@ -108,6 +109,7 @@ public class Main {
         } while (true);
 
     }
+
     public static void handleClientAction(Cliente cliente) throws SQLException, ClassNotFoundException {
 
         Scanner scanner = new Scanner(System.in);
@@ -255,7 +257,55 @@ public class Main {
         return new Ordine(cliente, tipoPianta, nPiante, dataConsegna);
     }
 
+
+
     public static void handleAdmin() throws Exception {
+
+        Scanner scanner = new Scanner(System.in);
+        GestioneAdmin gestioneAdmin = new GestioneAdmin();
+        String input;
+
+        do {
+
+            System.out.println(
+                    """
+                             \s
+                              PAGINA ADMIN
+                              1. Accedi
+                              2. Indietro
+                              3. Esci
+                            \s"""
+            );
+
+            input = scanner.nextLine();
+
+            switch (input) {
+                case "1" -> {
+                    Scanner scanner1 = new Scanner(System.in);
+
+                    System.out.println("\nEmail: ");
+                    String email = scanner1.nextLine();
+                    System.out.println("Password: ");
+                    String password = scanner1.nextLine();
+
+                    Admin admin = gestioneAdmin.accedi(email, password);
+
+                    if (admin != null)
+                        handleAdminAction();
+                }
+                case "2" -> {
+                    return;
+                }
+                case "3" -> System.exit(0);
+                default -> System.out.println("Input invalido, si prega di riprovare.");
+            }
+
+        } while (true);
+
+    }
+
+
+    public static void handleAdminAction() throws Exception {
 
         Scanner scanner = new Scanner(System.in);
         String input;
