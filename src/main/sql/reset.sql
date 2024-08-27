@@ -8,6 +8,14 @@ DROP TABLE IF EXISTS "Pianta" CASCADE ;
 DROP TABLE IF EXISTS "Operatore" CASCADE;
 DROP TABLE IF EXISTS "Ambiente" CASCADE;
 DROP TABLE IF EXISTS "Operazione" CASCADE;
+DROP TABLE IF EXISTS "Admin" CASCADE;
+DROP table if exists "Termometro" cascade ;
+drop table if exists "Irrigatore" cascade ;
+drop table if exists "IgrometroTerreno" cascade ;
+drop table if exists "IgrometroAria" cascade;
+drop table if exists "Climatizzatore" cascade ;
+drop table if exists "Lampada" cascade ;
+drop table if exists "Fotosensore" cascade;
 
 
 
@@ -85,23 +93,23 @@ CREATE TABLE IF NOT EXISTS "Operatore"(
 
 
 
-CREATE TABLE IF NOT EXISTS "Ambiente" (
+CREATE TABLE IF NOT EXISTS "Spazio" (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     descrizione VARCHAR(200),
-    nSpaziMax INT NOT NULL
+    nAmbientiMax INT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS "Spazio" (
+CREATE TABLE IF NOT EXISTS "Ambiente" (
     id SERIAL PRIMARY KEY,
-    ambiente_id INT,
+    spazio_id INT,
     nPosizioniMax INT NOT NULL,
     termometro INT,
     fotosensore INT,
     climatizzazione INT,
     lampada INT ,
     igrometroAria INT,
-    FOREIGN KEY (ambiente_id) REFERENCES "Ambiente"(id),
+    FOREIGN KEY (spazio_id) REFERENCES "Spazio"(id),
     FOREIGN KEY (termometro) REFERENCES  "Termometro"(id),
     FOREIGN KEY (fotosensore) REFERENCES "Fotosensore"(id),
     FOREIGN KEY (climatizzazione) REFERENCES  "Climatizzatore"(id),
@@ -112,23 +120,20 @@ CREATE TABLE IF NOT EXISTS "Spazio" (
 CREATE TABLE IF NOT EXISTS "Posizione" (
     id SERIAL PRIMARY KEY,
     assegnata BOOLEAN,
-    spazio INT,
+    ambiente INT,
     irriatore INT,
     igrometroTerreno INT,
-    operatore INT,
-    FOREIGN KEY (spazio) REFERENCES  "Spazio"(id),
+    FOREIGN KEY (ambiente) REFERENCES  "Ambiente"(id),
     FOREIGN KEY (irriatore) REFERENCES  "Irrigatore"(id),
-    FOREIGN KEY (igrometroTerreno) REFERENCES  "IgrometroTerreno"(id),
-    FOREIGN KEY (operatore) REFERENCES  "Operatore"(id)
+    FOREIGN KEY (igrometroTerreno) REFERENCES  "IgrometroTerreno"(id)
 );
 
 CREATE TABLE IF NOT EXISTS "Posizionamento" (
     id SERIAL PRIMARY KEY,
-    pianta INT,
+    pianta varchar(50),
     posizione INT,
     ordine INT,
     operatore int,
-    FOREIGN KEY (pianta) REFERENCES "Pianta"(id),
     FOREIGN KEY (posizione) REFERENCES  "Posizione"(id),
     FOREIGN KEY (ordine) REFERENCES  "Ordine"(id),
     FOREIGN KEY (operatore) REFERENCES  "Operatore"(id)
@@ -142,3 +147,7 @@ CREATE TABLE IF NOT EXISTS "Operazione" (
     data VARCHAR(50)
 );
 
+CREATE TABLE IF NOT EXISTS "Admin"(
+    email VARCHAR(50) PRIMARY KEY,
+    password VARCHAR(100)
+)

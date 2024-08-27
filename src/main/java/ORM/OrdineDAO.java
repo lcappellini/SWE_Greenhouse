@@ -87,7 +87,7 @@ public class OrdineDAO  {
                             resultSet.getInt("quantità"));
                     ordine.setStato(resultSet.getString("stato"));
                     ordine.setDataConsegna(resultSet.getString("dataConsegna"));
-
+                    ordine.setPrezzo(resultSet.getDouble("totale"));
                     ordini.add(ordine);
                 }
             }
@@ -133,6 +133,7 @@ public class OrdineDAO  {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
+                resultSet.next();
                 Ordine ordine = new Ordine();
                 ordine.setId(resultSet.getInt("id"));
                 ordine.setCliente(resultSet.getInt("cliente"));
@@ -140,6 +141,7 @@ public class OrdineDAO  {
                         resultSet.getInt("quantità"));
                 ordine.setStato(resultSet.getString("stato"));
                 ordine.setDataConsegna(resultSet.getString("dataConsegna"));
+                ordine.setPrezzo(resultSet.getDouble("totale"));
                 return ordine;
             }
 
@@ -149,7 +151,24 @@ public class OrdineDAO  {
         return null;
     }
 
+    public boolean ordiniPronti(Cliente cliente){
+        String query = "SELECT * FROM \"Ordine\" WHERE (cliente, stato)= (?, ?)";
 
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, cliente.getId());
+            statement.setString(2, "pronto");
+
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()){
+                return true;
+            }
+
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante il pagamenti dell'ordine: " + e.getMessage());
+        }
+        return false;
+    }
 
 
 }

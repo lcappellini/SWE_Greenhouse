@@ -10,15 +10,17 @@ public class Ordine {
     private String dataConsegna;
     private String dataInizio;
     private String stato;
-    private int prezzo;
+    private double prezzo;
 
     public Ordine() {
+        piante = new ArrayList<Pianta>();
     }
 
     public Ordine(String dataConsegna, ArrayList<Pianta> piante, Cliente cliente) {
         this.dataConsegna = dataConsegna;
         this.piante = piante;
         this.cliente = cliente;
+
     }
 
     public Ordine(Cliente cliente, ArrayList<Pianta> piante, String dataConsegna) {
@@ -34,6 +36,7 @@ public class Ordine {
             this.piante.add(new Pianta(tipoPianta));
         }
         this.dataConsegna = dataConsegna;
+        this.prezzo = piante.size() * piante.get(0).getCosto();
     }
 
 
@@ -69,7 +72,7 @@ public class Ordine {
         return stato;
     }
 
-    public int getPrezzo() {
+    public double getPrezzo() {
         return prezzo;
     }
 
@@ -99,8 +102,8 @@ public class Ordine {
         this.stato = stato;
     }
 
-    public void setPrezzo(int prezzo) {
-        this.prezzo = prezzo;
+    public void setPrezzo(double p) {
+        this.prezzo = p;
     }
 
     public void setCliente(Cliente cliente) {

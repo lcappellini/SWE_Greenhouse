@@ -21,26 +21,30 @@ public class PosizionamentoDAO {
     }
 
     public void creaPosizionamento(Ordine ordine, List<Integer> posizioni, int idOperatore) throws SQLException, ClassNotFoundException {
-        try {
-                // Aggiungi un posizionamento per ogni pianta nell'ordine
-                String queryInserimento = "INSERT INTO \"Posizionamento\" (pianta, posizione, ordine, operatore) VALUES (?, ?, ?)";
-                try (PreparedStatement statementInserimento = connection.prepareStatement(queryInserimento)) {
-                    int i = 0;
-                    for (Integer posizione : posizioni) {
-                        statementInserimento.setString(1, ordine.getTipoPianta(0));
-                        statementInserimento.setInt(2, posizione);
-                        statementInserimento.setInt(3, ordine.getId());
-                        statementInserimento.setInt(4, idOperatore);
-                        statementInserimento.executeUpdate();
-                        i++;
-                    }
-                    System.out.println("Posizionamenti creati con successo!");
-                }
+        String queryInserimento = "INSERT INTO \"Posizionamento\" (pianta, posizione, ordine, operatore) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement statementInserimento = connection.prepareStatement(queryInserimento)) {
+            connection.setAutoCommit(false);  // Inizio della transazione
+
+            for (int i = 0; i < posizioni.size(); i++) {
+                statementInserimento.clearParameters();
+                statementInserimento.setString(1, ordine.getTipoPianta(i));  // Considera di usare l'indice i o un'altra logica appropriata
+                statementInserimento.setInt(2, posizioni.get(i));
+                statementInserimento.setInt(3, ordine.getId());
+                statementInserimento.setInt(4, idOperatore);
+                statementInserimento.executeUpdate();
+            }
+
+            connection.commit();  // Commit della transazione
+            System.out.println("Posizionamenti creati con successo!");
 
         } catch (SQLException e) {
+            connection.rollback();  // Rollback della transazione in caso di errore
             System.err.println("Errore durante la creazione dei posizionamenti: " + e.getMessage());
+            throw e;  // Rilancia l'eccezione per la gestione a un livello superiore
         }
     }
+
 
 
     public List<Integer> liberaPosizionamenti(int idOrdine) {

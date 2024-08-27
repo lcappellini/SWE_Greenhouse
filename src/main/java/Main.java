@@ -126,7 +126,7 @@ public class Main {
                     \s
                      PAGINA ORDINI
                      1. Richiedi nuovo ordine
-                     2. Controlla i miei ordini
+                     2. Controlla i miei ordini (TBF)
                      3. Paga e ritira ordine
                      4. Indietro
                      5. Esci
@@ -167,6 +167,10 @@ public class Main {
 
                 }
                 case "3" -> {
+                    if(!gestioneOrdini.ordiniPronti(cliente)){
+                        System.out.println("Nessun ordine da ritirare.");
+                        handleClientAction(cliente);
+                    }
                     //Ricerca dell'ordine da pagare
                     Scanner scanner1 = new Scanner(System.in);
                     Map<String, Object> criteria = new HashMap<>();
@@ -318,9 +322,9 @@ public class Main {
                      PAGINA ADMIN
                      1. Gestione Ordini-Posizionamenti
                      2. Gestione Spazi-Ambienti-Posizioni
-                     4. Gestione Piante
-                     5. Indietro
-                     6. Esci
+                     3. Gestione Piante
+                     4. Indietro
+                     5. Esci
                    \s"""
             );
 
@@ -329,10 +333,9 @@ public class Main {
             switch (input) {
                 case "1" -> handleOrdini();
                 case "2" -> handleSpazi();
-                case "3" -> handlePosizionamenti();
-                case "4" -> handlePiante();
-                case "5" -> {return;}
-                case "6" -> System.exit(0);
+                case "3" -> handlePiante();
+                case "4" -> {return;}
+                case "5" -> System.exit(0);
                 default -> System.out.println("Input invalido, si prega di riprovare.");
             }
 
@@ -345,8 +348,8 @@ public class Main {
         GestionePosizionamenti gestionePosizionamenti = new GestionePosizionamenti();
         GestionePosizioni gestionePosizioni = new GestionePosizioni();
         GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
+        GestionePiante gestionePiante = new GestionePiante();
         String input;
-        //FIXME PLz
         do {
 
             System.out.println(
@@ -354,11 +357,11 @@ public class Main {
                     \s
                      GESTIONE ORDINI & POSIZIONAMENTI
                      1. Visualizza ordini
-                     2. Modifica ordine
+                     2. Modifica ordine (TBD)
                      3. Posiziona ordine
                      4. Visualizza Posizionamenti
-                     4. Indietro
-                     5. Esci
+                     5. Indietro
+                     6. Esci
                    \s"""
             );
 
@@ -372,8 +375,6 @@ public class Main {
                     //TODO modifica dei parametri dell'ordine
                 }
                 case "3" -> {
-                    //FIXME da implementare : l'operatore deve mettere le piante dell'ordine in posizioni libere
-
                     //Ricerca Ordine da posizionare
                     Scanner scanner1 = new Scanner(System.in);
                     Map<String, Object> criteri = new HashMap<>();
@@ -403,6 +404,9 @@ public class Main {
 
                     //Creazione posizionamento
                     gestionePosizionamenti.creaPosizionamento(ordine, posizioniOccupate, idOperatore);
+
+                    //Le piante vengono aggiunte in DB
+                    gestionePiante.aggiungi(ordine.getPiante());
 
                     //Operatore Registra il Posizionamento
                     OperazioneDAO oDAO = new OperazioneDAO();
@@ -436,11 +440,11 @@ public class Main {
             System.out.println(
                     """
                     \s
-                     GESTIONE AMBIENTI
+                     GESTIONE SPAZI
                      1. Registra Spazio
                      2. Elimina Spazio
                      3. Visualizza tutti gli Spazi
-                     4. Visualizza Spazio 
+                     4. Visualizza Spazio (FIXME)
                      5. Gestisci Ambienti
                      6. Indietro
                      7. Esci
@@ -470,6 +474,8 @@ public class Main {
                     gestioneSpazi.visualizzaSpazi();
                 }
                 case "4" ->{
+                    //FIXME "Errore durante la visualizzazione dello spazio:
+                    // Colonna denominata «id» non è presente in questo «ResultSet».
                     Scanner scanner1 = new Scanner(System.in);
                     System.out.println("\nID Spazio da visualizzare: ");
                     int idSpazio = Integer.parseInt(scanner1.nextLine());
@@ -502,12 +508,12 @@ public class Main {
             System.out.println(
                     """
                     \s
-                     GESTIONE SPAZI
+                     GESTIONE AMBIENTE
                      1. Registra Ambiente
                      2. Elimina Ambiente
-                     3. Visualizza Ambienti dell'Spazio
+                     3. Visualizza Ambienti dello Spazio
                      4. Monitora Ambiente
-                     5. Gestisci Posizioni
+                     5. Gestisci Posizioni (FIXME)
                      6. Indietro
                      7. Esci
                    \s"""
@@ -547,6 +553,7 @@ public class Main {
                 }
                 case "3" -> {
                     gestioneAmbienti.visualizzaAmbienti(spazio.getId());
+
                 }
                 case "4" -> {
                     Scanner scanner1 = new Scanner(System.in);
@@ -581,6 +588,9 @@ public class Main {
 
                 }
                 case "5" ->{
+                    //FIXME "Errore durante il completamento dello ambiente:
+                    // ERROR: column "ambiente_id" does not exist
+                    //  Posizione: 33"
                     Scanner scanner1 = new Scanner(System.in);
                     System.out.println("ID Ambiente del quale gestire le posizioni: ");
                     int idAmbiente = Integer.parseInt(scanner1.nextLine());
@@ -724,7 +734,9 @@ public class Main {
 
         } while (true);
     }
-    public static void handlePosizionamenti() {
+
+    /*
+    public static void handlePosizionamenti() {  //deprecated
         Scanner scanner = new Scanner(System.in);
         GestionePosizionamenti gestionePosizionamenti = new GestionePosizionamenti();
         String input;
@@ -764,6 +776,8 @@ public class Main {
         } while (true);
     }
 
+     */
+
     public static void handlePiante() throws Exception {
         Scanner scanner = new Scanner(System.in);
         String input;
@@ -777,8 +791,8 @@ public class Main {
                     \s
                      GESTIONE PIANTE   
                      1. Controlla stato delle piante 
-                     2. Aggiungi tipo di pianta
-                     3. Rimuovi tipo di pianta
+                     2. Aggiungi tipo di pianta (TBD)
+                     3. Rimuovi tipo di pianta (TBD)
                      4. Indietro
                      5. Esci
                    \s"""
@@ -807,13 +821,15 @@ public class Main {
                     Pianta pianta =  gestionePiante.restituisciPianta(idPianta);
 
                     //L'operatore esegue 2 ( =controllo stato pianta)
-                    String descrizione = "";
+                    String esecuzione = "";
                     if(pianta.controllaStato()){
-                        descrizione = operatore.esegui(2);
+                        esecuzione = operatore.esegui(2);
                     }else{
-                        descrizione = operatore.esegui(3);
+                        esecuzione = operatore.esegui(3);
                     }
-                    System.out.println(descrizione);
+                    System.out.println(esecuzione);
+                    System.out.println("Stato Pianta : "+ pianta.getDescrizione());
+                    gestionePiante.aggiornaDescrizione(idPianta, descrizione);
 
                     //Viene registrata l'operazione su DB
                     OperazioneDAO oDAO = new OperazioneDAO();
@@ -825,7 +841,7 @@ public class Main {
 
                 }
                 case "2" -> {}
-                case "3" -> handlePosizionamenti();
+                case "3" -> {return;}
                 case "4" -> {return;}
                 case "5" -> System.exit(0);
                 default -> System.out.println("Input invalido, si prega di riprovare.");
