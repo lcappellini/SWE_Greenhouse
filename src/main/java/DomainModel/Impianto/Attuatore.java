@@ -16,7 +16,16 @@ public abstract class Attuatore extends Dispositivo{
     public int getId() {
         return id;
     }
-    public abstract String esegui(int value);
+    public String esegui(int value){
+        if(value >= 0){
+            attivo = true;
+            return this.tipoAttuatore()+" "+this.id+" accesso.";
+        }else{
+            attivo = false;
+            return this.tipoAttuatore()+" "+this.id+" spento.";
+        }
+
+    };
     public abstract String tipoAttuatore();
 
     public boolean attivo() {
