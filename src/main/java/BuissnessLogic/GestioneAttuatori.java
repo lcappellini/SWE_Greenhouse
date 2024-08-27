@@ -30,7 +30,7 @@ public class GestioneAttuatori {
 
     public List<Integer> restituisci(String nomeTabella, Map<String, Object> criteri) {
         ObjectDAO odao = new ObjectDAO();
-        return restituisci(nomeTabella,criteri);
+        return odao.restituisci(nomeTabella, criteri);
     }
 
 

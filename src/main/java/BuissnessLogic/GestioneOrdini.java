@@ -51,4 +51,8 @@ public class GestioneOrdini {
         objectDAO.visualizza("Ordine", criteri);
     }
 
+    public boolean ordiniPronti(Cliente cliente) {
+        OrdineDAO ordineDAO = new OrdineDAO();
+        return ordineDAO.ordiniPronti(cliente);
+    }
 }

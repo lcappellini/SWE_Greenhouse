@@ -26,15 +26,46 @@ public class PiantaDAO {
             statement.setInt(1, id);
 
             try (ResultSet resultSet = statement.executeQuery()) {
-                // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
-                Pianta pianta = new Pianta(resultSet.getInt("id"),
-                        resultSet.getString("tipo"),
-                        resultSet.getString("descrizione"));
-                return pianta;
+                if (resultSet.next()) {
+                    // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
+                    Pianta pianta = new Pianta(resultSet.getInt("id"),
+                            resultSet.getString("tipo"),
+                            resultSet.getString("descrizione"));
+                    return pianta;
+                }
             }
+            return null;
         } catch (SQLException e) {
             System.err.println("Errore durante la ricerca dell'ordine: " + e.getMessage());
         }
         return null;
+    }
+
+    public void aggiungi(ArrayList<Pianta> piante) {
+        String query = "INSERT INTO \"Pianta\" (tipo) VALUES (?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            connection.setAutoCommit(false);  // Inizio della transazione
+            for (Pianta pianta : piante) {
+                statement.clearParameters();
+                statement.setString(1, pianta.getTipoPianta());
+                statement.executeUpdate();
+            }
+            connection.commit();  // Commit della transazione
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'inserimento delle piante: " + e.getMessage());
+        }
+
+    }
+    public void aggiornaDescrizione(int idPianta , String descrizione) {
+        String query = "UPDATE \"Pianta\" SET descrizione = (?) WHERE (id) = (?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, descrizione);
+            statement.setInt(2, idPianta);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'aggiornamento della pianta: " + e.getMessage());
+        }
+
     }
 }

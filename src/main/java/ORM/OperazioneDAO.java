@@ -28,9 +28,8 @@ public class OperazioneDAO {
             statement.setString(3, descrizione);
             statement.setString(4, data);
             statement.executeUpdate();
-            System.out.println("Posizione creata correttamente");
         } catch (SQLException e) {
-            System.err.println("Errore durante la creazione della posizione: " + e.getMessage());
+            System.err.println("Errore durante la registrazione dell'operazione: " + e.getMessage());
         }
     }
 }

@@ -181,7 +181,7 @@ public class PosizioneDAO {
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
-            while(resultSet.next() & posizioni.size()<nPiante) {
+            while(resultSet.next() & posizioni.size() <= nPiante) {
                 int id = resultSet.getInt("id");
                 posizioni.add(id);
             }

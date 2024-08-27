@@ -1,9 +1,10 @@
 package main.java.DomainModel.Impianto;
 
+import java.util.Map;
+
 public abstract class Attuatore extends Dispositivo{
     protected int id;
     protected boolean attivo = false;
-
     // Costruttore della classe Attuatore
     public Attuatore(int id) {
         this.id = id;
