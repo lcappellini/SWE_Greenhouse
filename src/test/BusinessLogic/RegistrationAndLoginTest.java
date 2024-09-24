@@ -8,7 +8,7 @@ import main.java.DomainModel.Cliente;
 
 import java.sql.SQLException;
 
-public static class RegistrationAndLoginTest {
+public class RegistrationAndLoginTest {
 
     @Test
     public void registrationTest(){
