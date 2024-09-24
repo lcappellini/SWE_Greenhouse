@@ -46,7 +46,7 @@ public class ClienteDAO {
     }
 
 
-    public Cliente accedi(String email, String password) {
+    public Cliente accedi(String email, String password){
         String query = "SELECT * FROM \"Cliente\" WHERE email = ? AND password = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -59,6 +59,8 @@ public class ClienteDAO {
                     Cliente cliente = new Cliente(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getString("email"), rs.getString("password"));
                     return cliente;
                 }
+            }catch (SQLException e) {
+                System.err.println("Errore durante l'accesso del cliente: " + e.getMessage());
             }
         } catch (SQLException e) {
             System.err.println("Errore durante l'accesso del cliente: " + e.getMessage());
