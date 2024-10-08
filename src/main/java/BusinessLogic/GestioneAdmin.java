@@ -1,4 +1,4 @@
-package main.java.BuissnessLogic;
+package main.java.BusinessLogic;
 
 import main.java.DomainModel.Admin;
 import main.java.ORM.AdminDAO;

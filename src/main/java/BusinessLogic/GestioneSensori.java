@@ -1,4 +1,4 @@
-package main.java.BuissnessLogic;
+package main.java.BusinessLogic;
 
 import main.java.DomainModel.Impianto.*;
 import main.java.ORM.*;

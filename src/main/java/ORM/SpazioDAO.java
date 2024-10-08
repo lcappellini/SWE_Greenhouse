@@ -123,11 +123,7 @@ public class SpazioDAO {
 
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
-                String nome = resultSet.getString("nome");
-                String descrizione = resultSet.getString("descrizione");
-                int nAmbientiMax = resultSet.getInt("nAmbientiMax");
-
-                spazio = new Spazio(id, nome, descrizione, nAmbientiMax);
+                spazio = new Spazio(id);
             }
         } catch (SQLException e) {
             System.err.println("Errore durante il recupero dello spazio: " + e.getMessage());

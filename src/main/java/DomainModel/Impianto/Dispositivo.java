@@ -1,4 +1,9 @@
 package main.java.DomainModel.Impianto;
 
-public class Dispositivo {
+public abstract class Dispositivo {
+    private int id;
+
+    public Dispositivo(int id) {
+        this.id = id;
+    }
 }

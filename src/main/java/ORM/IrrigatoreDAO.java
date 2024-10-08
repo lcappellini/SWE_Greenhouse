@@ -7,10 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class LampadaDAO extends AttuatoreDAO{
+public class IrrigatoreDAO extends AttuatoreDAO{
     private Connection connection;
 
-    public LampadaDAO() {
+    public IrrigatoreDAO() {
 
         try {
             this.connection = ConnectionManager.getInstance().getConnection();
@@ -20,9 +20,9 @@ public class LampadaDAO extends AttuatoreDAO{
 
     }
     @Override
-    public Lampada getById(int id){
-        String query = "SELECT * FROM \"Lampada\" WHERE id = ?";
-        Lampada attuatore = null;
+    public Irrigatore getById(int id){
+        String query = "SELECT * FROM \"Irrigatore\" WHERE id = ?";
+        Irrigatore attuatore = null;
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
@@ -32,11 +32,10 @@ public class LampadaDAO extends AttuatoreDAO{
                 // Ottieni i dati comuni a tutti gli attuatori
                 int attuatoreId = resultSet.getInt("id");
                 boolean working = resultSet.getBoolean("working");
-                boolean stato = resultSet.getBoolean("stato");
                 //FIXME creare dei buoni costruttori su questa base
 
                 // Ora creiamo l'oggetto specifico in base al tipoAttuatore
-                attuatore = new Lampada(attuatoreId, working, stato);
+                attuatore = new Irrigatore(attuatoreId, working);
             }
         } catch (SQLException e) {
             System.err.println("Errore durante la ricerca dell'attuatore: " + e.getMessage());

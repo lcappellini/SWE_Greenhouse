@@ -1,4 +1,4 @@
-package main.java.BuissnessLogic;
+package main.java.BusinessLogic;
 import main.java.DomainModel.Pianta.Pianta;
 import main.java.ORM.ObjectDAO;
 import main.java.ORM.PiantaDAO;
@@ -21,8 +21,10 @@ public class GestionePiante {
     }
 
     public void aggiungi(ArrayList<Pianta> piante){
-        PiantaDAO pDAO = new PiantaDAO();
-        pDAO.aggiungi(piante);
+        ObjectDAO dao = new ObjectDAO();
+        for(Pianta p : piante){
+            dao.inserisci(p);
+        }
     }
 
     public void aggiornaDescrizione(int idPianta, String descrizione) {

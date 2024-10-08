@@ -1,4 +1,4 @@
-package main.java.BuissnessLogic;
+package main.java.BusinessLogic;
 
 import main.java.ORM.ImpiantoDAO;
 

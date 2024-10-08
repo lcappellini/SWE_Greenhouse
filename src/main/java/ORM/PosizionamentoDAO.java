@@ -1,7 +1,6 @@
 package main.java.ORM;
 
-import main.java.DomainModel.Impianto.Posizione;
-import main.java.DomainModel.Ordine;
+import main.java.DomainModel.Impianto.Posizionamento;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,48 +19,40 @@ public class PosizionamentoDAO {
 
     }
 
-    public void creaPosizionamento(Ordine ordine, List<Integer> posizioni, int idOperatore) throws SQLException, ClassNotFoundException {
+    public void inserisciPosizionamenti(ArrayList<Posizionamento> posizionamenti) throws SQLException {
         String queryInserimento = "INSERT INTO \"Posizionamento\" (pianta, posizione, ordine, operatore) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement statementInserimento = connection.prepareStatement(queryInserimento)) {
             connection.setAutoCommit(false);  // Inizio della transazione
 
-            for (int i = 0; i < posizioni.size(); i++) {
+            for (Posizionamento p : posizionamenti) {
                 statementInserimento.clearParameters();
-                statementInserimento.setString(1, ordine.getTipoPianta(i));  // Considera di usare l'indice i o un'altra logica appropriata
-                statementInserimento.setInt(2, posizioni.get(i));
-                statementInserimento.setInt(3, ordine.getId());
-                statementInserimento.setInt(4, idOperatore);
+                statementInserimento.setInt(1, p.getPianta().getId());  // Considera di usare l'indice i o un'altra logica appropriata
+                statementInserimento.setInt(2, p.getPosizione().getId());
+                statementInserimento.setInt(3, p.getOrdine().getId());
+                statementInserimento.setInt(4, p.getOperatore().getId());
                 statementInserimento.executeUpdate();
             }
 
             connection.commit();  // Commit della transazione
-            System.out.println("Posizionamenti creati con successo!");
-
         } catch (SQLException e) {
             connection.rollback();  // Rollback della transazione in caso di errore
             System.err.println("Errore durante la creazione dei posizionamenti: " + e.getMessage());
-            throw e;  // Rilancia l'eccezione per la gestione a un livello superiore
         }
     }
 
 
 
-    public List<Integer> liberaPosizionamenti(int idOrdine) {
-        List<Integer> posizioniLiberate = new ArrayList<>();
+    public ArrayList<Integer> liberaPosizionamenti(int idOrdine) {
+        ArrayList<Integer> liberati = new ArrayList<>();
 
-        String selectQuery = "SELECT posizione FROM \"Posizionamento\" WHERE ordine = ?";
+        String selectQuery = "SELECT * FROM \"Posizionamento\" WHERE ordine = ?";
         String deleteQuery = "DELETE FROM \"Posizionamento\" WHERE ordine = ?";
 
         try (PreparedStatement selectStmt = connection.prepareStatement(selectQuery)) {
             selectStmt.setInt(1, idOrdine);
             ResultSet rs = selectStmt.executeQuery();
-
-            while (rs.next()) {
-                int idPosizione = rs.getInt("posizione");
-                posizioniLiberate.add(idPosizione);
-            }
-
+            while (rs.next()) {liberati.add(rs.getInt("posizione"));}
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -78,7 +69,7 @@ public class PosizionamentoDAO {
             e.printStackTrace();
         }
 
-        return posizioniLiberate;
+        return liberati;
     }
 
     public void visualizzaPosizionamenti(int idOridne) {
@@ -112,5 +103,18 @@ public class PosizionamentoDAO {
         } catch (SQLException e) {
             System.err.println("Errore durante la visualizzazione delle posizioni: " + e.getMessage());
         }
+    }
+
+    public ArrayList<Integer> ritira(int id) {
+        ArrayList<Integer> id_piante = new ArrayList<>();
+        String selectQuery = "SELECT pianta FROM \"Posizionamento\" WHERE ordine = ?";
+
+        try(PreparedStatement s = connection.prepareStatement(selectQuery)){
+            ResultSet rs = s.executeQuery();
+            while (rs.next()) {id_piante.add(rs.getInt("pianta"));}
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return id_piante;
     }
 }

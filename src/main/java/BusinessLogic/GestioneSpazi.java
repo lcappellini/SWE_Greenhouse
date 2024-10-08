@@ -1,4 +1,4 @@
-package main.java.BuissnessLogic;
+package main.java.BusinessLogic;
 
 import main.java.DomainModel.Impianto.Spazio;
 import main.java.ORM.SpazioDAO;
@@ -18,6 +18,7 @@ public class GestioneSpazi {
     }
 
     public void visualizzaSpazi() {
+        //FIXME Errore durante la visualizzazione degli spazi: Colonna denominata «nome» non è presente in questo «ResultSet».
         SpazioDAO spazioDAO = new SpazioDAO();
         spazioDAO.visualizzaSpazi();
     }

@@ -1,4 +1,4 @@
-package main.java.BuissnessLogic;
+package main.java.BusinessLogic;
 
 import main.java.DomainModel.Impianto.Posizione;
 import main.java.ORM.ObjectDAO;
@@ -9,53 +9,58 @@ import java.util.List;
 import java.util.Map;
 
 public class GestionePosizioni {
-    public GestionePosizioni(){}
+    PosizioneDAO  posizioneDAO;
+    public GestionePosizioni(){
+        posizioneDAO = new PosizioneDAO();
+    }
 
     public ArrayList<Posizione> completaAmbiente(int idAmbiente){
-        PosizioneDAO posizioneDAO = new PosizioneDAO();
         return  posizioneDAO.getPosizioni(idAmbiente);
     }
 
     public void creaPosizione(int idAmbiente) {
-        PosizioneDAO posizioneDAO = new PosizioneDAO();
         posizioneDAO.creaPosizione(idAmbiente);
     }
 
     public void rimuoviPosizione(int idPosizione) {
-        PosizioneDAO posizioneDAO = new PosizioneDAO();
         posizioneDAO.rimuoviPosizione(idPosizione);
     }
 
     public void visualizzaPosizioni(int idAmbiente) {
-        PosizioneDAO posizioneDAO = new PosizioneDAO();
         posizioneDAO.visualizzaPosizioni(idAmbiente);
     }
 
     public void monitoraPosizone(int idPosizione) {
-        PosizioneDAO posizioneDAO = new PosizioneDAO();
         posizioneDAO.monitoraPosizione(idPosizione);
     }
     public void modificaPosizione(int idPosizione, String query, String valore, String attributo) {
-        PosizioneDAO posizioneDAO = new PosizioneDAO();
         posizioneDAO.modificaPosizione(idPosizione, query, valore, attributo);
     }
 
     public void liberaPosizioni(List<Integer> posizioni) {
-        PosizioneDAO posizioneDAO = new PosizioneDAO();
         posizioneDAO.liberaPosizioni(posizioni);
     }
 
-    public ArrayList<Posizione> getNPosizioni(int nPosizioni) {
-        PosizioneDAO posizioneDAO = new PosizioneDAO();
-        return posizioneDAO.getNPosizioni(nPosizioni);
-    }
-    public List<Integer> restituisci(Map<String, Object> criteri){
-        ObjectDAO objectDAO = new ObjectDAO();
-        return objectDAO.restituisci("Posizione", criteri);
+
+
+    public boolean verificaNonAssegnate(int n){
+        return posizioneDAO.verificaNonAssegnate(n);
     }
 
-    public List<Integer> occupa(int nPiante) {
-        PosizioneDAO posizioneDAO = new PosizioneDAO();
-        return  posizioneDAO.occupa(nPiante);
+    public void liberaUltime(int i) {
+        posizioneDAO.liberaUltime(i);
+    }
+
+    public ArrayList<Posizione> occupa(int i) {
+        //Posizioni da occupare
+        ArrayList<Posizione> posizioniLibere = posizioneDAO.occupa(i);
+        if(posizioniLibere.isEmpty()){
+            System.out.println("Non ci sono posizioni libere!");
+            return null;
+        } else if (posizioniLibere.size() != i) {
+            System.out.println("Posizioni libere insufficienti");
+            return null;
+        }
+        return posizioniLibere;
     }
 }

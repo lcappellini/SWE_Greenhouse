@@ -1,7 +1,8 @@
 package main.java.ORM;
 
+import main.java.DomainModel.Impianto.IgrometroTerra;
+import main.java.DomainModel.Impianto.Irrigatore;
 import main.java.DomainModel.Impianto.Posizione;
-import main.java.DomainModel.Impianto.Ambiente;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -142,7 +143,7 @@ public class PosizioneDAO {
         }
     }
 
-    public ArrayList<Posizione> getNPosizioni(int nPosizioni) {
+    public ArrayList<Posizione> getNPosizioniNonAssegnate(int nPosizioni) {
         String query = "SELECT * FROM \"Posizione\" WHERE assegnata = false";
         ArrayList<Posizione> posizioni = new ArrayList<>();
 
@@ -163,31 +164,90 @@ public class PosizioneDAO {
     }
 
 
-    public boolean riserva(int i) {
-        String query = "SELECT COUNT(*) FROM \"Posizione\" WHERE (assegnata) = false";
-        boolean posizioni = false;
+    public boolean verificaNonAssegnate(int i) {
+        String query = "SELECT COUNT(*) FROM \"Posizione\" WHERE assegnata = false";
+        boolean flag = false;
+
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            posizioni = statement.execute();
-            //TODO
+            ResultSet resultSet = statement.executeQuery();  // Esegui la query e ottieni il ResultSet
+            if (resultSet.next()) {  // Sposta il cursore alla prima riga
+                int count = resultSet.getInt(1);  // Ottieni il risultato della colonna COUNT(*)
+                flag = count >= i;  // Verifica se il numero di posizioni non assegnate è almeno i
+            }
         } catch (SQLException e) {
             System.err.println("Errore durante la visualizzazione delle posizioni: " + e.getMessage());
         }
-        return posizioni;
+
+        return flag;  // Ritorna true se ci sono abbastanza posizioni non assegnate, altrimenti false
     }
 
-    public List<Integer> occupa(int nPiante) {
-        String query = "SELECT * FROM \"Posizione\" WHERE assegnata = false";
-        List<Integer> posizioni = new ArrayList<>();
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            ResultSet resultSet = statement.executeQuery();
-            while(resultSet.next() & posizioni.size() <= nPiante) {
-                int id = resultSet.getInt("id");
-                posizioni.add(id);
+    public ArrayList<Posizione> occupa(int nPiante) {
+        String selectQuery = "SELECT * FROM \"Posizione\" WHERE assegnata = ? AND occupata = ?";
+        String updateQuery = "UPDATE \"Posizione\" SET occupata = ? WHERE id = ?";
+        ArrayList<Posizione> posizioni = new ArrayList<>();
+
+        try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
+             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+
+            // Imposta i parametri per la query di selezione
+            selectStatement.setBoolean(1, true);
+            selectStatement.setBoolean(2, false);
+
+            // Esegui la query di selezione
+            ResultSet resultSet = selectStatement.executeQuery();
+
+            // Raccogli le posizioni disponibili e limitale a nPiante
+            while (resultSet.next() && posizioni.size() < nPiante) {
+                posizioni.add(new Posizione(resultSet.getInt("id"), new Irrigatore(resultSet.getInt("irrigatore")),
+                        new IgrometroTerra(resultSet.getInt("igrometroTerreno")), resultSet.getBoolean("assegnata"),
+                        true));
+                updateStatement.setBoolean(1, true);  // Imposta occupata a true
+                updateStatement.setInt(2, resultSet.getInt("id"));        // Aggiorna la posizione con l'id specifico
+                updateStatement.executeUpdate();      // Esegui l'aggiornamento
             }
+
+
         } catch (SQLException e) {
             System.err.println("Errore durante la sistemazione delle posizioni: " + e.getMessage());
         }
-        return posizioni;
+
+        return posizioni;  // Ritorna la lista degli ID delle posizioni aggiornate
     }
+
+
+
+
+    public void assegna(int nPiante) {
+        String query = "UPDATE \"Posizione\" "
+                + "SET assegnata = true "
+                + "WHERE id IN (SELECT id FROM \"Posizione\" WHERE (assegnata, occupata) = (false, false) LIMIT ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, nPiante); // Imposta il limite di posizioni da aggiornare
+            int rowsUpdated = statement.executeUpdate(); // Esegui l'update
+            System.out.println("Aggiornate " + rowsUpdated + " posizioni.");
+        } catch (SQLException e) {
+            System.err.println("Errore durante la sistemazione delle posizioni: " + e.getMessage());
+        }
+    }
+
+    public void liberaUltime(int i) {
+        String query = "UPDATE \"Posizione\" SET assegnata = false "
+                + "WHERE id IN (SELECT id FROM \"Posizione\" WHERE assegnata = true "
+                + "ORDER BY id DESC LIMIT ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, i); // Imposta il numero di posizioni da liberare
+            int rowsAffected = statement.executeUpdate(); // Esegui l'update
+            if (rowsAffected > 0) {
+                System.out.println("Liberate " + rowsAffected + " posizioni.");
+            } else {
+                System.out.println("Nessuna posizione da liberare.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante la liberazione delle posizioni: " + e.getMessage());
+        }
+    }
+
 }

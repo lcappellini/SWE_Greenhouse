@@ -24,12 +24,11 @@ public class TermometroDAO extends SensoreDAO{
 
     @Override
     public void registraMisura(Sensore termometro) {
-        String query = "INSERT INTO \"Termometro\" (id, temperatura, data) VALUES (?, ?, ?)";
+        String query = "UPDATE \"Termometro\" SET perc_luce = ?, data = ?  WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, termometro.getId());
-            pstmt.setFloat(2, termometro.getValore());
-            String time = LocalDateTime.now().toString();
-            pstmt.setString(3, time);
+            pstmt.setInt(1, (int) termometro.getValore());
+            pstmt.setString(2, termometro.getData().toString());
+            pstmt.setInt(3, termometro.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());

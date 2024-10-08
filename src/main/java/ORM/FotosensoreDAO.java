@@ -22,12 +22,11 @@ public class FotosensoreDAO extends SensoreDAO{
 
     @Override
     public void registraMisura(Sensore fotosensore) {
-        String query = "INSERT INTO \"Fotosensore\" (id, perc_luce, data) VALUES (?, ?, ?)";
+        String query = "UPDATE \"Fotosensore\" SET perc_luce = ?, data = ?  WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, fotosensore.getId());
-            pstmt.setFloat(2, fotosensore.getValore());
-            String time = LocalDateTime.now().toString();
-            pstmt.setString(3, time);
+            pstmt.setInt(1, (int) fotosensore.getValore());
+            pstmt.setString(2, fotosensore.getData().toString());
+            pstmt.setInt(3, fotosensore.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());
