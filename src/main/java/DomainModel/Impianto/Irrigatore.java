@@ -1,25 +1,40 @@
 package main.java.DomainModel.Impianto;
 
 public class Irrigatore extends Attuatore{
+    private int durata;
+
     public Irrigatore(int id) {
-        super(id); // Chiama il costruttore della classe Attuatore
+        super(id);
+    }
+    public Irrigatore(int id, boolean working) {
+        super(id, working);  // Chiama il costruttore della classe base
+    }
+
+    // Getter e setter per durata
+    public int getDurata() {
+        return durata;
+    }
+
+    public void setDurata(int durata) {
+        this.durata = durata;
     }
 
     @Override
     public String esegui(int i){
-        String descrizione = "L'irrigatore "+this.id;
-        if(i>=0){
-            descrizione = descrizione+" è acceso.";
-            attivo = true;
+        StringBuilder descrizione =  new StringBuilder("L'irrigatore ").append(getId());
+        if(i>0){
+            descrizione.append(" è acceso.");
+            working = true;
         }else{
-            descrizione = descrizione+" è spento.";
-            attivo = false;
+            descrizione.append(" è spento.");
+            working = false;
         }
-        return descrizione;
+        return descrizione.toString();
     }
 
     @Override
     public String tipoAttuatore(){
         return "Irrigatore";
     }
+
 }

@@ -25,13 +25,12 @@ public class IgrometroAriaDAO extends SensoreDAO{
     }
 
     @Override
-    public void registraMisura(Sensore igrometro) {
-        String query = "INSERT INTO \"IgrometroAria\" (id, perc_acqua, data) VALUES (?, ?, ?)";
+    public void registraMisura(Sensore igrometroAria) {
+        String query = "UPDATE \"IgrometroAria\" SET perc_acqua = ?, data = ?  WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, igrometro.getId());
-            pstmt.setFloat(2, igrometro.getValore());
-            String time = LocalDateTime.now().toString();
-            pstmt.setString(3, time);
+            pstmt.setInt(1, (int) igrometroAria.getValore());
+            pstmt.setString(2, igrometroAria.getData().toString());
+            pstmt.setInt(3, igrometroAria.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());

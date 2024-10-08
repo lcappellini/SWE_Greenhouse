@@ -6,148 +6,144 @@ DROP TABLE IF EXISTS "Cliente" CASCADE ;
 DROP TABLE IF EXISTS "Ordine" CASCADE ;
 DROP TABLE IF EXISTS "Pianta" CASCADE ;
 DROP TABLE IF EXISTS "Operatore" CASCADE;
-DROP TABLE IF EXISTS "Ambiente" CASCADE;
+DROP TABLE IF EXISTS "Settore" CASCADE;
 DROP TABLE IF EXISTS "Operazione" CASCADE;
 DROP TABLE IF EXISTS "Admin" CASCADE;
 DROP table if exists "Termometro" cascade ;
 drop table if exists "Irrigatore" cascade ;
 drop table if exists "IgrometroTerreno" cascade ;
 drop table if exists "IgrometroAria" cascade;
-drop table if exists "Climatizzatore" cascade ;
+drop table if exists "Climatizzazione" cascade ;
 drop table if exists "Lampada" cascade ;
 drop table if exists "Fotosensore" cascade;
 
-
+-- table generation
 
 CREATE TABLE IF NOT EXISTS "Pianta" (
-    id SERIAL PRIMARY KEY,
-    tipo VARCHAR(50),
-    descrizione varchar(200)
+                                        id SERIAL PRIMARY KEY ,
+                                        tipo VARCHAR(50),
+                                        descrizione VARCHAR(200),
+                                        dataInizio VARCHAR(50),
+                                        stato VARCHAR(100),
+                                        costo DECIMAL(10, 2)
 );
 
 
 CREATE TABLE IF NOT EXISTS "Termometro" (
-    id INT PRIMARY KEY ,
-    temperatura INT,
-    data VARCHAR(50)
+                                            id INT PRIMARY KEY ,
+                                            temperatura INT,
+                                            data VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS "IgrometroAria" (
-    id INT PRIMARY KEY ,
-    perc_acqua INT,
-    data VARCHAR(50)
-);
+                                               id INT PRIMARY KEY ,
+                                               perc_acqua INT,
+                                               data VARCHAR(50)
 
+);
 CREATE TABLE IF NOT EXISTS "IgrometroTerreno" (
-    id INT PRIMARY KEY,
-    perc_acqua INT,
-    data VARCHAR(50)
-);
+                                                  id INT PRIMARY KEY,
+                                                  perc_acqua INT,
+                                                  data VARCHAR(50)
 
+);
 CREATE TABLE IF NOT EXISTS "Irrigatore" (
-    id INT PRIMARY KEY,
-    acceso BOOLEAN
+                                            id INT PRIMARY KEY,
+                                            working BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS "Fotosensore" (
-    id INT PRIMARY KEY,
-    perc_luce INT,
-    data VARCHAR(50)
+                                             id INT PRIMARY KEY,
+                                             perc_luce INT,
+                                             data VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS "Lampada" (
-    id INT PRIMARY KEY,
-    acceso BOOLEAN
+                                         id INT PRIMARY KEY,
+                                         working BOOLEAN
 );
 
-CREATE TABLE IF NOT EXISTS "Climatizzatore" (
-    id INT PRIMARY KEY,
-    acceso BOOLEAN,
-    temperaturaRichiesta INT
+CREATE TABLE IF NOT EXISTS "Climatizzazione" (
+                                                 id INT PRIMARY KEY,
+                                                 working BOOLEAN,
+                                                 temperaturaRichiesta INT
 );
 
 CREATE TABLE IF NOT EXISTS "Ordine" (
-    id SERIAL PRIMARY KEY,
-    cliente INT,
-    dataConsegna VARCHAR(50),
-    tipoPianta VARCHAR(50),
-    quantità INT,
-    descrizione varchar(100),
-    totale decimal(6,2),
-    stato VARCHAR(50)
+                                        id SERIAL PRIMARY KEY,
+                                        cliente INT,
+                                        dataConsegna DATE,
+                                        piante VARCHAR(300),
+                                        descrizione VARCHAR(100),
+                                        totale DECIMAL(6,2),
+                                        stato VARCHAR(50)
 );
+
 
 
 CREATE TABLE IF NOT EXISTS "Cliente" (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(50),
-    cognome VARCHAR(50),
-    email VARCHAR(50),
-    password varchar(50)
+                                         id SERIAL PRIMARY KEY,
+                                         nome VARCHAR(50),
+                                         cognome VARCHAR(50),
+                                         email VARCHAR(50),
+                                         password varchar(50)
 );
 
 CREATE TABLE IF NOT EXISTS "Operatore"(
-    id SERIAL PRIMARY KEY,
-    occupato BOOLEAN
+                                          id SERIAL PRIMARY KEY,
+                                          working BOOLEAN,
+                                          ruolo VARCHAR(50)
 );
-
 
 
 CREATE TABLE IF NOT EXISTS "Spazio" (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    descrizione VARCHAR(200),
-    nAmbientiMax INT NOT NULL
+                                        id INT PRIMARY KEY
 );
 
-CREATE TABLE IF NOT EXISTS "Ambiente" (
-    id SERIAL PRIMARY KEY,
-    spazio_id INT,
-    nPosizioniMax INT NOT NULL,
-    termometro INT,
-    fotosensore INT,
-    climatizzazione INT,
-    lampada INT ,
-    igrometroAria INT,
-    FOREIGN KEY (spazio_id) REFERENCES "Spazio"(id),
-    FOREIGN KEY (termometro) REFERENCES  "Termometro"(id),
-    FOREIGN KEY (fotosensore) REFERENCES "Fotosensore"(id),
-    FOREIGN KEY (climatizzazione) REFERENCES  "Climatizzatore"(id),
-    FOREIGN KEY (lampada) REFERENCES "Lampada"(id),
-    FOREIGN KEY (igrometroAria) REFERENCES "IgrometroAria"(id)
+CREATE TABLE IF NOT EXISTS "Settore" (
+                                         id INT PRIMARY KEY,
+                                         spazio_id INT,
+                                         termometro INT,
+                                         fotosensore INT,
+                                         climatizzazione INT,
+                                         lampada INT,
+                                         igrometroAria INT,
+                                         FOREIGN KEY (spazio_id) REFERENCES "Spazio"(id),
+                                         FOREIGN KEY (termometro) REFERENCES  "Termometro"(id),
+                                         FOREIGN KEY (fotosensore) REFERENCES "Fotosensore"(id),
+                                         FOREIGN KEY (climatizzazione) REFERENCES  "Climatizzazione"(id),
+                                         FOREIGN KEY (lampada) REFERENCES "Lampada"(id),
+                                         FOREIGN KEY (igrometroAria) REFERENCES "IgrometroAria"(id)
 );
 
 CREATE TABLE IF NOT EXISTS "Posizione" (
-    id SERIAL PRIMARY KEY,
-    assegnata BOOLEAN,
-    ambiente INT,
-    irriatore INT,
-    igrometroTerreno INT,
-    FOREIGN KEY (ambiente) REFERENCES  "Ambiente"(id),
-    FOREIGN KEY (irriatore) REFERENCES  "Irrigatore"(id),
-    FOREIGN KEY (igrometroTerreno) REFERENCES  "IgrometroTerreno"(id)
+                                           id INT PRIMARY KEY,
+                                           assegnata BOOLEAN,
+                                           occupata BOOLEAN,
+                                           settore INT,
+                                           irrigatore INT,
+                                           igrometroTerreno INT,
+                                           FOREIGN KEY (settore) REFERENCES  "Settore"(id),
+                                           FOREIGN KEY (irrigatore) REFERENCES  "Irrigatore"(id),
+                                           FOREIGN KEY (igrometroTerreno) REFERENCES  "IgrometroTerreno"(id)
 );
 
 CREATE TABLE IF NOT EXISTS "Posizionamento" (
-    id SERIAL PRIMARY KEY,
-    pianta varchar(50),
-    posizione INT,
-    ordine INT,
-    operatore int,
-    FOREIGN KEY (posizione) REFERENCES  "Posizione"(id),
-    FOREIGN KEY (ordine) REFERENCES  "Ordine"(id),
-    FOREIGN KEY (operatore) REFERENCES  "Operatore"(id)
+                                                id SERIAL PRIMARY KEY,
+                                                pianta INT,
+                                                posizione INT,
+                                                ordine INT,
+                                                operatore int,
+                                                FOREIGN KEY  (pianta) REFERENCES "Pianta"(id),
+                                                FOREIGN KEY (posizione) REFERENCES  "Posizione"(id),
+                                                FOREIGN KEY (ordine) REFERENCES  "Ordine"(id),
+                                                FOREIGN KEY (operatore) REFERENCES  "Operatore"(id)
 );
 
-CREATE TABLE IF NOT EXISTS "Operazione" (
-    id SERIAL PRIMARY KEY,
-    tipoAttuatore VARCHAR(50),
-    idAttuatore INT,
-    descrizione VARCHAR(100),
-    data VARCHAR(50)
-);
+CREATE TABLE IF NOT EXISTS "Operazione"
+(id SERIAL PRIMARY KEY, tipoAttuatore VARCHAR(50), idAttuatore INT,
+ descrizione VARCHAR(100), data VARCHAR(50));
 
-CREATE TABLE IF NOT EXISTS "Admin"(
-    email VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(100)
+CREATE TABLE IF NOT EXISTS "Admin"(email VARCHAR(50) PRIMARY KEY,
+                                      password VARCHAR(100)
 )

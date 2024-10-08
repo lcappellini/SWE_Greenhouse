@@ -6,9 +6,8 @@ import main.java.DomainModel.Ordine;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
-import main.java.ORM.ObjectDAO;
-
 
 
 public class OrdineDAO  {
@@ -25,21 +24,19 @@ public class OrdineDAO  {
 
     }
 
-    public int addOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO \"Ordine\" (cliente, dataConsegna, tipoPianta, quantità, stato) " +
-                "VALUES (?, ?, ?, ?, ?)";
-
+    public void inserisciOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
+        String sql = "INSERT INTO \"Ordine\" (cliente, dataConsegna, piante, descrizione, totale, stato) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = null;
-        ResultSet generatedKeys = null;
-        int id = -1; // Inizializza l'ID con un valore di default
 
         try {
             preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setInt(1, ordine.getCliente().getId());
-            preparedStatement.setString(2, ordine.getDataConsegna());
-            preparedStatement.setString(3, ordine.getTipoPiante());
-            preparedStatement.setInt(4, ordine.getnPiante());
-            preparedStatement.setString(5, "da posizionare");
+            preparedStatement.setInt(1, ordine.getCliente());
+            preparedStatement.setString(2, ordine.getStringDataConsegna());
+            preparedStatement.setString(3, ordine.getStringTipoPiante());
+            preparedStatement.setString(4, ordine.getDescrizione());
+            preparedStatement.setDouble(5, ordine.getTotale());
+            preparedStatement.setString(6, ordine.getStato());
 
             int affectedRows = preparedStatement.executeUpdate();
 
@@ -47,27 +44,11 @@ public class OrdineDAO  {
                 throw new SQLException("Inserimento dell'ordine non riuscito, nessuna riga aggiornata.");
             }
 
-            generatedKeys = preparedStatement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                id = generatedKeys.getInt(1);
-                ordine.setId(id); // Aggiorna l'ID dell'oggetto Ordine con l'ID generato dal database
-            } else {
-                throw new SQLException("Inserimento dell'ordine non riuscito, nessun ID generato.");
-            }
-
             System.out.println("Ordine aggiunto correttamente.");
 
         } catch (SQLException e) {
-            System.err.println("Errore: " + e.getMessage());
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-            if (generatedKeys != null) {
-                generatedKeys.close();
-            }
+            System.err.println("Errore: ".contains(e.getMessage()));
         }
-        return id; // Restituisci l'ID dell'ordine appena inserito
     }
 
     public ArrayList<Ordine> vediOrdini(Cliente cliente) {
@@ -79,15 +60,9 @@ public class OrdineDAO  {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
-                    Ordine ordine = new Ordine();
-                    ordine.setId(resultSet.getInt("id"));
-                    ordine.setCliente(cliente);
-                    ordine.setPianteDalTipo(resultSet.getString("tipoPianta"),
-                            resultSet.getInt("quantità"));
-                    ordine.setStato(resultSet.getString("stato"));
-                    ordine.setDataConsegna(resultSet.getString("dataConsegna"));
-                    ordine.setPrezzo(resultSet.getDouble("totale"));
+                    Ordine ordine = new Ordine(resultSet.getInt("id"), resultSet.getInt("cliente"),
+                            resultSet.getString("piante"), resultSet.getString("stato"), resultSet.getString("dataConsegna"),
+                            resultSet.getString("descrizione"));
                     ordini.add(ordine);
                 }
             }
@@ -98,17 +73,59 @@ public class OrdineDAO  {
         return ordini;
     }
 
-    public void pagaERitiraOrdine(Cliente cliente, int idOrdine) {
-        String query = "UPDATE \"Ordine\" SET stato = 'ritirato' WHERE (id, ordine)= (?, ?)";
+    public ArrayList<Ordine> restituisci(Map<String, Object> criteri){
+        ArrayList<Ordine> ordini = new ArrayList<>();
+
+        // Costruisci la query SQL dinamica
+        StringBuilder query = new StringBuilder("SELECT * FROM \"Ordine\"");
+
+        // Aggiungi le condizioni di ricerca se ci sono criteri
+        if (criteri != null && !criteri.isEmpty()) {
+            query.append(" WHERE ");
+            int count = 0;
+            for (String key : criteri.keySet()) {
+                if (count > 0) {
+                    query.append(" AND ");
+                }
+                query.append(key).append(" = ?");
+                count++;
+            }
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+            // Imposta i valori per i parametri della query in base ai criteri
+            int paramIndex = 1;
+            for (Object value : criteri.values()) {
+                statement.setObject(paramIndex, value); // Può gestire diversi tipi di dati
+                paramIndex++;
+            }
+
+            // Esegui la query
+            ResultSet resultSet = statement.executeQuery();
+
+            // Estrai i dati dal ResultSet e crea gli oggetti Ordine
+            while (resultSet.next()) {
+
+
+                // Aggiungi l'ordine alla lista da restituire
+                //ordini.add(ordine);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante il recupero degli ordini: " + e.getMessage());
+        }
+
+        return ordini;
+    }
+
+
+    public void pagaERitiraOrdine(Ordine ordine) {
+        String query = "UPDATE \"Ordine\" SET stato = 'ritirato' WHERE (id)= (?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, idOrdine);
-            statement.setInt(2, cliente.getId());
-
+            statement.setInt(1, ordine.getId());
             statement.executeUpdate();
-
             System.out.println("Pagamento effettuato correttemente. Può ritirare l'ordine.");
-
         } catch (SQLException e) {
             System.err.println("Errore durante il pagamenti dell'ordine: " + e.getMessage());
         }
@@ -119,36 +136,30 @@ public class OrdineDAO  {
         objectDAO.visualizza("Ordine", criteri);
     }
 
-    public void ritiraOrdine(Cliente cliente, int idOrdine) {
 
-    }
 
-    public Ordine getOrdineDaPosizionare(int idOrdine) {
-        String query = "SELECT * FROM \"Ordine\" WHERE (stato, id) = (?,?)";
+    public ArrayList<Ordine> getOrdiniDaPosizionare() {
+        String query = "SELECT * FROM \"Ordine\" WHERE (stato) = (?)";
+        ArrayList<Ordine> ordini = new ArrayList<>();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, "da posizionare");
-            statement.setInt(2, idOrdine);
 
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
-                resultSet.next();
-                Ordine ordine = new Ordine();
-                ordine.setId(resultSet.getInt("id"));
-                ordine.setCliente(resultSet.getInt("cliente"));
-                ordine.setPianteDalTipo(resultSet.getString("tipoPianta"),
-                        resultSet.getInt("quantità"));
-                ordine.setStato(resultSet.getString("stato"));
-                ordine.setDataConsegna(resultSet.getString("dataConsegna"));
-                ordine.setPrezzo(resultSet.getDouble("totale"));
-                return ordine;
+                while(resultSet.next()){
+                    Ordine ordine = new Ordine(resultSet.getInt("id"), resultSet.getInt("cliente"),
+                            resultSet.getString("piante"), resultSet.getString("stato"), resultSet.getString("dataConsegna"),
+                            resultSet.getString("descrizione"));
+                    ordini.add(ordine);
+                };
             }
 
         } catch (SQLException e) {
             System.err.println("Errore durante la ricerca dell'ordine: " + e.getMessage());
         }
-        return null;
+        return ordini;
     }
 
     public boolean ordiniPronti(Cliente cliente){
@@ -170,5 +181,85 @@ public class OrdineDAO  {
         return false;
     }
 
+
+    public void rimuoviUltimoOrdine() {
+        // Query per cancellare l'ordine con l'ID più alto
+        String query = "DELETE FROM \"Ordine\" WHERE id = (SELECT MAX(id) FROM \"Ordine\")";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            int rowsAffected = statement.executeUpdate();  // Esegui la cancellazione
+            if (rowsAffected > 0) {
+                System.out.println("Ultimo ordine rimosso con successo.");
+            } else {
+                System.out.println("Nessun ordine da rimuovere.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante la rimozione dell'ultimo ordine: "+e.getMessage());
+        }
+    }
+
+    public void aggiorna(int id_ordine, Map<String, Object> criterio) {
+        ObjectDAO objectDAO = new ObjectDAO();
+        objectDAO.aggiorna(id_ordine, "Ordine", criterio);
+    }
+
+    public Ordine getById(int idOrdine) {
+        String query = "SELECT * FROM \"Ordine\" WHERE id = ?";
+        Ordine ordine = null;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, idOrdine);
+
+            ResultSet resultSet= statement.executeQuery();
+            if(resultSet.next()){
+                ordine = new Ordine(resultSet.getInt("id"), resultSet.getInt("cliente"),
+                        resultSet.getString("piante"), resultSet.getString("stato"),
+                        resultSet.getString("dataConsegna"), resultSet.getString("descrizione"));
+            }else{
+                System.out.println("Nessun ordine trovato con id "+ idOrdine);
+            }
+
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante il pagamenti dell'ordine: " + e.getMessage());
+        }
+        return ordine;
+    }
+
+    public void posiziona(Ordine ordine) {
+        ObjectDAO objectDAO = new ObjectDAO();
+        Map<String, Object> criteri = new HashMap<>();
+        criteri.put("stato", "posizionato" );
+        objectDAO.aggiorna(ordine.getId(), "Ordine", criteri);
+    }
+
+    public void aggiornaOrdine(Ordine ordine) throws SQLException {
+        String query = "UPDATE \"Ordine\" " +
+                "SET cliente = ?, dataConsegna = ?, piante = ?, descrizione = ?, totale = ?, stato = ? " +
+                "WHERE id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            // Assegna i parametri alla query
+            statement.setInt(1, ordine.getCliente());
+            //TODO utilizzare logica DATE di Sql in Ordine ecc...
+            statement.setString(2, ordine.getStringDataConsegna());
+            statement.setObject(3, ordine.getPiante());  // Assicurati di usare il tipo giusto, eventualmente serializzando la lista di piante
+            statement.setString(4, ordine.getDescrizione());
+            statement.setDouble(5, ordine.getTotale());
+            statement.setString(6, ordine.getStato());
+            statement.setInt(7, ordine.getId());
+
+            int rowsUpdated = statement.executeUpdate();
+             /*
+            if (rowsUpdated > 0) {
+                System.out.println("Ordine aggiornato correttamente. Pagamento effettuato.");
+            } else {
+                System.out.println("Ordine non trovato o non aggiornato.");
+            }*/
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'aggiornamento dell'ordine: " + e.getMessage());
+            throw e;  // Rilancia l'eccezione per la gestione a livello superiore
+        }
+    }
 
 }

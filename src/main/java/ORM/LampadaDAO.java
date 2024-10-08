@@ -1,17 +1,16 @@
 package main.java.ORM;
 
-import main.java.DomainModel.Impianto.Attuatore;
-import main.java.DomainModel.Impianto.Ambiente;
+import main.java.DomainModel.Impianto.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 public class LampadaDAO extends AttuatoreDAO{
     private Connection connection;
 
-    public LampadaDAO(){
+    public LampadaDAO() {
 
         try {
             this.connection = ConnectionManager.getInstance().getConnection();
@@ -21,14 +20,53 @@ public class LampadaDAO extends AttuatoreDAO{
 
     }
     @Override
-    public void registraAzione(Attuatore lampada){
-        String query = "INSERT INTO \"Lampada\" (id, acceso) VALUES (?, ?)";
+    public Lampada getById(int id){
+        String query = "SELECT * FROM \"Lampada\" WHERE id = ?";
+        Lampada attuatore = null;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                // Ottieni i dati comuni a tutti gli attuatori
+                int attuatoreId = resultSet.getInt("id");
+                boolean working = resultSet.getBoolean("working");
+                boolean stato = resultSet.getBoolean("stato");
+                //FIXME creare dei buoni costruttori su questa base
+
+                // Ora creiamo l'oggetto specifico in base al tipoAttuatore
+                attuatore = new Lampada(attuatoreId, working, stato);
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante la ricerca dell'attuatore: " + e.getMessage());
+        }
+
+        return attuatore;
+    }
+    /*
+
+    @Override
+    public void registraAzione(Attuatore lampada, String data){
+        String query = "UPDATE \"Lampada\"  SET working = ? WHERE id = ?";
+        String queryOP = "INSERT INTO \"Operazione\" (tipoAttuatore, idAttuatore, descrizione) VALUES (?, ?, ?)";
+
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, lampada.getId());
-            pstmt.setBoolean(2, lampada.attivo());
+            pstmt.setBoolean(1, lampada.isWorking());
+            pstmt.setInt(2, lampada.getId());
+
             pstmt.executeUpdate();
+            // 2. Inserisci l'operazione nella tabella delle operazioni degli attuatori
+            String insertOperazioneSQL = "INSERT INTO \"Operazione\" (tipoAttuatore, idAttuatore, descrizione, data) VALUES (?, ?, ?, ?)";
+            PreparedStatement psInsert = connection.prepareStatement(insertOperazioneSQL);
+            psInsert.setString(1, lampada.tipoAttuatore());
+            psInsert.setInt(2, lampada.getId());
+            psInsert.setString(3, lampada.getLavoro());
+            psInsert.setString(4, data);
+            psInsert.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());
         }
-    }
+    }*/
+
 }

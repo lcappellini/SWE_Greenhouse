@@ -1,25 +1,37 @@
 package main.java.DomainModel.Impianto;
 
 public class Lampada extends Attuatore{
+    private boolean stato;
 
-    private int limite_luce = 400;
-    //TODO si potrebbe implementare un diverso limite per tipologia di pianta...
-
-    public Lampada(int id) {
-        super(id); // Chiama il costruttore della classe Attuatore
+    public Lampada(int id, boolean working, boolean stato) {
+        super(id, working);  // Chiama il costruttore della classe base
+        this.stato = stato;
     }
+    public Lampada(int id){
+        super(id);
+    }
+
+    // Getter e setter per stato
+    public boolean getStato() {
+        return stato;
+    }
+
+    public void setStato(boolean stato) {
+        this.stato = stato;
+    }
+
 
     @Override
     public String esegui(int i){
-        String descrizione = "La Lampada "+this.id;
-        if(i>=0){
-            descrizione = descrizione+" è accesa.";
-            attivo = true;
+        StringBuilder descrizione =  new StringBuilder("La lampada ").append(this.id);
+        if(i>0){
+            descrizione.append(" è accesa.");
+            working = true;
         }else{
-            descrizione = descrizione+" è spenta.";
-            attivo = false;
+            descrizione.append(" è spenta.");
+            working = false;
         }
-        return descrizione;
+        return descrizione.toString();
     }
     @Override
     public String tipoAttuatore(){

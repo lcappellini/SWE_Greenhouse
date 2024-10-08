@@ -62,7 +62,9 @@ public class ObjectDAO {
         }
     }
 
-    public List<Integer> restituisci(String nomeTabella, Map<String, Object> criteri) {
+
+
+    public List<Integer> restituisciChiavi(String nomeTabella, Map<String, Object> criteri) {
         List<Integer> chiaviPrimarie = new ArrayList<>();
         StringBuilder query = new StringBuilder("SELECT id FROM \"").append(nomeTabella).append("\" ");
 
@@ -121,6 +123,47 @@ public class ObjectDAO {
             System.err.println("Errore durante l'inserimento dell'oggetto: " + e.getMessage());
         }
     }
+
+
+
+    public void aggiorna(int id, String nomeTabella, Map<String, Object> criteri) {
+
+        // Costruisci dinamicamente la query SQL
+        StringBuilder query = new StringBuilder("UPDATE \"").append(nomeTabella).append("\" ").append(" SET ");
+
+        // Aggiungi i campi da aggiornare alla query
+        int count = 0;
+        for (String key : criteri.keySet()) {
+            if (count > 0) {
+                query.append(", ");
+            }
+            query.append(key).append(" = ?");
+            count++;
+        }
+
+        // Aggiungi la clausola WHERE con l'array di ID
+        query.append(" WHERE id IN (?)");
+
+        try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+            // Imposta i parametri dinamicamente per i campi da aggiornare
+            int paramIndex = 1;
+            for (Map.Entry<String, Object> entry : criteri.entrySet()) {
+                Object value = entry.getValue();
+                statement.setObject(paramIndex, value); // Supporta qualsiasi tipo di dato
+                paramIndex++;
+            }
+
+            // Imposta i parametro ID
+            statement.setInt(paramIndex, id);
+
+
+            // Esegui la query di aggiornamento
+            int rowsAffected = statement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'aggiornamento: " + e.getMessage());
+        }
+    }
+
 
     public void aggiorna(Object object) {
         String nomeTabella = object.getClass().getSimpleName();

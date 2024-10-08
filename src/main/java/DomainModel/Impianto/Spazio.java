@@ -2,31 +2,28 @@ package main.java.DomainModel.Impianto;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Spazio {
     private int id;
-    private String nome;
-    private String descrizione;
-    private int nAmbientiMax;
-    private ArrayList<Ambiente> ambienti;
+    //private String nome;
+    private List<Settore> settori;
 
-    public Spazio(int id, String nome, String descrizione, int nAmbientiMax) {
+    public Spazio(int id) {
         this.id = id;
-        this.nome = nome;
-        this.descrizione = descrizione;
-        this.nAmbientiMax = nAmbientiMax;
+        //this.nome = nome;
+        settori = new ArrayList<>();
+        for(int i = 0; i<4 ; i++){
+            settori.add(new Settore(i));
+        }
     }
 
-    public void setAmbienti(ArrayList<Ambiente> ambienti) {
-        this.ambienti = ambienti;
+    public void setSettori(ArrayList<Settore> settori) {
+        this.settori = settori;
     }
 
-    public ArrayList<Ambiente> getAmbienti() {
-        return ambienti;
-    }
-
-    public int getnAmbientiMax() {
-        return nAmbientiMax;
+    public List<Settore> getSettori() {
+        return settori;
     }
 
     // Getters e Setters
@@ -34,15 +31,4 @@ public class Spazio {
         return id;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public int getNAmbientiMax() {
-        return nAmbientiMax;
-    }
 }

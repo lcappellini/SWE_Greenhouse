@@ -1,43 +1,59 @@
 package main.java.DomainModel;
 import main.java.DomainModel.Pianta.Pianta;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Ordine {
     private int id;
-    private Cliente cliente;
+    private int cliente;
     private ArrayList<Pianta> piante;
-    private String dataConsegna;
-    private String dataInizio;
+    private LocalDate dataConsegna;
+    private String descrizione;
     private String stato;
-    private double prezzo;
+    private double totale;
 
     public Ordine() {
         piante = new ArrayList<Pianta>();
     }
 
-    public Ordine(String dataConsegna, ArrayList<Pianta> piante, Cliente cliente) {
-        this.dataConsegna = dataConsegna;
-        this.piante = piante;
-        this.cliente = cliente;
 
-    }
 
-    public Ordine(Cliente cliente, ArrayList<Pianta> piante, String dataConsegna) {
+    public Ordine(int cliente, ArrayList<Pianta> piante) {
         this.cliente = cliente;
         this.piante = piante;
-        this.dataConsegna = dataConsegna;
+        this.dataConsegna = LocalDate.now();
+        this.dataConsegna = this.dataConsegna.plusDays(maxGiorniRichiesti());
+        this.stato = "da posizionare";
+        this.totale = setTotale();
     }
 
-    public Ordine(Cliente cliente, String tipoPianta, int nPiante, String dataConsegna) {
-        this.cliente = cliente;
-        this.piante = new ArrayList<>();
-        for (int i = 0; i < nPiante; i++) {
-            this.piante.add(new Pianta(tipoPianta));
+    int maxGiorniRichiesti(){
+        int i = 0;
+        for(Pianta p : piante){
+            if(i<p.getGiorni_rescita()){
+                i = p.getGiorni_rescita();
+            }
         }
-        this.dataConsegna = dataConsegna;
-        this.prezzo = piante.size() * piante.get(0).getCosto();
+        return i;
     }
+
+
+    public Ordine(int id_cliente, String piante, String stato, String dataConsegna,   String descrizione) {
+        this.stato = stato;
+        this.dataConsegna = LocalDate.now();
+        setPiante(piante);
+        setTotale();
+        this.cliente = id_cliente;
+    }
+    public Ordine(int id, int id_cliente, String piante, String stato, String dataConsegna,   String descrizione) {
+        this(id_cliente, piante, stato, dataConsegna, descrizione);
+        this.id = id;
+    }
+
+
+
 
 
 
@@ -49,7 +65,7 @@ public class Ordine {
         return piante.size();
     }
 
-    public Cliente getCliente() {
+    public int getCliente() {
         return cliente;
     }
 
@@ -60,20 +76,26 @@ public class Ordine {
         return piante.get(index).getTipoPianta();
     }
 
-    public String getDataConsegna() {
+    public LocalDate getDataConsegna() {
         return dataConsegna;
     }
 
-    public String getDataInizio() {
-        return dataInizio;
+
+    public String getStringDataConsegna(){
+        return dataConsegna.toString();
     }
+
+    public String getDescrizione() {
+        return descrizione;
+    }
+
 
     public String getStato() {
         return stato;
     }
 
-    public double getPrezzo() {
-        return prezzo;
+    public double getTotale() {
+        return totale;
     }
 
     public void setId(int id) {
@@ -83,44 +105,61 @@ public class Ordine {
     public void setPiante(ArrayList<Pianta> piante) {
         this.piante = piante;
     }
-    public void setPianteDalTipo(String tipoPianta, int nPiante) {
-        for (int i = 0; i < nPiante; i++) {
-            this.piante.add(new Pianta(tipoPianta));
+
+    public void setPiante(String piante) {
+        // Controlla che la stringa non sia vuota o nulla
+        if (piante == null || piante.trim().isEmpty()) {
+            System.out.println("Errore: La stringa delle piante è vuota.");
+            return;
         }
-    }
-    public void setDataConsegna(String dataConsegna) {
-        this.dataConsegna = dataConsegna;
-    }
 
-    public void setDataInizio(String dataInizio) {
-        this.dataInizio = dataInizio;
-    }
+        // Dividi la stringa delle piante in base alla virgola
+        String[] nomiPiante = piante.split(",");
 
+        // Crea una lista di oggetti Pianta
+        ArrayList<Pianta> listaPiante = new ArrayList<>();
+
+        // Trasforma ogni nome in un oggetto Pianta e aggiungilo alla lista
+        for (String nome : nomiPiante) {
+            listaPiante.add(new Pianta(nome.trim())); // Trim per rimuovere eventuali spazi
+        }
+
+        // Imposta la lista delle piante nella classe
+        this.piante = listaPiante;
+
+    }
 
 
     public void setStato(String stato) {
         this.stato = stato;
     }
 
-    public void setPrezzo(double p) {
-        this.prezzo = p;
-    }
 
-    public void setCliente(Cliente cliente) {
+
+    public void setCliente(int cliente) {
         this.cliente = cliente;
     }
 
-    public void setCliente(int idcliente) {
-        this.cliente = new Cliente(idcliente);
-    }
 
-    public String getTipoPiante() {
-        String tipoPiante = piante.get(0).getTipoPianta();
+
+    public String getStringTipoPiante() {
+        StringBuilder tipoPiante = new StringBuilder(piante.get(0).getTipoPianta());
         for(Pianta p : piante){
-            if(!p.getTipoPianta().contains(tipoPiante)){
-                tipoPiante += ", " +p.getTipoPianta();
+            if(!tipoPiante.toString().contains(p.getTipoPianta())){
+                tipoPiante.append(p.getTipoPianta());
+                tipoPiante.append(", ");
             }
         }
-        return tipoPiante;
+        tipoPiante.replace(0, tipoPiante.length()-2, tipoPiante.toString());
+        return tipoPiante.toString();
     }
+
+    double setTotale(){
+        double t = 0;
+        for(Pianta p : piante){
+            t += p.getCosto();
+        }
+        return t;
+    }
+
 }

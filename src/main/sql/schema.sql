@@ -1,9 +1,12 @@
 -- table generation
 
 CREATE TABLE IF NOT EXISTS "Pianta" (
-    id INT PRIMARY KEY ,
+    id SERIAL PRIMARY KEY ,
     tipo VARCHAR(50),
-    descrizione VARCHAR(200)
+    descrizione VARCHAR(200),
+    dataInizio VARCHAR(50),
+    stato VARCHAR(100),
+    costo DECIMAL(10, 2)
     );
 
 
@@ -27,7 +30,7 @@ CREATE TABLE IF NOT EXISTS "IgrometroTerreno" (
 );
 CREATE TABLE IF NOT EXISTS "Irrigatore" (
     id INT PRIMARY KEY,
-    acceso BOOLEAN
+    working BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS "Fotosensore" (
@@ -38,25 +41,25 @@ CREATE TABLE IF NOT EXISTS "Fotosensore" (
 
 CREATE TABLE IF NOT EXISTS "Lampada" (
     id INT PRIMARY KEY,
-    acceso BOOLEAN
+    working BOOLEAN
 );
 
-CREATE TABLE IF NOT EXISTS "Climatizzatore" (
+CREATE TABLE IF NOT EXISTS "Climatizzazione" (
     id INT PRIMARY KEY,
-    acceso BOOLEAN,
+    working BOOLEAN,
     temperaturaRichiesta INT
 );
 
 CREATE TABLE IF NOT EXISTS "Ordine" (
     id SERIAL PRIMARY KEY,
     cliente INT,
-    dataConsegna VARCHAR(50),
-    tipoPianta VARCHAR(50),
-    quantità INT,
+    dataConsegna DATE,
+    piante VARCHAR(300),
     descrizione VARCHAR(100),
     totale DECIMAL(6,2),
     stato VARCHAR(50)
 );
+
 
 
 CREATE TABLE IF NOT EXISTS "Cliente" (
@@ -65,25 +68,22 @@ CREATE TABLE IF NOT EXISTS "Cliente" (
     cognome VARCHAR(50),
     email VARCHAR(50),
     password varchar(50)
-    );
+                                     );
 
 CREATE TABLE IF NOT EXISTS "Operatore"(
     id SERIAL PRIMARY KEY,
-    occupato BOOLEAN
-    );
+    working BOOLEAN,
+    ruolo VARCHAR(50)
+                                      );
 
 
 CREATE TABLE IF NOT EXISTS "Spazio" (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    descrizione VARCHAR(200),
-    nAmbientiMax INT NOT NULL
-);
+    id INT PRIMARY KEY
+                                    );
 
-CREATE TABLE IF NOT EXISTS "Ambiente" (
-    id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS "Settore" (
+    id INT PRIMARY KEY,
     spazio_id INT,
-    nPosizioniMax INT NOT NULL,
     termometro INT,
     fotosensore INT,
     climatizzazione INT,
@@ -92,28 +92,30 @@ CREATE TABLE IF NOT EXISTS "Ambiente" (
     FOREIGN KEY (spazio_id) REFERENCES "Spazio"(id),
     FOREIGN KEY (termometro) REFERENCES  "Termometro"(id),
     FOREIGN KEY (fotosensore) REFERENCES "Fotosensore"(id),
-    FOREIGN KEY (climatizzazione) REFERENCES  "Climatizzatore"(id),
+    FOREIGN KEY (climatizzazione) REFERENCES  "Climatizzazione"(id),
     FOREIGN KEY (lampada) REFERENCES "Lampada"(id),
     FOREIGN KEY (igrometroAria) REFERENCES "IgrometroAria"(id)
 );
 
 CREATE TABLE IF NOT EXISTS "Posizione" (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY,
     assegnata BOOLEAN,
-    ambiente INT,
-    irriatore INT,
+    occupata BOOLEAN,
+    settore INT,
+    irrigatore INT,
     igrometroTerreno INT,
-    FOREIGN KEY (ambiente) REFERENCES  "Ambiente"(id),
-    FOREIGN KEY (irriatore) REFERENCES  "Irrigatore"(id),
+    FOREIGN KEY (settore) REFERENCES  "Settore"(id),
+    FOREIGN KEY (irrigatore) REFERENCES  "Irrigatore"(id),
     FOREIGN KEY (igrometroTerreno) REFERENCES  "IgrometroTerreno"(id)
 );
 
 CREATE TABLE IF NOT EXISTS "Posizionamento" (
     id SERIAL PRIMARY KEY,
-    pianta VARCHAR(50),
+    pianta INT,
     posizione INT,
     ordine INT,
     operatore int,
+    FOREIGN KEY  (pianta) REFERENCES "Pianta"(id),
     FOREIGN KEY (posizione) REFERENCES  "Posizione"(id),
     FOREIGN KEY (ordine) REFERENCES  "Ordine"(id),
     FOREIGN KEY (operatore) REFERENCES  "Operatore"(id)

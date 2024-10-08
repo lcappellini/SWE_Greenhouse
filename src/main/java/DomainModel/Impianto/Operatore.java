@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Operatore extends Attuatore {
-    int valore_operativo;
-    private boolean occupato = false;
-    Map<Integer, String> tipoLavoro;
-
-    public Operatore(int id) {
-        super(id);// Chiama il costruttore della classe Attuatore
+    protected Map<Integer, String> tipoLavoro;
+    String ruolo;
+    
+    public Operatore(int id, boolean working, String ruolo) {
+        this(id, working);
+        this.ruolo = ruolo;
         tipoLavoro = new HashMap<>();
         tipoLavoro.put(0,"posizionamento");
         tipoLavoro.put(1, "liberazione");
@@ -17,6 +17,18 @@ public class Operatore extends Attuatore {
         tipoLavoro.put(3, "cura della pianta");
         tipoLavoro.put(-1, "");
     }
+
+    public Operatore(int id, boolean working) {
+        super(id, working);
+        tipoLavoro = new HashMap<>();
+        tipoLavoro.put(0,"posizionamento");
+        tipoLavoro.put(1, "liberazione");
+        tipoLavoro.put(2, "controllo");
+        tipoLavoro.put(3, "cura della pianta");
+        tipoLavoro.put(-1, "");
+
+    }
+
 
     public void lavora(){}
 
@@ -26,14 +38,20 @@ public class Operatore extends Attuatore {
     }
 
     public String esegui(int richiesta) {
-        String descrizione = "L'operatore "+this.id;
-        if(richiesta >= 0){
-            descrizione += " sta eseguendo : "+tipoLavoro.get(richiesta);
-            attivo = true;
+        lavoro = "";
+        StringBuilder descrizione = new StringBuilder("L'operatore ");
+        descrizione.append(this.id);
+        if(richiesta > 0){
+            descrizione.append(" sta eseguendo: ");
+            descrizione.append(tipoLavoro.get(richiesta));
+            descrizione.append(". ");
+            working = true;
         }else{
-            descrizione += " ha terminato.";
-            attivo = false;
+            descrizione.append(" ha terminato. ");
+            working = false;
         }
-        return descrizione;
+        lavoro = descrizione.toString();
+        return lavoro;
     }
+
 }
