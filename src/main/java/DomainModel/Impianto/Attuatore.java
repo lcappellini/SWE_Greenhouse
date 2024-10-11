@@ -34,6 +34,8 @@ public abstract class Attuatore {
     public void setWorking(boolean working) {
         this.working = working;
     }
+   
+ 
 
     public String getLavoro() {
         return lavoro;
