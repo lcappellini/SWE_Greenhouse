@@ -10,18 +10,18 @@ public class Posizione {
 
     private int id;
     private Pianta pianta;
-    private Irrigatore irriqatore;
+    private Irrigatore irrigatore;
     private IgrometroTerra igrometroTerra;
     private boolean assegnata;
     private boolean occupata;
 
     //costruttore
 
-    public Posizione(int id, Irrigatore irriqatore,
+    public Posizione(int id, Irrigatore irrigatore,
                      IgrometroTerra igrometroTerra, boolean assegnata,
                      boolean occupata) {
         this.id = id;
-        this.irriqatore = irriqatore;
+        this.irrigatore = irrigatore;
         this.igrometroTerra = igrometroTerra;
         this.assegnata = assegnata;
         this.occupata = occupata;
@@ -31,7 +31,7 @@ public class Posizione {
         Map<String, Object> misure = new HashMap<>();
         LocalDateTime lt = LocalDateTime.now();
 
-        igrometroTerra.misura(lt, irriqatore.working);
+        igrometroTerra.misura(lt, irrigatore.working);
         /*
         if(fuoriRange(igrometroTerra.tipoSensore(), misure.get(igrometroTerra.tipoSensore()))){
             irriqatore.esegui(1);
@@ -65,8 +65,9 @@ public class Posizione {
 
     //getters
     public int getId() { return id; }
-    public Irrigatore getIrriqatore() { return irriqatore; }
+    public Irrigatore getIrrigatore() { return irrigatore; }
     public IgrometroTerra getIgrometroTerra() { return igrometroTerra; }
-    public boolean eAssegnata() { return assegnata; }
-    public boolean eOccupata() { return occupata; }
+    public boolean isAssegnata() { return assegnata; }
+    public boolean isOccupata() { return occupata; }
+
 }

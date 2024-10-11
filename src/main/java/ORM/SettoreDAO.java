@@ -22,19 +22,18 @@ public class SettoreDAO {
     public void creaSettore(int idSpazio, int nPosizioniMax,
                             int idTermometro, int idFotosensore, int idIgrometroAria,
                             int idClimatizzazione, int idLampada) {
-        String insertAmbienteSQL = "INSERT INTO \"Settore\" (spazio_id, nPosizioniMax, termometro, " +
-                "fotosensore, igrometroAria, climatizzazione, lampada) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insertAmbienteSQL = "INSERT INTO \"Settore\" (spazio_id, termometro, " +
+                "fotosensore, igrometroAria, climatizzazione, lampada) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement insertStatement = connection.prepareStatement(insertAmbienteSQL)) {
             // Assegna una posizione. Potrebbe essere calcolata o generata in qualche modo.
 
             insertStatement.setInt(1, idSpazio);
-            insertStatement.setInt(2, nPosizioniMax);
-            insertStatement.setInt(3, idTermometro);
-            insertStatement.setInt(4, idFotosensore);
-            insertStatement.setInt(5, idIgrometroAria);
-            insertStatement.setInt(6, idClimatizzazione);
-            insertStatement.setInt(7, idLampada);
+            insertStatement.setInt(2, idTermometro);
+            insertStatement.setInt(3, idFotosensore);
+            insertStatement.setInt(4, idIgrometroAria);
+            insertStatement.setInt(5, idClimatizzazione);
+            insertStatement.setInt(6, idLampada);
 
             insertStatement.executeUpdate();
             System.out.println("Ambiente creato correttamente e associato all'spazio con ID: " + idSpazio);
@@ -58,7 +57,7 @@ public class SettoreDAO {
             int columnCount = metaData.getColumnCount();
 
             // Stampiamo l'intestazione
-            System.out.println("+--------+------------+-------------------+");
+            System.out.println("+--------+--ms1s----------+-------------------+");
             for (int i = 1; i <= columnCount; i++) {
                 System.out.printf("| %-10s ", metaData.getColumnName(i));
             }
@@ -144,6 +143,47 @@ public class SettoreDAO {
         }
         return settore;
     }
+    public Settore getSettoreBySpazio(int idSpazio, int index) {
+        String query = "SELECT * FROM \"Settore\" WHERE spazio_id = ? LIMIT 1 OFFSET ?";
+        Settore settore = null;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, idSpazio);  // Filtra per idSpazio
+            statement.setInt(2, index - 1); // L'indice è usato per l'offset (0-based)
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                // Estrai i dati dal ResultSet
+                int settoreId = resultSet.getInt("id");
+                int termometroId = resultSet.getInt("termometro");
+                int fotosensoreId = resultSet.getInt("fotosensore");
+                int climatizzazioneId = resultSet.getInt("climatizzazione");
+                int lampadaId = resultSet.getInt("lampada");
+                int igrometroAriaId = resultSet.getInt("igrometroAria");
+
+                // Ora dobbiamo creare il settore con i dati estratti
+                Termometro termometro = new Termometro(termometroId);
+                IgrometroAria igrometroAria = new IgrometroAria(igrometroAriaId);
+                Fotosensore fotosensore = new Fotosensore(fotosensoreId);
+
+                Climatizzazione climatizzazione = new Climatizzazione(climatizzazioneId);
+                Lampada lampada = new Lampada(lampadaId);
+
+                ArrayList<Posizione> posizioni = new ArrayList<>();
+
+                // Crea l'oggetto Settore
+                settore = new Settore(settoreId, posizioni, termometro, igrometroAria,fotosensore, climatizzazione, lampada);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Errore durante la ricerca del settore: " + e.getMessage());
+        }
+
+        return settore;
+    }
+
 
 
     public void visualizzaAmbiente() {

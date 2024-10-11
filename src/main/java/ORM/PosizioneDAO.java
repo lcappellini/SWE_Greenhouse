@@ -20,9 +20,9 @@ public class PosizioneDAO {
         }
     }
 
-    public ArrayList<Posizione> getPosizioni(int idAmbiente) {
+    public ArrayList<Posizione> getPosizioniBySettore(int idAmbiente) {
         ArrayList<Posizione> posizioni = new ArrayList<>();
-        String query = "SELECT * FROM \"Posizione\" WHERE ambiente_id = ?";
+        String query = "SELECT * FROM \"Posizione\" WHERE settore = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, idAmbiente);
@@ -30,7 +30,9 @@ public class PosizioneDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
-                    posizioni.add(new Posizione(id));
+                    posizioni.add(new Posizione(id, new Irrigatore(resultSet.getInt("irrigatore")),
+                            new IgrometroTerra(resultSet.getInt("igrometroterreno")),
+                            resultSet.getBoolean("assegnata"), resultSet.getBoolean("occupata")));
                 }
             }
         } catch (SQLException e) {

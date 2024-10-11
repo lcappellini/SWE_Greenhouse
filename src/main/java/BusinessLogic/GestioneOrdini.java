@@ -34,13 +34,16 @@ public class GestioneOrdini {
         this.ordineDAO = ordineDAO;
     }
 
-    public void creazioneOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
-        if(posizioneDAO.verificaNonAssegnate(ordine.getnPiante())){
-            ordineDAO.inserisciOrdine(ordine);
-            posizioneDAO.assegna(ordine.getnPiante());
-        }else{
-            System.out.println("Posizioni insufficienti per questo ordine.");
-        }
+    public void creazioneOrdine(Ordine ordine){
+
+            if (posizioneDAO.verificaNonAssegnate(ordine.getnPiante())) {
+
+                ordineDAO.inserisciOrdine(ordine);
+                posizioneDAO.assegna(ordine.getnPiante());
+            } else {
+                System.out.println("Posizioni insufficienti per questo ordine.");
+            }
+
     }
 
 

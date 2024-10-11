@@ -26,7 +26,7 @@ public class Termometro extends Sensore<Float> {
             probabilitaOttimale += 0.2f;
         } else {
             // Diminuisce leggermente la probabilità durante la notte (più freddo)
-            probabilitaOttimale -= 0.1f;
+            probabilitaOttimale -= 0.01f;
         }
 
         // Genera la temperatura in base alla probabilità calcolata
