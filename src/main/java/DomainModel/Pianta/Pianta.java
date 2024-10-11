@@ -1,16 +1,17 @@
 package main.java.DomainModel.Pianta;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Pianta {
     private int id;
     private String tipoPianta;
     private LocalDate dataInizio;
-    private StringBuilder descrizione;
+    private String descrizione;
     //FIXME statoooo
     private String stato;
     private double costo;
-    private int giorni_rescita;
+    private int giorni_crescita;
     private int minTemp;
     private int maxTemp;
     private int oreLuce;
@@ -22,15 +23,15 @@ public class Pianta {
     }
 
 
-    public int getGiorni_rescita() {
-        return giorni_rescita;
+    public int getGiorni_crescita() {
+        return giorni_crescita;
     }
     public void setGiorni_rescitaDaTipo(String tipoPianta) {
         switch (this.tipoPianta){
-            case "Basilico" -> giorni_rescita = 15;
-            case "Rosa" -> giorni_rescita = 30;
-            case "Geranio" -> giorni_rescita = 45;
-            case "Girasole" -> giorni_rescita = 50;
+            case "Basilico" -> giorni_crescita = 15;
+            case "Rosa" -> giorni_crescita = 30;
+            case "Geranio" -> giorni_crescita = 45;
+            case "Girasole" -> giorni_crescita = 50;
         }
     }
     public Pianta(String tipoPianta) {
@@ -43,15 +44,12 @@ public class Pianta {
         this(tipoPianta);
         this.id = id;
         this.dataInizio = LocalDate.now();
-        this.descrizione.append("La pianta è stata posata il ");
-        this.descrizione.append(dataInizio.toString());
-        this.descrizione.append(". ");
-
+        this.descrizione = "["+dataInizio.toString()+"]: Piantata. ";
     }
 
     public Pianta(int id, String tipoPianta, String descrizione) {
         this(id, tipoPianta);
-        this.descrizione.append(descrizione);
+        this.descrizione += descrizione;
     }
 
 
@@ -66,19 +64,20 @@ public class Pianta {
             default -> this.costo = 0;
         }
     }
-    public StringBuilder getDescrizione(){
+    public String getDescrizione(){
         return descrizione;
     }
 
-    public void generaStato(){
-        float probabilitaOttimale = 0.8f; // Valore di base
+    public String generaStato(){
+        float probabilitaOttimale = 0.93f; // Valore di base
 
         // Genera stato
         if (Math.random() < probabilitaOttimale) {
-            this.stato = "Sta crescendo. ";
+            this.stato = "sta crescendo";
         } else {
-            this.stato = "Ha bisogno di cura";
+            this.stato = "ha bisogno di cure";
         }
+        return "Stato " + tipoPianta + "[" + id + "] -> " + stato;
     }
 
     public boolean controllaStato() {
@@ -93,7 +92,7 @@ public class Pianta {
             this.stato = "sta crescendo";
         } else {
             stato_buono = false;
-            this.stato = "ha bisogno di cura";
+            this.stato = "ha bisogno di cure";
         }
 
         return stato_buono;
@@ -106,11 +105,21 @@ public class Pianta {
 
     public void setId(int id) {this.id = id;}
 
-    public void setDescrizione(String descrizione_) {
-        this.descrizione = new StringBuilder(descrizione_);
+    public void setDescrizione(String descrizione) {
+        this.descrizione = descrizione;
     }
 
     public void setDataInizio(LocalDate now) {
         this.dataInizio = now;
+    }
+
+    public boolean haBisogno() {
+        return this.stato.equals("ha bisogno di cure");
+    }
+
+    public String cura(int id){
+        String c = "[" + LocalDateTime.now().toString()+ "]" + "Curata da Operatore("+id +") .";
+        this.descrizione += c;
+        return c;
     }
 }

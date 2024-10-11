@@ -18,10 +18,30 @@ public class GestioneSpazi {
     }
 
     public void visualizzaSpazi() {
-        //FIXME Errore durante la visualizzazione degli spazi: Colonna denominata «nome» non è presente in questo «ResultSet».
-        SpazioDAO spazioDAO = new SpazioDAO();
-        spazioDAO.visualizzaSpazi();
+
+        int i = 1;
+        Spazio s = getSpazio(i);
+
+        if (s == null) {
+            System.out.println("|  N/A   |"); // Se il primo spazio è null, stampa N/A
+        } else {
+            System.out.println("+--------+");
+            System.out.println("|   ID   |");
+            System.out.println("+--------+");
+
+            // Ciclo che continua fino a quando lo spazio non è null
+            do {
+                System.out.printf("| %-6d |\n", s.getId());
+                i++;
+                s = getSpazio(i);
+            } while (s != null);
+        }
+
+        System.out.println("+--------+");
+
     }
+
+
     public int getNAmbientiMaxByIdSpazio(int idSpazio) {
         SpazioDAO spazioDAO = new SpazioDAO();
         return spazioDAO.getNAmbientiMaxByIdSpazio(idSpazio);

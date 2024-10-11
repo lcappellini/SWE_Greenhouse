@@ -24,32 +24,27 @@ public class OrdineDAO  {
 
     }
 
-    public void inserisciOrdine(Ordine ordine) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO \"Ordine\" (cliente, dataConsegna, piante, descrizione, totale, stato) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
-        PreparedStatement preparedStatement = null;
+    public void inserisciOrdine(Ordine ordine) {
+        String sql = "INSERT INTO \"Ordine\" (cliente, dataConsegna, piante, totale, stato) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
-        try {
-            preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            // Set parameters for the prepared statement
             preparedStatement.setInt(1, ordine.getCliente());
-            preparedStatement.setString(2, ordine.getStringDataConsegna());
-            preparedStatement.setString(3, ordine.getStringTipoPiante());
-            preparedStatement.setString(4, ordine.getDescrizione());
-            preparedStatement.setDouble(5, ordine.getTotale());
-            preparedStatement.setString(6, ordine.getStato());
+            preparedStatement.setString(2, ordine.getStringDataConsegna());  // Assuming you have this method
+            preparedStatement.setString(3, ordine.getPianteString());        // Assuming this returns the right format
+            preparedStatement.setDouble(4, ordine.getTotale());
+            preparedStatement.setString(5, ordine.getStato());
 
-            int affectedRows = preparedStatement.executeUpdate();
+            // Execute the insert operation
+            preparedStatement.executeUpdate();
 
-            if (affectedRows == 0) {
-                throw new SQLException("Inserimento dell'ordine non riuscito, nessuna riga aggiornata.");
-            }
-
-            System.out.println("Ordine aggiunto correttamente.");
-
+            System.out.println("Ordine inserito correttamente.");
         } catch (SQLException e) {
-            System.err.println("Errore: ".contains(e.getMessage()));
+            System.err.println("Errore durante l'inserimento dell'ordine: " + e.getMessage());
         }
     }
+
 
     public ArrayList<Ordine> vediOrdini(Cliente cliente) {
         ArrayList<Ordine> ordini = new ArrayList<>();
@@ -61,8 +56,7 @@ public class OrdineDAO  {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Ordine ordine = new Ordine(resultSet.getInt("id"), resultSet.getInt("cliente"),
-                            resultSet.getString("piante"), resultSet.getString("stato"), resultSet.getString("dataConsegna"),
-                            resultSet.getString("descrizione"));
+                            resultSet.getString("piante"), resultSet.getString("stato"), resultSet.getString("dataConsegna"));
                     ordini.add(ordine);
                 }
             }
@@ -150,8 +144,7 @@ public class OrdineDAO  {
                 // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
                 while(resultSet.next()){
                     Ordine ordine = new Ordine(resultSet.getInt("id"), resultSet.getInt("cliente"),
-                            resultSet.getString("piante"), resultSet.getString("stato"), resultSet.getString("dataConsegna"),
-                            resultSet.getString("descrizione"));
+                            resultSet.getString("piante"), resultSet.getString("stato"), resultSet.getString("dataConsegna"));
                     ordini.add(ordine);
                 };
             }
@@ -214,7 +207,7 @@ public class OrdineDAO  {
             if(resultSet.next()){
                 ordine = new Ordine(resultSet.getInt("id"), resultSet.getInt("cliente"),
                         resultSet.getString("piante"), resultSet.getString("stato"),
-                        resultSet.getString("dataConsegna"), resultSet.getString("descrizione"));
+                        resultSet.getString("dataConsegna"));
             }else{
                 System.out.println("Nessun ordine trovato con id "+ idOrdine);
             }

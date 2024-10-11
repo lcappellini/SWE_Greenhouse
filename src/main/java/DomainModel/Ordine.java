@@ -2,7 +2,6 @@ package main.java.DomainModel;
 import main.java.DomainModel.Pianta.Pianta;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Ordine {
@@ -32,23 +31,23 @@ public class Ordine {
     int maxGiorniRichiesti(){
         int i = 0;
         for(Pianta p : piante){
-            if(i<p.getGiorni_rescita()){
-                i = p.getGiorni_rescita();
+            if(i<p.getGiorni_crescita()){
+                i = p.getGiorni_crescita();
             }
         }
         return i;
     }
 
 
-    public Ordine(int id_cliente, String piante, String stato, String dataConsegna,   String descrizione) {
+    public Ordine(int id_cliente, String piante, String stato, String dataConsegna) {
         this.stato = stato;
         this.dataConsegna = LocalDate.now();
         setPiante(piante);
         setTotale();
         this.cliente = id_cliente;
     }
-    public Ordine(int id, int id_cliente, String piante, String stato, String dataConsegna,   String descrizione) {
-        this(id_cliente, piante, stato, dataConsegna, descrizione);
+    public Ordine(int id, int id_cliente, String piante, String stato, String dataConsegna) {
+        this(id_cliente, piante, stato, dataConsegna);
         this.id = id;
     }
 
@@ -107,6 +106,7 @@ public class Ordine {
     }
 
     public void setPiante(String piante) {
+
         // Controlla che la stringa non sia vuota o nulla
         if (piante == null || piante.trim().isEmpty()) {
             System.out.println("Errore: La stringa delle piante è vuota.");
@@ -126,7 +126,6 @@ public class Ordine {
 
         // Imposta la lista delle piante nella classe
         this.piante = listaPiante;
-
     }
 
 
@@ -142,16 +141,13 @@ public class Ordine {
 
 
 
-    public String getStringTipoPiante() {
-        StringBuilder tipoPiante = new StringBuilder(piante.get(0).getTipoPianta());
+    public String getPianteString() {
+        StringBuilder tp = new StringBuilder();
         for(Pianta p : piante){
-            if(!tipoPiante.toString().contains(p.getTipoPianta())){
-                tipoPiante.append(p.getTipoPianta());
-                tipoPiante.append(", ");
-            }
+            tp.append(p.getTipoPianta()).append(", ");
         }
-        tipoPiante.replace(0, tipoPiante.length()-2, tipoPiante.toString());
-        return tipoPiante.toString();
+        tp = new StringBuilder(tp.substring(0, tp.length() - 2));
+        return tp.toString();
     }
 
     double setTotale(){

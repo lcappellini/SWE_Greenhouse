@@ -72,9 +72,8 @@ CREATE TABLE IF NOT EXISTS "Climatizzazione" (
 CREATE TABLE IF NOT EXISTS "Ordine" (
                                         id SERIAL PRIMARY KEY,
                                         cliente INT,
-                                        dataConsegna DATE,
+                                        dataConsegna VARCHAR(50),
                                         piante VARCHAR(300),
-                                        descrizione VARCHAR(100),
                                         totale DECIMAL(6,2),
                                         stato VARCHAR(50)
 );

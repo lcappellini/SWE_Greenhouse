@@ -1,7 +1,6 @@
 package main.java.DomainModel.Impianto;
 
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -231,7 +230,7 @@ public class Settore {
     public boolean eDisponibile(int nPosti){
         int i = 0;
         for(Posizione p : posizioni){
-            if(!p.eAssegnata()){
+            if(!p.isAssegnata()){
                 i = i + 1;
             }
         }

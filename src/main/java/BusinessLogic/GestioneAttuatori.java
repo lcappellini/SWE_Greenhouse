@@ -41,13 +41,13 @@ public class GestioneAttuatori {
         return odao.restituisciChiavi(nomeTabella, criteri);
     }
 
-
+    //FIXME ritornare Operatore non va bene
     public Operatore richiediAttuatoreLibero(String tipoAttuatore) {
         Scanner sc = new Scanner(System.in);
         attuatoreDAO.visualizzaLiberi(tipoAttuatore);
         StringBuilder prompt = new StringBuilder("Inserire ID ").append(tipoAttuatore).append(": ");
         System.out.print(prompt.toString());
-        int id = Integer.parseInt(sc.nextLine());  // Legge l'ID inserito dall'uten// te
+        int id = Integer.parseInt(sc.nextLine());  // Legge l'ID inserito dall'utente
         String query = "SELECT * FROM \"" + tipoAttuatore + "\" WHERE id = ?";
         Operatore attuatore = switch (tipoAttuatore.toLowerCase()) {
             case "operatore" -> operatoreDAO.getById(id);
