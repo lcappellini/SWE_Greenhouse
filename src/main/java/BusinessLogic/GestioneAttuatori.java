@@ -19,27 +19,8 @@ public class GestioneAttuatori {
         dao.registraAzione(a, descrizione, data);
     }
 
-    public void visualizzaLiberi(String tipoAttuatore) {
-        ObjectDAO odao = new ObjectDAO();
-        Map<String, Object> criteria = new HashMap<>();
-        criteria.put("occupato", false);
-        odao.visualizza(tipoAttuatore, criteria);
-    }
-
-    public void visualizza(String tipoAttuatore, Map<String, Object> criteri) {
-        ObjectDAO odao = new ObjectDAO();
-        if(Arrays.asList(tipiAttuatori).contains(tipoAttuatore)){
-            odao.visualizza(tipoAttuatore, criteri);
-        }else{
-            System.out.println("Attuatore non trovato");
-        }
-    }
 
 
-    public List<Integer> restituisciChiavi(String nomeTabella, Map<String, Object> criteri) {
-        ObjectDAO odao = new ObjectDAO();
-        return odao.restituisciChiavi(nomeTabella, criteri);
-    }
 
     //FIXME ritornare Operatore non va bene
     public Operatore richiediAttuatoreLibero(String tipoAttuatore) {

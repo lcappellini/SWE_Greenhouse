@@ -1,10 +1,14 @@
 package main.java.ORM;
 
 import main.java.DomainModel.Impianto.Posizionamento;
+import main.java.DomainModel.Impianto.Posizione;
+import main.java.DomainModel.Ordine;
+import main.java.DomainModel.Pianta.Pianta;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PosizionamentoDAO {
 
@@ -16,11 +20,11 @@ public class PosizionamentoDAO {
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println("Error: " + e.getMessage());
         }
-
     }
 
+
     public void inserisciPosizionamenti(ArrayList<Posizionamento> posizionamenti) throws SQLException {
-        String queryInserimento = "INSERT INTO \"Posizionamento\" (pianta, posizione, ordine, operatore) VALUES (?, ?, ?, ?)";
+        String queryInserimento = "INSERT INTO \"Posizionamento\" (pianta, posizione, ordine) VALUES (?, ?, ?)";
 
         try (PreparedStatement statementInserimento = connection.prepareStatement(queryInserimento)) {
             connection.setAutoCommit(false);  // Inizio della transazione
@@ -30,7 +34,6 @@ public class PosizionamentoDAO {
                 statementInserimento.setInt(1, p.getPianta().getId());  // Considera di usare l'indice i o un'altra logica appropriata
                 statementInserimento.setInt(2, p.getPosizione().getId());
                 statementInserimento.setInt(3, p.getOrdine().getId());
-                statementInserimento.setInt(4, p.getOperatore().getId());
                 statementInserimento.executeUpdate();
             }
 
@@ -43,34 +46,38 @@ public class PosizionamentoDAO {
 
 
 
-    public ArrayList<Integer> liberaPosizionamenti(int idOrdine) {
-        ArrayList<Integer> liberati = new ArrayList<>();
-
-        String selectQuery = "SELECT * FROM \"Posizionamento\" WHERE ordine = ?";
+    public boolean eliminaPosizionamentiByOrdine(int idOrdine) throws SQLException {
         String deleteQuery = "DELETE FROM \"Posizionamento\" WHERE ordine = ?";
 
-        try (PreparedStatement selectStmt = connection.prepareStatement(selectQuery)) {
-            selectStmt.setInt(1, idOrdine);
-            ResultSet rs = selectStmt.executeQuery();
-            while (rs.next()) {liberati.add(rs.getInt("posizione"));}
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        // Gestisci la transazione manualmente
         try (PreparedStatement deleteStmt = connection.prepareStatement(deleteQuery)) {
-            deleteStmt.setInt(1, idOrdine);
-            int affectedRows = deleteStmt.executeUpdate();
-            if (affectedRows > 0) {
-                //System.out.println("Righe eliminate con successo: " + affectedRows);
-            } else {
-                System.out.println("Nessuna riga trovata con l'id_Ordine specificato.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            connection.setAutoCommit(false);  // Inizio della transazione
 
-        return liberati;
+            // Imposta il parametro dell'ordine nella query
+            deleteStmt.setInt(1, idOrdine);
+
+            // Esegui la query di eliminazione
+            int affectedRows = deleteStmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                // Elimina eseguita correttamente
+                System.out.println("Righe eliminate con successo: " + affectedRows);
+                connection.commit();
+                return true; // Imposta isDeleted a true se ci sono state righe eliminate
+            } else {
+                System.out.println("Nessun Posizionamento eliminato.");
+                connection.commit();
+                return false;
+            }
+
+        } catch (SQLException e) {
+            connection.rollback();  // Rollback in caso di errore
+            System.err.println("Errore durante l'eliminazione dei posizionamenti: " + e.getMessage());
+            throw e;  // Rilancia l'eccezione per gestione successiva
+        }
     }
+
+
 
     public void visualizzaPosizionamenti(int idOridne) {
         String query = "SELECT * FROM \"Posizionamento\" WHERE ordine = ?";
@@ -116,5 +123,67 @@ public class PosizionamentoDAO {
             e.printStackTrace();
         }
         return id_piante;
+    }
+
+
+
+
+    public ArrayList<Posizionamento> get(Map<String, Object> criteria) throws SQLException {
+        ArrayList<Posizionamento> posizionamenti = new ArrayList<>();
+
+        StringBuilder query = new StringBuilder("SELECT * FROM \"Posizionamento\"");
+
+        if (criteria != null && !criteria.isEmpty()) {
+            query.append(" WHERE ");
+            for (String key : criteria.keySet()) {
+                query.append(key).append(" = ? AND ");
+            }
+            query.setLength(query.length() - 5);  // Rimuove l'ultimo " AND "
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+            if (criteria != null && !criteria.isEmpty()) {
+                int paramIndex = 1;
+                for (Object value : criteria.values()) {
+                    statement.setObject(paramIndex, value);
+                    paramIndex++;
+                }
+            }
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    int posizioneId = resultSet.getInt("posizione");
+                    int ordineId = resultSet.getInt("ordine");
+                    int piantaId = resultSet.getInt("pianta");
+
+                    // Usa i DAO per recuperare i dati necessari
+                    PosizioneDAO posizioneDAO = new PosizioneDAO();
+                    PiantaDAO piantaDAO = new PiantaDAO();
+                    OrdineDAO ordineDAO = new OrdineDAO();
+
+                    Posizione posizione = posizioneDAO.getById(posizioneId);
+                    Ordine ordine = ordineDAO.getById(ordineId);
+                    Pianta pianta = piantaDAO.getById(piantaId);
+
+                    posizionamenti.add(new Posizionamento(
+                            resultSet.getInt("id"),
+                            posizione,
+                            ordine,
+                            pianta
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+        return posizionamenti;
+    }
+
+
+    public void aggiorna(int id_posizione, Map<String, Object> c){
+        ObjectDAO objectDAO = new ObjectDAO();
+        objectDAO.aggiorna(id_posizione,"Posizione", c);
     }
 }

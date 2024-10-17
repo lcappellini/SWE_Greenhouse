@@ -7,21 +7,21 @@ import java.sql.SQLException;
 
 
 public class GestioneCliente {
+    ClienteDAO clienteDAO;
 
-    public GestioneCliente() {}
+    public GestioneCliente() {
+        clienteDAO = new ClienteDAO();
+    }
 
     public Cliente registraCliente(String nome, String cognome, String email, String password) throws SQLException, ClassNotFoundException {
-        ClienteDAO clienteDAO = new ClienteDAO();
         return clienteDAO.registraCliente(nome, cognome, email, password);
     }
 
     public Cliente accedi(String email, String password) throws SQLException, ClassNotFoundException {
-        ClienteDAO clienteDAO = new ClienteDAO();
         return clienteDAO.accedi(email, password);
     }
 
     public void rimuoviCliente(String email) throws SQLException, ClassNotFoundException {
-        ClienteDAO clienteDAO = new ClienteDAO();
         clienteDAO.rimuoviCliente(email);
     }
 

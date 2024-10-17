@@ -57,7 +57,7 @@ public class SettoreDAO {
             int columnCount = metaData.getColumnCount();
 
             // Stampiamo l'intestazione
-            System.out.println("+--------+--ms1s----------+-------------------+");
+            System.out.println("+--------+------------+-------------------+");
             for (int i = 1; i <= columnCount; i++) {
                 System.out.printf("| %-10s ", metaData.getColumnName(i));
             }

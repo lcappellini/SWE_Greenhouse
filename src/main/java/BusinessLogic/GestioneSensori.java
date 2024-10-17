@@ -16,7 +16,5 @@ public class GestioneSensori {
             e.printStackTrace();
         }
     }
-    public void misura(Posizione posizione){
-        //...
-    }
+
 }

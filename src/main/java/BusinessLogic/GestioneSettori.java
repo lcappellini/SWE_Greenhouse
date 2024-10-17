@@ -28,15 +28,7 @@ public class GestioneSettori {
         gestioneSensori = new GestioneSensori();
     }
 
-    public void creaSettore(int idSpazio, int nPosizioniMax,
-                            int idTermometro, int idFotosensore, int idIgrometroAria,
-                            int idClimatizzazione, int idLampada){
-        settoreDAO.creaSettore(idSpazio, nPosizioniMax, idTermometro, idFotosensore,
-                idIgrometroAria, idClimatizzazione, idLampada);
-    }
-    public void rimuoviSettore(int idAmbiente) {
-        settoreDAO.rimuoviSettore(idAmbiente);
-    }
+    
     public void visualizzaSettori(int idSpazio) {
 
         int i = 1;
@@ -47,7 +39,7 @@ public class GestioneSettori {
         } else {
             System.out.println("+------------------------------------------------------------------------------------------+");
             System.out.println("|   ID   | Spazio | Termometro |  Fotosensore | Climatizzazione | Lampada | Igrometro aria |");
-            System.out.println("+--------|--------|------------|--------------|-----------------|---------|----------------|");
+            System.out.println("|--------|--------|------------|--------------|-----------------|---------|----------------|");
             // Ciclo che continua fino a quando non ci sono più settori
             do {
                 System.out.printf("| %-6d | %-6d | %-10s | %-12s | %-15s | %-7s | %-14s |\n",
@@ -63,7 +55,7 @@ public class GestioneSettori {
             } while (s != null);
         }
 
-        System.out.println("+--------+--------+------------+--------------+-----------------+---------+----------------+");
+        System.out.println("+------------------------------------------------------------------------------------------+");
     }
 
 
