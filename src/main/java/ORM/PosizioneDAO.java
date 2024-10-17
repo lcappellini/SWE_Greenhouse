@@ -3,21 +3,34 @@ package main.java.ORM;
 import main.java.DomainModel.Impianto.IgrometroTerra;
 import main.java.DomainModel.Impianto.Irrigatore;
 import main.java.DomainModel.Impianto.Posizione;
+import main.java.DomainModel.Ordine;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PosizioneDAO {
 
+    // Istanza privata statica dell'oggetto OrdineDAO
+    private static PosizioneDAO instance;
+
     private Connection connection;
 
-    public  PosizioneDAO(){
+    public PosizioneDAO(){
         try {
             this.connection = ConnectionManager.getInstance().getConnection();
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println("Error: " + e.getMessage());
         }
+    }
+
+    public static PosizioneDAO getInstance() {
+        if (instance == null) {
+            instance = new PosizioneDAO(); // Istanza creata solo la prima volta
+        }
+        return instance;
     }
 
     public ArrayList<Posizione> getPosizioniBySettore(int idAmbiente) {
@@ -249,6 +262,91 @@ public class PosizioneDAO {
             }
         } catch (SQLException e) {
             System.err.println("Errore durante la liberazione delle posizioni: " + e.getMessage());
+        }
+    }
+
+    public Posizione getById(int posizioneId) {
+        Map<String, Object> m = new HashMap<>();
+        m.put("id", posizioneId);
+        Posizione p = get(m).get(0);
+        return p;
+    }
+
+    public ArrayList<Posizione> get(Map<String, Object> criteri) {
+        StringBuilder query = new StringBuilder("SELECT * FROM \"Posizione\"");
+
+        if(criteri != null && !criteri.isEmpty()) {
+            query.append(" WHERE ");
+            for(String key : criteri.keySet()) {
+                query.append(key).append(" = ? AND ");
+            }
+            query.setLength(query.length() - 5);  // Rimuove l'ultimo " AND "
+
+        }
+
+        IgrometroTerraDAO igrometroTerraDAO = new IgrometroTerraDAO();
+        IrrigatoreDAO irrigatoreDAO = new IrrigatoreDAO();
+
+        ArrayList<Posizione> posizioni = new ArrayList<>();
+
+        try(PreparedStatement statement = connection.prepareStatement(query.toString())){
+            if(criteri != null && !criteri.isEmpty()) {
+                int paramIndex = 1;
+                for (Object value : criteri.values()) {
+                    statement.setObject(paramIndex, value);
+                    paramIndex++;
+                }
+            }
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                int id = resultSet.getInt("id");
+                Irrigatore irrigatore = irrigatoreDAO.getById(resultSet.getInt("irrigatore"));
+                IgrometroTerra igrometroTerra = igrometroTerraDAO.getById(resultSet.getInt("igrometroterreno"));
+                boolean assegnata = resultSet.getBoolean("assegnata");
+                boolean occupata = resultSet.getBoolean("occupata");
+                posizioni.add(new Posizione(id, irrigatore, igrometroTerra, assegnata, occupata));
+            }
+        }catch (SQLException ignored){
+        }
+        return posizioni;
+    }
+
+    public void aggiorna(int id, Map<String, Object> m) throws SQLException {
+        if (m == null || m.isEmpty()) {
+            System.out.println("Nessun dato da aggiornare.");
+            return; // Non ci sono dati da aggiornare
+        }
+
+        StringBuilder query = new StringBuilder("UPDATE \"Posizione\" SET ");
+
+        // Costruzione della query di aggiornamento
+        for (String key : m.keySet()) {
+            query.append(key).append(" = ?, ");
+        }
+        query.setLength(query.length() - 2); // Rimuove l'ultima virgola e spazio
+        query.append(" WHERE id = ?"); // Aggiungi la condizione per l'ID
+
+        try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+            int paramIndex = 1;
+
+            // Imposta i valori dalla mappa
+            for (Object value : m.values()) {
+                statement.setObject(paramIndex++, value);
+            }
+
+            // Imposta l'ID dell'elemento da aggiornare come ultimo parametro
+            statement.setInt(paramIndex, id);
+
+            // Esegui l'aggiornamento
+            int rowsUpdated = statement.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("Posizione[" + id+"] aggiornata.");
+            } else {
+                System.out.println("Nessun aggiornamento effettuato per ID: " + id);
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'aggiornamento della posizione: " + e.getMessage());
+            throw e; // Rilancia l'eccezione per gestione successiva
         }
     }
 

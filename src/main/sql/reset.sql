@@ -19,14 +19,7 @@ drop table if exists "Fotosensore" cascade;
 
 -- table generation
 
-CREATE TABLE IF NOT EXISTS "Pianta" (
-                                        id SERIAL PRIMARY KEY ,
-                                        tipo VARCHAR(50),
-                                        descrizione VARCHAR(200),
-                                        dataInizio VARCHAR(50),
-                                        stato VARCHAR(100),
-                                        costo DECIMAL(10, 2)
-);
+
 
 
 CREATE TABLE IF NOT EXISTS "Termometro" (
@@ -77,7 +70,15 @@ CREATE TABLE IF NOT EXISTS "Ordine" (
                                         totale DECIMAL(6,2),
                                         stato VARCHAR(50)
 );
-
+CREATE TABLE IF NOT EXISTS "Pianta" (
+                                        id SERIAL PRIMARY KEY ,
+                                        tipo VARCHAR(50),
+                                        descrizione VARCHAR(200),
+                                        dataInizio VARCHAR(50),
+                                        stato VARCHAR(100),
+                                        costo DECIMAL(10, 2),
+                                        ordine int references "Ordine"(id) on DELETE cascade
+);
 
 
 CREATE TABLE IF NOT EXISTS "Cliente" (

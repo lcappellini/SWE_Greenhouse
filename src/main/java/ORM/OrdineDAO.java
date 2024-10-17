@@ -10,19 +10,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class OrdineDAO  {
+public class OrdineDAO {
 
     private Connection connection;
 
     public OrdineDAO() {
-
         try {
             this.connection = ConnectionManager.getInstance().getConnection();
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println("Error: " + e.getMessage());
         }
-
     }
+
 
     public void inserisciOrdine(Ordine ordine) {
         String sql = "INSERT INTO \"Ordine\" (cliente, dataConsegna, piante, totale, stato) " +
@@ -67,7 +66,7 @@ public class OrdineDAO  {
         return ordini;
     }
 
-    public ArrayList<Ordine> restituisci(Map<String, Object> criteri){
+    public ArrayList<Ordine> restituisci(Map<String, Object> criteri) {
         ArrayList<Ordine> ordini = new ArrayList<>();
 
         // Costruisci la query SQL dinamica
@@ -125,11 +124,52 @@ public class OrdineDAO  {
         }
     }
 
-    public void visualizza(Map<String, Object> criteri) {
-        ObjectDAO objectDAO = new ObjectDAO();
-        objectDAO.visualizza("Ordine", criteri);
-    }
+    public ArrayList<Ordine> get(Map<String, Object> criteri) {
+        StringBuilder query = new StringBuilder("SELECT * FROM \"Ordine\"");
 
+        // Aggiungi condizioni se ci sono criteri
+        if (criteri != null && !criteri.isEmpty()) {
+            query.append(" WHERE ");
+            for (String key : criteri.keySet()) {
+                query.append(key).append(" = ? AND ");
+            }
+            query.setLength(query.length() - 5);  // Rimuove l'ultimo " AND "
+        }
+
+        ArrayList<Ordine> ordini = new ArrayList<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+            // Imposta i parametri se ci sono criteri
+            if (criteri != null && !criteri.isEmpty()) {
+                int paramIndex = 1;
+                for (Object value : criteri.values()) {
+                    statement.setObject(paramIndex, value);
+                    paramIndex++;
+                }
+            }
+            PiantaDAO piantaDAO = new PiantaDAO();
+
+            // Esegui la query e gestisci il ResultSet
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    ordini.add(new Ordine(
+                            resultSet.getInt("id"),
+                            resultSet.getInt("cliente"),
+                            resultSet.getString("piante"),
+                            resultSet.getString("stato"),
+                            resultSet.getString("dataConsegna"),
+                            resultSet.getDouble("totale")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            // Logga l'errore
+            System.err.println("Errore durante il recupero degli ordini: " + e.getMessage());
+            e.printStackTrace(); // Mostra la traccia dello stack per una diagnostica più dettagliata
+        }
+
+        return ordini;
+    }
 
 
     public ArrayList<Ordine> getOrdiniDaPosizionare() {
@@ -142,11 +182,12 @@ public class OrdineDAO  {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
-                while(resultSet.next()){
+                while (resultSet.next()) {
                     Ordine ordine = new Ordine(resultSet.getInt("id"), resultSet.getInt("cliente"),
                             resultSet.getString("piante"), resultSet.getString("stato"), resultSet.getString("dataConsegna"));
                     ordini.add(ordine);
-                };
+                }
+                ;
             }
 
         } catch (SQLException e) {
@@ -155,7 +196,7 @@ public class OrdineDAO  {
         return ordini;
     }
 
-    public boolean ordiniPronti(Cliente cliente){
+    public boolean ordiniPronti(Cliente cliente) {
         String query = "SELECT * FROM \"Ordine\" WHERE (cliente, stato)= (?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -163,7 +204,7 @@ public class OrdineDAO  {
             statement.setString(2, "pronto");
 
             ResultSet rs = statement.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return true;
             }
 
@@ -187,36 +228,48 @@ public class OrdineDAO  {
                 System.out.println("Nessun ordine da rimuovere.");
             }
         } catch (SQLException e) {
-            System.err.println("Errore durante la rimozione dell'ultimo ordine: "+e.getMessage());
+            System.err.println("Errore durante la rimozione dell'ultimo ordine: " + e.getMessage());
         }
     }
 
-    public void aggiorna(int id_ordine, Map<String, Object> criterio) {
-        ObjectDAO objectDAO = new ObjectDAO();
-        objectDAO.aggiorna(id_ordine, "Ordine", criterio);
+    public boolean aggiorna(int id_ordine, Map<String, Object> criterio) {
+        boolean updated = false;
+        // Aggiungi condizioni se ci sono criteri
+        String str = "UPDATE \"Ordine\" SET ";
+        StringBuilder query = new StringBuilder(str);
+        if (criterio != null && !criterio.isEmpty()) {
+            for (String key : criterio.keySet()) {
+                query.append(key).append(" = ?, ");
+            }
+            query.setLength(query.length() - 5);  // Rimuove l'ultimo " AND "
+        } else {
+            return updated;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+            int paramIndex = 1;
+            for (Object value : criterio.values()) {
+                statement.setObject(paramIndex, value);
+                paramIndex++;
+            }
+            int rowsUpdated = statement.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                updated = true;
+            } else {
+                System.out.println("Ordine non trovato o non aggiornato.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'aggiornamento dell'ordine: " + e.getMessage());
+        }
+        return updated;
     }
+
 
     public Ordine getById(int idOrdine) {
-        String query = "SELECT * FROM \"Ordine\" WHERE id = ?";
-        Ordine ordine = null;
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, idOrdine);
-
-            ResultSet resultSet= statement.executeQuery();
-            if(resultSet.next()){
-                ordine = new Ordine(resultSet.getInt("id"), resultSet.getInt("cliente"),
-                        resultSet.getString("piante"), resultSet.getString("stato"),
-                        resultSet.getString("dataConsegna"));
-            }else{
-                System.out.println("Nessun ordine trovato con id "+ idOrdine);
-            }
-
-
-        } catch (SQLException e) {
-            System.err.println("Errore durante il pagamenti dell'ordine: " + e.getMessage());
-        }
-        return ordine;
+        Map<String, Object> m = new HashMap<>();
+        m.put("id", idOrdine);
+        return get(m).get(0);
     }
 
     public void posiziona(Ordine ordine) {

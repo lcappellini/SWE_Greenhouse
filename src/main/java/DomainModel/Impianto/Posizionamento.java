@@ -7,34 +7,27 @@ public class Posizionamento {
     private int id;
     private Posizione posizione;
     private Pianta pianta;
-    private Operatore operatore;
     private Ordine ordine;
 
 
     public Posizionamento() {}
 
-    public Posizionamento(int id, Posizione posizione, Pianta pianta, Operatore operatore, Ordine ordine) {
+    public Posizionamento(Posizione posizione, Pianta pianta, Ordine ordine) {
+        this.posizione = posizione;
+        this.pianta = pianta;
+        this.ordine = ordine;
+    }
+
+    public Posizionamento(int id, Posizione posizione, Ordine ordine, Pianta pianta) {
+        this(posizione, pianta, ordine);
         this.id = id;
-        this.posizione = posizione;
-        this.pianta = pianta;
-        this.operatore = operatore;
-        this.ordine = ordine;
     }
-
-    public Posizionamento(Posizione posizione, Pianta pianta, Operatore operatore, Ordine ordine) {
-        this.posizione = posizione;
-        this.pianta = pianta;
-        this.operatore = operatore;
-        this.ordine = ordine;
-    }
-
 
 
     public Posizione getPosizione() { return posizione; }
 
     public Pianta getPianta() { return pianta; }
 
-    public Operatore getOperatore() { return operatore; }
 
     public Ordine getOrdine() { return this.ordine;}
 }

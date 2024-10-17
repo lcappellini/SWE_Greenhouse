@@ -3,8 +3,11 @@ package main.java.BusinessLogic;
 import main.java.DomainModel.Impianto.Posizione;
 import main.java.ORM.PosizioneDAO;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GestionePosizioni {
 
@@ -18,13 +21,7 @@ public class GestionePosizioni {
         return  posizioneDAO.getPosizioniBySettore(id_settore);
     }
 
-    public void creaPosizione(int idAmbiente) {
-        posizioneDAO.creaPosizione(idAmbiente);
-    }
 
-    public void rimuoviPosizione(int idPosizione) {
-        posizioneDAO.rimuoviPosizione(idPosizione);
-    }
 
     //public void visualizzaPosizioni(int idAmbiente) {posizioneDAO.visualizzaPosizioni(idAmbiente);}
     public void visualizzaPosizioni(int idSettore) {
@@ -63,26 +60,34 @@ public class GestionePosizioni {
         posizioneDAO.liberaPosizioni(posizioni);
     }
 
-
-
-    public boolean verificaNonAssegnate(int n){
-        return posizioneDAO.verificaNonAssegnate(n);
-    }
-
-    public void liberaUltime(int i) {
-        posizioneDAO.liberaUltime(i);
-    }
-
-    public ArrayList<Posizione> occupa(int i) {
+    public List<Posizione> getPosizioniLibere(int i) {
         //Posizioni da occupare
-        ArrayList<Posizione> posizioniLibere = posizioneDAO.occupa(i);
-        if(posizioniLibere.isEmpty()){
+        Map<String, Object> m = new HashMap<>();
+        m.put("assegnata", true);
+        m.put("occupata", false);
+        ArrayList<Posizione> posizioni = posizioneDAO.get(m);
+        if(posizioni.isEmpty()){
             System.out.println("Non ci sono posizioni libere!");
             return null;
-        } else if (posizioniLibere.size() != i) {
+        } else if (posizioni.size() < i) {
             System.out.println("Posizioni libere insufficienti");
             return null;
         }
-        return posizioniLibere;
+        return posizioni.subList(0,i);
+    }
+
+    public void libera(Posizione posizione) throws SQLException {
+        Map<String, Object> m = new HashMap<>();
+        m.put("assegnata", false);
+        m.put("occupata", false);
+        posizioneDAO.aggiorna(posizione.getId(), m);
+    }
+
+    public void occupa(List<Posizione> posizioni) throws SQLException {
+        Map<String, Object> m = new HashMap<>();
+        m.put("occupata", true);
+        for(Posizione p : posizioni){
+            posizioneDAO.aggiorna(p.getId(), m);
+        }
     }
 }

@@ -22,10 +22,18 @@ public class Ordine {
     public Ordine(int cliente, ArrayList<Pianta> piante) {
         this.cliente = cliente;
         this.piante = piante;
-        this.dataConsegna = LocalDate.now();
-        this.dataConsegna = this.dataConsegna.plusDays(maxGiorniRichiesti());
+        this.dataConsegna = LocalDate.now().plusDays(maxGiorniRichiesti());
         this.stato = "da posizionare";
         this.totale = setTotale();
+    }
+
+    public Ordine(int id, int cliente, String piante, String stato, String dataConsegna, double totale) {
+        this.id = id;
+        this.stato = stato;
+        this.dataConsegna = LocalDate.parse(dataConsegna);
+        setPiante(piante);
+        this.cliente = cliente;
+        this.totale = totale;
     }
 
     int maxGiorniRichiesti(){
@@ -41,9 +49,8 @@ public class Ordine {
 
     public Ordine(int id_cliente, String piante, String stato, String dataConsegna) {
         this.stato = stato;
-        this.dataConsegna = LocalDate.now();
+        this.dataConsegna = LocalDate.parse(dataConsegna);
         setPiante(piante);
-        setTotale();
         this.cliente = id_cliente;
     }
     public Ordine(int id, int id_cliente, String piante, String stato, String dataConsegna) {
@@ -109,24 +116,32 @@ public class Ordine {
 
         // Controlla che la stringa non sia vuota o nulla
         if (piante == null || piante.trim().isEmpty()) {
-            System.out.println("Errore: La stringa delle piante è vuota.");
-            return;
+            throw new IllegalArgumentException("Errore: La stringa delle piante è vuota.");
         }
 
-        // Dividi la stringa delle piante in base alla virgola
-        String[] nomiPiante = piante.split(",");
+        // Dividi la stringa delle piante in base alla virgola (anche se ci sono spazi aggiuntivi)
+        String[] nomiPiante = piante.split("\\s*,\\s*");
 
         // Crea una lista di oggetti Pianta
         ArrayList<Pianta> listaPiante = new ArrayList<>();
 
         // Trasforma ogni nome in un oggetto Pianta e aggiungilo alla lista
         for (String nome : nomiPiante) {
-            listaPiante.add(new Pianta(nome.trim())); // Trim per rimuovere eventuali spazi
+            // Verifica che il nome non sia vuoto dopo il trim
+            if (!nome.trim().isEmpty()) {
+                listaPiante.add(new Pianta(nome.trim())); // Crea una nuova Pianta solo se il nome non è vuoto
+            }
+        }
+
+        // Se la lista risultante è vuota, segnala un errore
+        if (listaPiante.isEmpty()) {
+            throw new IllegalArgumentException("Errore: Nessuna pianta valida trovata nella stringa fornita.");
         }
 
         // Imposta la lista delle piante nella classe
         this.piante = listaPiante;
     }
+
 
 
     public void setStato(String stato) {

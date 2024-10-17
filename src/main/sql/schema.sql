@@ -1,13 +1,5 @@
 -- table generation
 
-CREATE TABLE IF NOT EXISTS "Pianta" (
-    id SERIAL PRIMARY KEY ,
-    tipo VARCHAR(50),
-    descrizione VARCHAR(200),
-    dataInizio VARCHAR(50),
-    stato VARCHAR(100),
-    costo DECIMAL(10, 2)
-    );
 
 
 CREATE TABLE IF NOT EXISTS "Termometro" (
@@ -26,7 +18,6 @@ CREATE TABLE IF NOT EXISTS "IgrometroTerreno" (
     id INT PRIMARY KEY,
     perc_acqua INT,
     data VARCHAR(50)
-
 );
 CREATE TABLE IF NOT EXISTS "Irrigatore" (
     id INT PRIMARY KEY,
@@ -57,6 +48,15 @@ CREATE TABLE IF NOT EXISTS "Ordine" (
     piante VARCHAR(300),
     totale DECIMAL(6,2),
     stato VARCHAR(50)
+);
+CREATE TABLE IF NOT EXISTS "Pianta" (
+    id SERIAL PRIMARY KEY ,
+    tipo VARCHAR(50),
+    descrizione VARCHAR(200),
+    dataInizio VARCHAR(50),
+    stato VARCHAR(100),
+    costo DECIMAL(10, 2),
+    ordine INT REFERENCES "Ordine"(id)
 );
 
 
