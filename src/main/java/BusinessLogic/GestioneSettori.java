@@ -15,15 +15,11 @@ public class GestioneSettori {
     private SensoreDAO sensoreDAO;
     private AttuatoreDAO attuatoreDAO;
     private ScheduledExecutorService executor;// Corrected: Added type declaration here
-    private GestioneAttuatori gestioneAttuatori;
-    private GestioneSensori gestioneSensori;
 
     public GestioneSettori() {
         settoreDAO = new SettoreDAO();
         attuatoreDAO = new AttuatoreDAO();
         sensoreDAO = new SensoreDAO();
-        gestioneAttuatori = new GestioneAttuatori();
-        gestioneSensori = new GestioneSensori();
     }
 
     public void visualizzaSettori(int idSpazio) {

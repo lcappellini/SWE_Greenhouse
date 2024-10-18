@@ -55,69 +55,6 @@ public class PosizioneDAO {
         return posizioni;
     }
 
-    public void creaPosizione(int idAmbiente) {
-        String query = "INSERT INTO \"Posizione\" (assegnata, ambiente) VALUES (?, ?)";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setBoolean(1, false);
-            statement.setInt(2, idAmbiente);
-            statement.executeUpdate();
-            System.out.println("Posizione creata correttamente");
-        } catch (SQLException e) {
-            System.err.println("Errore durante la creazione della posizione: " + e.getMessage());
-        }
-    }
-
-    public void rimuoviPosizione(int idPosizione) {
-        String query = "DELETE FROM \"Posizione\" WHERE id = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, idPosizione);
-
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Posizione rimosso con successo.");
-            } else {
-                System.out.println("Errore durante la rimozione della posizione. Nessuna posizione trovato con l'ID specificato.");
-            }
-        } catch (SQLException e) {
-            System.err.println("Errore durante la rimozione della posizione: " + e.getMessage());
-        }
-    }
-
-    public void visualizzaPosizioni(int idAmbiente) {
-        String query = "SELECT * FROM \"Posizione\" WHERE ambiente = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, idAmbiente);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            // Stampiamo l'intestazione
-            System.out.println("+--------+------------+-------------------+");
-            for (int i = 1; i <= columnCount; i++) {
-                System.out.printf("| %-10s ", metaData.getColumnName(i));
-            }
-            System.out.println("|");
-            System.out.println("+--------+------------+-------------------+");
-
-            // Stampiamo le righe
-            while (resultSet.next()) {
-                for (int i = 1; i <= columnCount; i++) {
-                    System.out.printf("| %-10s ", resultSet.getString(i));
-                }
-                System.out.println("|");
-            }
-            System.out.println("+--------+------------+-------------------+");
-
-        } catch (SQLException e) {
-            System.err.println("Errore durante la visualizzazione delle posizioni: " + e.getMessage());
-        }
-    }
-
     public void monitoraPosizione(int idPosizione) {
         ///TODO un sacco di robba su
     }
@@ -142,40 +79,6 @@ public class PosizioneDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public void liberaPosizioni(List<Integer> posizioni) {
-        String updateQuery = "UPDATE \"Posizione\" SET assegnata = false WHERE id = ?";
-
-        try (PreparedStatement pstmt = connection.prepareStatement(updateQuery)) {
-            for (Integer posizione : posizioni) {
-                pstmt.setInt(1, posizione);
-                pstmt.executeUpdate();
-            }
-            //System.out.println("Posizioni aggiornate con successo.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public ArrayList<Posizione> getNPosizioniNonAssegnate(int nPosizioni) {
-        String query = "SELECT * FROM \"Posizione\" WHERE assegnata = false";
-        ArrayList<Posizione> posizioni = new ArrayList<>();
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-
-            ResultSet resultSet = statement.executeQuery();
-            int i = 0;
-            //FIXME WTF i non viene incrementato
-            while(resultSet.next() & i<nPosizioni) {
-                int id = resultSet.getInt("id");
-                posizioni.add(new Posizione(id));
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Errore durante la visualizzazione delle posizioni: " + e.getMessage());
-        }
-        return posizioni;
     }
 
     public boolean verificaNonAssegnate(int i) {
@@ -239,24 +142,6 @@ public class PosizioneDAO {
             System.out.println("Aggiornate " + rowsUpdated + " posizioni.");
         } catch (SQLException e) {
             System.err.println("Errore durante la sistemazione delle posizioni: " + e.getMessage());
-        }
-    }
-
-    public void liberaUltime(int i) {
-        String query = "UPDATE \"Posizione\" SET assegnata = false "
-                + "WHERE id IN (SELECT id FROM \"Posizione\" WHERE assegnata = true "
-                + "ORDER BY id DESC LIMIT ?)";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, i); // Imposta il numero di posizioni da liberare
-            int rowsAffected = statement.executeUpdate(); // Esegui l'update
-            if (rowsAffected > 0) {
-                System.out.println("Liberate " + rowsAffected + " posizioni.");
-            } else {
-                System.out.println("Nessuna posizione da liberare.");
-            }
-        } catch (SQLException e) {
-            System.err.println("Errore durante la liberazione delle posizioni: " + e.getMessage());
         }
     }
 

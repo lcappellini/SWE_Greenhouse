@@ -12,11 +12,6 @@ public class Pianta {
     private String stato;
     private double costo;
     private int giorni_crescita;
-    private int minTemp;
-    private int maxTemp;
-    private int oreLuce;
-    private int minAcqua;
-    private int maxAcqua;
 
     public String getTipoPianta() {
         return tipoPianta;
@@ -25,8 +20,8 @@ public class Pianta {
     public int getGiorni_crescita() {
         return giorni_crescita;
     }
-    public void setGiorni_rescitaDaTipo(String tipoPianta) {
-        switch (this.tipoPianta){
+    public void setGiorni_crescitaDaTipo(String tipoPianta) {
+        switch (tipoPianta){
             case "Basilico" -> giorni_crescita = 15;
             case "Rosa" -> giorni_crescita = 30;
             case "Geranio" -> giorni_crescita = 45;
@@ -35,7 +30,7 @@ public class Pianta {
     }
     public Pianta(String tipoPianta) {
         this.tipoPianta = tipoPianta;
-        this.setGiorni_rescitaDaTipo(tipoPianta);
+        this.setGiorni_crescitaDaTipo(tipoPianta);
         this.setCosto(tipoPianta);
     }
 
@@ -76,28 +71,8 @@ public class Pianta {
         }
         return "Stato " + tipoPianta + "[" + id + "] -> " + stato;
     }
-
-    public boolean controllaStato() {
-    //FIXME
-        boolean stato_buono;
-
-        float probabilitaOttimale = 0.8f; // Valore di base
-
-        // Genera stato
-        if (Math.random() < probabilitaOttimale) {
-            stato_buono = true;
-            this.stato = "sta crescendo";
-        } else {
-            stato_buono = false;
-            this.stato = "ha bisogno di cure";
-        }
-
-        return stato_buono;
-    }
-
     public int getId() {return this.id;}
 
-    public LocalDate getDataInizio() {return this.dataInizio;}
     public String getStato() {return this.stato;}
 
     public void setId(int id) {this.id = id;}

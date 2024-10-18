@@ -16,16 +16,6 @@ public class GestionePiante {
     public GestionePiante() {
          piantaDAO = new PiantaDAO();
     }
-
-    public void visualizza(Map<String, Object> criteri){
-        ObjectDAO dao = new ObjectDAO();
-        dao.visualizza("Pianta", criteri);
-    }
-
-    public Pianta restituisciPianta(int id){
-        return piantaDAO.getById(id);
-    }
-
     public ArrayList<Pianta> aggiungi(ArrayList<Pianta> piante, int id_ordine) throws SQLException {
         return piantaDAO.inserisci(piante, id_ordine);
     }
@@ -80,23 +70,4 @@ public class GestionePiante {
         System.out.println("+------------------------------------------------------------------------------------+");
     }
 */
-    // Metodo per spezzare una stringa in linee di lunghezza massima
-    private List<String> spezzaStringa(String s, int maxLunghezza) {
-        List<String> linee = new ArrayList<>();
-        int lunghezza = s.length();
-
-        for (int i = 0; i < lunghezza; i += maxLunghezza) {
-            linee.add(s.substring(i, Math.min(lunghezza, i + maxLunghezza)));
-        }
-
-        return linee;
-    }
-
-    public void elimina(int id_ordine) throws SQLException {
-        if(piantaDAO.elimina(id_ordine)){
-            System.out.println("Le piante dell'ordine "+id_ordine+" sono state rimosse.");
-        }else{
-            System.out.println("Rimozione piante non effettuata.");
-        }
-    }
 }

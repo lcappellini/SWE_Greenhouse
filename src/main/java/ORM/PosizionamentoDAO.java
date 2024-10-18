@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PosizionamentoDAO {
-
     private Connection connection;
 
     public PosizionamentoDAO() {
@@ -74,52 +73,6 @@ public class PosizionamentoDAO {
         }
     }
 
-    public void visualizzaPosizionamenti(int idOridne) {
-        String query = "SELECT * FROM \"Posizionamento\" WHERE ordine = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, idOridne);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            // Stampiamo l'intestazione
-            System.out.println("+--------+------------+-------------------+");
-            for (int i = 1; i <= columnCount; i++) {
-                System.out.printf("| %-10s ", metaData.getColumnName(i));
-            }
-            System.out.println("|");
-            System.out.println("+--------+------------+-------------------+");
-
-            // Stampiamo le righe
-            while (resultSet.next()) {
-                for (int i = 1; i <= columnCount; i++) {
-                    System.out.printf("| %-10s ", resultSet.getString(i));
-                }
-                System.out.println("|");
-            }
-            System.out.println("+--------+------------+-------------------+");
-
-        } catch (SQLException e) {
-            System.err.println("Errore durante la visualizzazione delle posizioni: " + e.getMessage());
-        }
-    }
-
-    public ArrayList<Integer> ritira(int id) {
-        ArrayList<Integer> id_piante = new ArrayList<>();
-        String selectQuery = "SELECT pianta FROM \"Posizionamento\" WHERE ordine = ?";
-
-        try(PreparedStatement s = connection.prepareStatement(selectQuery)){
-            ResultSet rs = s.executeQuery();
-            while (rs.next()) {id_piante.add(rs.getInt("pianta"));}
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        return id_piante;
-    }
-
     public ArrayList<Posizionamento> get(Map<String, Object> criteria) throws SQLException {
         ArrayList<Posizionamento> posizionamenti = new ArrayList<>();
 
@@ -173,8 +126,4 @@ public class PosizionamentoDAO {
         return posizionamenti;
     }
 
-    public void aggiorna(int id_posizione, Map<String, Object> c){
-        ObjectDAO objectDAO = new ObjectDAO();
-        objectDAO.aggiorna(id_posizione,"Posizione", c);
-    }
 }

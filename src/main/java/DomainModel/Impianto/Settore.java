@@ -7,12 +7,9 @@ import java.util.*;
 public class Settore {
 
     private int id;
-    private int nPosizioniMax;
     private ArrayList<Posizione> posizioni;
     private List<Sensore> sensori;
     private List<Attuatore> attuatori;
-    private Map<String, Float> misure;
-    private Map<String, Boolean> accesi;
     private Map<Sensore, Attuatore> associazioneSensoreAttuatore;
     /*
     private Climatizzazione climatizzatore;
@@ -50,9 +47,6 @@ public class Settore {
         associazioneSensoreAttuatore.put(igA, cl); // Igrometro collegato al climatizzatore
         associazioneSensoreAttuatore.put(fs, lampada); // Fotosensore collegato alla lampada
     }
-
-
-
 
     private boolean fuoriRange(String tipoSensore, float misura) {
         // Definizione dei limiti per ogni tipo di sensore
@@ -121,66 +115,6 @@ public class Settore {
         return termometro;
     }
 
-
-
-    /*private void attivaAttuatore(String tipoSensore) {
-        Attuatore attuatore = null;
-
-        switch (tipoSensore) {
-            case "Termometro":
-                attuatore = associazioneSensoreAttuatore.get(sensori.stream()
-                        .filter(s -> s.tipoSensore().equals("Termometro"))
-                        .findFirst().orElse(null));
-                if (attuatore != null && attuatore instanceof Climatizzazione) {
-                    Climatizzazione climatizzazione = (Climatizzazione) attuatore;
-                    climatizzazione.regolaTemperatura();
-                    System.out.println("Attivatore Climatizzazione regolato per la temperatura.");
-                }
-                break;
-
-            case "IgrometroAria":
-                attuatore = associazioneSensoreAttuatore.get(sensori.stream()
-                        .filter(s -> s.tipoSensore().equals("IgrometroAria"))
-                        .findFirst().orElse(null));
-                if (attuatore != null && attuatore instanceof Climatizzazione) {
-                    Climatizzazione climatizzazione = (Climatizzazione) attuatore;
-                    climatizzazione.regolaUmidita();
-                    System.out.println("Attivatore Climatizzazione regolato per l'umidità.");
-                }
-                break;
-
-            case "Fotosensore":
-                attuatore = associazioneSensoreAttuatore.get(sensori.stream()
-                        .filter(s -> s.tipoSensore().equals("Fotosensore"))
-                        .findFirst().orElse(null));
-                if (attuatore != null && attuatore instanceof Lampada) {
-                    Lampada lampada = (Lampada) attuatore;
-                    lampada.accendi();
-                    System.out.println("Lampada accesa.");
-                }
-                break;
-
-            default:
-                System.out.println("Tipo di sensore non riconosciuto.");
-                break;
-        }
-    }
-    private void spegniAttuatore(String tipoSensore) {
-        // Logica per spegnere l'attuatore in base al tipo di sensore
-        switch (tipoSensore) {
-            case "Termometro":
-                attuatori.get(0).spegni(); // Supponiamo che l'attuatore di temperatura sia il primo
-                break;
-            case "IgrometroAria":
-                attuatori.get(1).spegni(); // Supponiamo che l'attuatore di umidità sia il secondo
-                break;
-            case "Fotosensore":
-                attuatori.spegni(); // Supponiamo che il fotosensore controlli lo stesso attuatore di umidità
-                break;
-            // Aggiungi altri casi se necessario
-        }
-    }
-*/
     public void monitora(LocalDateTime lt) {
         Map<String, Object> misure = new HashMap<>();
         for (Sensore s : sensori) {
@@ -208,35 +142,6 @@ public class Settore {
         }
     }
 
-    public Map<Sensore, Object> getMisure(){
-        Map<Sensore, Object> misure = new HashMap<>();
-        for(Sensore s : sensori){
-            misure.put(s, s.getValore());
-        }
-        return misure;
-    }
-
-    public int getnPosizioniMax() {
-        return nPosizioniMax;
-    }
-
-    public ArrayList<Posizione> getPosizioni() { return posizioni; }
-
-    public int getTemperatura(){
-        //FIXME int i = termometro.chiedi();
-        return 0;
-    }
-
-    public boolean eDisponibile(int nPosti){
-        int i = 0;
-        for(Posizione p : posizioni){
-            if(!p.isAssegnata()){
-                i = i + 1;
-            }
-        }
-        return i == nPosti;
-    }
-
     public void setPosizioni(ArrayList<Posizione> posizioni) {
         this.posizioni = posizioni;
     }
@@ -245,66 +150,9 @@ public class Settore {
         return id;
     }
 
-
-
-    public void misura(LocalDateTime lt){
-        misure.clear();
-
-        for( Sensore s : sensori){
-            String tipoSensore = s.tipoSensore();
-            //misure.put(tipoSensore ,s.misura(lt, accesi.get(tipoSensore)));
-        }
-    }
-
-    public Map<String, String> aziona(){
-        Map<String, String> descrizioni = new HashMap<>();
-        for(Attuatore a : attuatori){
-            if(a.tipoAttuatore().equals("Climatizzazione")){
-                if(((misure.get("Termometro")<15.0 || misure.get("Termometro")>30.0)
-                        || misure.get("IgrometroAria")<30)) {
-                    if (!a.attivo()) {
-                        descrizioni.put(a.tipoAttuatore(), a.esegui(1));
-                        accesi.put("Climatizzazione",true);
-
-                    }
-                }else if(a.attivo()){
-                    descrizioni.put(a.tipoAttuatore(),a.esegui(-1));
-                    accesi.put("Climatizzazione",false);
-                }
-
-            }else if(a.tipoAttuatore().equals("Lampada")){
-                if(misure.get("Fotosensore")<200 ){
-                    if(!a.attivo()){
-                        descrizioni.put(a.tipoAttuatore(),a.esegui(1));
-                        accesi.put("Lampada",true);
-                    }
-                }else if(a.attivo()){
-                    descrizioni.put(a.tipoAttuatore(),a.esegui(-1));
-                    accesi.put("Lampada",false);
-                }
-            }
-
-        }
-        return descrizioni;
-    }
-
-    public Map<String, Boolean> getAttuatoriAccesi() {
-        return accesi;
-    }
-
     public List<Sensore> getSensori() {
         return sensori;
     }
-
-    /*public Sensore getSensore(String tipoSensore) {
-        Sensore sensore = null;
-        for(Sensore s : sensori){
-            if(s.tipoSensore().equals(tipoSensore)){
-                sensore = s;
-            }
-        }
-        return sensore;
-    }*/
 
     public List<Attuatore> getAttuatori() {
         return attuatori;

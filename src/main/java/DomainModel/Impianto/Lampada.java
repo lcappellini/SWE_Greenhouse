@@ -20,7 +20,6 @@ public class Lampada extends Attuatore{
         this.stato = stato;
     }
 
-
     @Override
     public String esegui(int i){
         StringBuilder descrizione =  new StringBuilder("La lampada ").append(this.id);

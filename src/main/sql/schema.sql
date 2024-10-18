@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS "Ordine" (
     totale DECIMAL(6,2),
     stato VARCHAR(50)
 );
+
 CREATE TABLE IF NOT EXISTS "Pianta" (
     id SERIAL PRIMARY KEY ,
     tipo VARCHAR(50),

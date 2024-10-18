@@ -12,15 +12,11 @@ import java.util.*;
 public class GestioneOrdini {
     private OrdineDAO ordineDAO;
     private PosizioneDAO posizioneDAO;
-    private ObjectDAO objectDAO;
-    private PosizionamentoDAO posizionamentoDAO;
     private PiantaDAO piantaDAO;
 
     public GestioneOrdini() {
         ordineDAO = new OrdineDAO();
         posizioneDAO = new PosizioneDAO();
-        objectDAO = new ObjectDAO();
-        posizionamentoDAO = new PosizionamentoDAO();
         piantaDAO = new PiantaDAO();
     }
 
@@ -40,19 +36,6 @@ public class GestioneOrdini {
             System.out.println("Posizioni insufficienti per questo ordine.");
         }
         return false;
-    }
-
-    public Ordine getOrdineDaPosizionare() {
-        Ordine o = null;
-        Scanner scanner1 = new Scanner(System.in);
-        visualizzaOrdiniDaPosizionare();
-        System.out.println("Inserire ID dell'ordine da posizionare: ");
-        int idOrdine = Integer.parseInt(scanner1.nextLine());
-        o = ordineDAO.getById(idOrdine);
-        if(o.getStato().equals("da posizionare")){
-            return o;
-        }
-        return null;
     }
 
     public void visualizzaOrdiniDaPosizionare(){
@@ -105,12 +88,6 @@ public class GestioneOrdini {
         return linee;
     }
 
-    public void visualizzaOrdiniCliente(Cliente cliente) {
-        Map<String, Object> criteri = new HashMap<>();
-        criteri.put("cliente", cliente.getId());
-        objectDAO.visualizza("Ordine", criteri);
-    }
-
     public void ritira(Ordine o) {
 
         if(o != null && o.getStato().equals("da ritirare")) {
@@ -149,22 +126,6 @@ public class GestioneOrdini {
                 System.out.println("l'ordine non appartiene al cliente");
             }
         }*/
-    }
-
-    public Ordine getOrdinePronto(Cliente cliente) {
-        Ordine o = null;
-        Scanner scanner1 = new Scanner(System.in);
-        Map<String, Object> criteria = new HashMap<>();
-        criteria.put("cliente",cliente.getId());
-        criteria.put("stato","pronto");
-        visualizzaOrdini(criteria);
-        System.out.println("Inserire ID dell'ordine da pagare: ");
-        int idOrdine = Integer.parseInt(scanner1.nextLine());
-        o = ordineDAO.getById(idOrdine);
-        if(o.getCliente() == cliente.getId() && o.getStato().equals("pronto")){
-            return o;
-        }
-        return null;
     }
 
     public void prepara(Ordine ordine) {

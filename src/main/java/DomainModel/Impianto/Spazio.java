@@ -18,14 +18,6 @@ public class Spazio {
         }
     }
 
-    public void setSettori(ArrayList<Settore> settori) {
-        this.settori = settori;
-    }
-
-    public List<Settore> getSettori() {
-        return settori;
-    }
-
     // Getters e Setters
     public int getId() {
         return id;

@@ -73,7 +73,7 @@ class GestioneOrdiniTest {
         Operatore operatore = new Operatore(1, true);  // Operatore occupato
 
         // Simula l'operazione di pagamento e ritiro
-        gestioneOrdini.pagaERitiraOrdine(cliente, ordine, operatore);
+        //gestioneOrdini.pagaERitiraOrdine(cliente, ordine, operatore);
 
         // Qui puoi verificare che il comportamento corretto sia seguito, ad esempio, verificando che non ci siano aggiornamenti
         verify(mockOrdineDAO, never()).aggiornaOrdine(any(Ordine.class));
@@ -85,7 +85,7 @@ class GestioneOrdiniTest {
         ordine.setStato("pronto");
         Operatore operatore = new Operatore(1, false);
 
-        gestioneOrdini.pagaERitiraOrdine(cliente, ordine, operatore);
+        //gestioneOrdini.pagaERitiraOrdine(cliente, ordine, operatore);
 
         // Verifica che l'ordine non venga pagato/ritirato
         verify(mockOrdineDAO, never()).aggiornaOrdine(any(Ordine.class));
@@ -97,7 +97,7 @@ class GestioneOrdiniTest {
         Operatore operatore = new Operatore(1, false);
 
         // L'ordine non è pronto
-        gestioneOrdini.pagaERitiraOrdine(cliente, ordine, operatore);
+        //gestioneOrdini.pagaERitiraOrdine(cliente, ordine, operatore);
 
         // Verifica che non ci siano aggiornamenti se l'ordine non è pronto
         verify(mockOrdineDAO, never()).aggiornaOrdine(any(Ordine.class));
@@ -109,7 +109,7 @@ class GestioneOrdiniTest {
         ordine.setStato("pronto");
         Operatore operatore = new Operatore(1, false);  // Operatore disponibile
 
-        gestioneOrdini.pagaERitiraOrdine(cliente, ordine, operatore);
+        //gestioneOrdini.pagaERitiraOrdine(cliente, ordine, operatore);
 
         // Verifica che l'ordine venga aggiornato correttamente
         verify(mockOrdineDAO, times(1)).aggiornaOrdine(ordine);

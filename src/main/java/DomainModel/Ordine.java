@@ -9,15 +9,12 @@ public class Ordine {
     private int cliente;
     private ArrayList<Pianta> piante;
     private LocalDate dataConsegna;
-    private String descrizione;
     private String stato;
     private double totale;
 
     public Ordine() {
         piante = new ArrayList<Pianta>();
     }
-
-
 
     public Ordine(int cliente, ArrayList<Pianta> piante) {
         this.cliente = cliente;
@@ -73,23 +70,10 @@ public class Ordine {
     public ArrayList<Pianta> getPiante() {
         return piante;
     }
-    public String getTipoPianta(int index){
-        return piante.get(index).getTipoPianta();
-    }
-
-    public LocalDate getDataConsegna() {
-        return dataConsegna;
-    }
-
 
     public String getStringDataConsegna(){
         return dataConsegna.toString();
     }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
 
     public String getStato() {
         return stato;
@@ -101,10 +85,6 @@ public class Ordine {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public void setPiante(ArrayList<Pianta> piante) {
-        this.piante = piante;
     }
 
     public void setPiante(String piante) {
@@ -137,19 +117,13 @@ public class Ordine {
         this.piante = listaPiante;
     }
 
-
-
     public void setStato(String stato) {
         this.stato = stato;
     }
 
-
-
     public void setCliente(int cliente) {
         this.cliente = cliente;
     }
-
-
 
     public String getPianteString() {
         StringBuilder tp = new StringBuilder();
@@ -167,5 +141,4 @@ public class Ordine {
         }
         return t;
     }
-
 }

@@ -1,5 +1,7 @@
 package main.java.DomainModel.Impianto;
 
+import main.java.DomainModel.Utente;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,11 +28,7 @@ public class Operatore extends Attuatore {
         tipoLavoro.put(2, "controllo");
         tipoLavoro.put(3, "cura della pianta");
         tipoLavoro.put(-1, "");
-
     }
-
-
-    public void lavora(){}
 
     @Override
     public String tipoAttuatore() {
@@ -54,4 +52,16 @@ public class Operatore extends Attuatore {
         return lavoro;
     }
 
+    // inherits Utente
+    private String nome;
+    private String cognome;
+    private String email;
+    private String password;
+    public int getId() {
+        return id;
+    }
+    public String getNome() {return nome;}
+    public String getCognome() {return cognome;}
+    public String getEmail() {return email;}
+    public String getPassword() {return password;}
 }

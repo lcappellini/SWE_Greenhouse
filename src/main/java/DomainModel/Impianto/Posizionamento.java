@@ -9,9 +9,6 @@ public class Posizionamento {
     private Pianta pianta;
     private Ordine ordine;
 
-
-    public Posizionamento() {}
-
     public Posizionamento(Posizione posizione, Pianta pianta, Ordine ordine) {
         this.posizione = posizione;
         this.pianta = pianta;
@@ -23,11 +20,9 @@ public class Posizionamento {
         this.id = id;
     }
 
-
     public Posizione getPosizione() { return posizione; }
 
     public Pianta getPianta() { return pianta; }
-
 
     public Ordine getOrdine() { return this.ordine;}
 }

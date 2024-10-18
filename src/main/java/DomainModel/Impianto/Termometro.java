@@ -49,7 +49,6 @@ public class Termometro extends Sensore<Float> {
         return this.valore;
     }
 
-
     @Override
     public String tipoSensore(){
         return "Termometro";

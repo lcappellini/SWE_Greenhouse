@@ -7,12 +7,8 @@ import java.util.*;
 
 public class GestioneAttuatori {
     public GestioneAttuatori() {}
-    private String[] tipiAttuatori = {"Climatizzazione", "Lampada", "Operatore", "Irrigatore"};
     OperatoreDAO operatoreDAO = new OperatoreDAO();
     AttuatoreDAO attuatoreDAO = new AttuatoreDAO();
-    ClimatizzazioneDAO climatizzazioneDAO = new ClimatizzazioneDAO();
-    LampadaDAO lampadaDAO = new LampadaDAO();
-    IrrigatoreDAO irrigatoreDAO = new IrrigatoreDAO();
 
     public void registraOperazione(Attuatore a, String descrizione, String data){
         OperazioneDAO dao = new OperazioneDAO();

@@ -54,10 +54,6 @@ public class GestionePosizioni {
         posizioneDAO.modificaPosizione(idPosizione, query, valore, attributo);
     }
 
-    public void liberaPosizioni(List<Integer> posizioni) {
-        posizioneDAO.liberaPosizioni(posizioni);
-    }
-
     public List<Posizione> getPosizioniLibere(int i) {
         //Posizioni da occupare
         Map<String, Object> m = new HashMap<>();
