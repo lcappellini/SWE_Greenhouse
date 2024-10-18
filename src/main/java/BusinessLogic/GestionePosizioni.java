@@ -21,8 +21,6 @@ public class GestionePosizioni {
         return  posizioneDAO.getPosizioniBySettore(id_settore);
     }
 
-
-
     //public void visualizzaPosizioni(int idAmbiente) {posizioneDAO.visualizzaPosizioni(idAmbiente);}
     public void visualizzaPosizioni(int idSettore) {
 

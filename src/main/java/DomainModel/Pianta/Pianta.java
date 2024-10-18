@@ -22,7 +22,6 @@ public class Pianta {
         return tipoPianta;
     }
 
-
     public int getGiorni_crescita() {
         return giorni_crescita;
     }
@@ -51,8 +50,6 @@ public class Pianta {
         this(id, tipoPianta);
         this.descrizione += descrizione;
     }
-
-
 
     public double getCosto(){ return costo; }
     public void setCosto(String tipoPianta){

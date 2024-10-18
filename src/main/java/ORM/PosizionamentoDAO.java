@@ -22,7 +22,6 @@ public class PosizionamentoDAO {
         }
     }
 
-
     public void inserisciPosizionamenti(ArrayList<Posizionamento> posizionamenti) throws SQLException {
         String queryInserimento = "INSERT INTO \"Posizionamento\" (pianta, posizione, ordine) VALUES (?, ?, ?)";
 
@@ -43,8 +42,6 @@ public class PosizionamentoDAO {
             System.err.println("Errore durante la creazione dei posizionamenti: " + e.getMessage());
         }
     }
-
-
 
     public boolean eliminaPosizionamentiByOrdine(int idOrdine) throws SQLException {
         String deleteQuery = "DELETE FROM \"Posizionamento\" WHERE ordine = ?";
@@ -76,8 +73,6 @@ public class PosizionamentoDAO {
             throw e;  // Rilancia l'eccezione per gestione successiva
         }
     }
-
-
 
     public void visualizzaPosizionamenti(int idOridne) {
         String query = "SELECT * FROM \"Posizionamento\" WHERE ordine = ?";
@@ -124,9 +119,6 @@ public class PosizionamentoDAO {
         }
         return id_piante;
     }
-
-
-
 
     public ArrayList<Posizionamento> get(Map<String, Object> criteria) throws SQLException {
         ArrayList<Posizionamento> posizionamenti = new ArrayList<>();
@@ -180,7 +172,6 @@ public class PosizionamentoDAO {
 
         return posizionamenti;
     }
-
 
     public void aggiorna(int id_posizione, Map<String, Object> c){
         ObjectDAO objectDAO = new ObjectDAO();

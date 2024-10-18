@@ -18,7 +18,6 @@ public class SettoreDAO {
         }
     }
 
-
     public void creaSettore(int idSpazio, int nPosizioniMax,
                             int idTermometro, int idFotosensore, int idIgrometroAria,
                             int idClimatizzazione, int idLampada) {
@@ -42,7 +41,6 @@ public class SettoreDAO {
             System.err.println("Errore durante la creazione dello ambiente: " + e.getMessage());
         }
     }
-
 
     public void visualizzaSettori(int idSpazio) {
         //FIXME Qui c'è da far vedere lo Ambiente con i suoi attributi e gli ID delle posizioni che ha
@@ -78,7 +76,6 @@ public class SettoreDAO {
         }
     }
 
-
     public void rimuoviSettore(int idSettore) {
         String query = "DELETE FROM \"Settore\" WHERE id = ?";
 
@@ -96,14 +93,12 @@ public class SettoreDAO {
         }
     }
 
-
     public void visualizza(int id_spazio){
         ObjectDAO dao = new ObjectDAO();
         Map<String, Integer> m= new HashMap<>();
         m.put("id_spazio", id_spazio);
         //dao.visualizza("Settore", m);
     }
-
 
     public Settore getById(int idSettore)  {
         String query = "SELECT * FROM \"Settore\" WHERE id = ?";
@@ -143,6 +138,7 @@ public class SettoreDAO {
         }
         return settore;
     }
+
     public Settore getSettoreBySpazio(int idSpazio, int index) {
         String query = "SELECT * FROM \"Settore\" WHERE spazio_id = ? LIMIT 1 OFFSET ?";
         Settore settore = null;
@@ -183,8 +179,6 @@ public class SettoreDAO {
 
         return settore;
     }
-
-
 
     public void visualizzaAmbiente() {
     }

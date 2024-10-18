@@ -22,7 +22,6 @@ public class OrdineDAO {
         }
     }
 
-
     public void inserisciOrdine(Ordine ordine) {
         String sql = "INSERT INTO \"Ordine\" (cliente, dataConsegna, piante, totale, stato) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -43,7 +42,6 @@ public class OrdineDAO {
             System.err.println("Errore durante l'inserimento dell'ordine: " + e.getMessage());
         }
     }
-
 
     public ArrayList<Ordine> vediOrdini(Cliente cliente) {
         ArrayList<Ordine> ordini = new ArrayList<>();
@@ -111,7 +109,6 @@ public class OrdineDAO {
         return ordini;
     }
 
-
     public void pagaERitiraOrdine(Ordine ordine) {
         String query = "UPDATE \"Ordine\" SET stato = 'ritirato' WHERE (id)= (?)";
 
@@ -171,7 +168,6 @@ public class OrdineDAO {
         return ordini;
     }
 
-
     public ArrayList<Ordine> getOrdiniDaPosizionare() {
         String query = "SELECT * FROM \"Ordine\" WHERE (stato) = (?)";
         ArrayList<Ordine> ordini = new ArrayList<>();
@@ -214,7 +210,6 @@ public class OrdineDAO {
         }
         return false;
     }
-
 
     public void rimuoviUltimoOrdine() {
         // Query per cancellare l'ordine con l'ID più alto
@@ -264,7 +259,6 @@ public class OrdineDAO {
         }
         return updated;
     }
-
 
     public Ordine getById(int idOrdine) {
         Map<String, Object> m = new HashMap<>();

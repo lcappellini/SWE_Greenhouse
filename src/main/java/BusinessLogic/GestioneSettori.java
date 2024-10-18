@@ -18,8 +18,6 @@ public class GestioneSettori {
     private GestioneAttuatori gestioneAttuatori;
     private GestioneSensori gestioneSensori;
 
-
-
     public GestioneSettori() {
         settoreDAO = new SettoreDAO();
         attuatoreDAO = new AttuatoreDAO();
@@ -28,7 +26,6 @@ public class GestioneSettori {
         gestioneSensori = new GestioneSensori();
     }
 
-    
     public void visualizzaSettori(int idSpazio) {
 
         int i = 1;
@@ -57,8 +54,6 @@ public class GestioneSettori {
 
         System.out.println("+------------------------------------------------------------------------------------------+");
     }
-
-
 
     public void monitoraSettore(Settore settore, LocalDateTime lt) {
         settore.monitora(lt);
@@ -130,7 +125,6 @@ public class GestioneSettori {
         }).start();
     }
 
-
     // Funzione per fermare il monitoraggio
     public void stopMonitoraggio() {
         if (executor != null && !executor.isShutdown()) {
@@ -155,8 +149,5 @@ public class GestioneSettori {
         }
         return settore;
     }
-
-
-
 
 }

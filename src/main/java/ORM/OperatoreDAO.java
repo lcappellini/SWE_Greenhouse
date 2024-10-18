@@ -19,8 +19,6 @@ public class OperatoreDAO extends AttuatoreDAO{
         }
     }
 
-
-
     public Operatore getById(int id) {
         String query = "SELECT * FROM \"Operatore\" WHERE id = ?";
         Operatore op = null;
@@ -51,6 +49,7 @@ public class OperatoreDAO extends AttuatoreDAO{
             System.err.println(e.getMessage());
         }
     }
+
     /*
     @Override
     public void registraAzione(Attuatore operatore){

@@ -62,8 +62,6 @@ public class ObjectDAO {
         }
     }
 
-
-
     public List<Integer> restituisciChiavi(String nomeTabella, Map<String, Object> criteri) {
         List<Integer> chiaviPrimarie = new ArrayList<>();
         StringBuilder query = new StringBuilder("SELECT id FROM \"").append(nomeTabella).append("\" ");
@@ -124,8 +122,6 @@ public class ObjectDAO {
         }
     }
 
-
-
     public void aggiorna(int id, String nomeTabella, Map<String, Object> criteri) {
 
         // Costruisci dinamicamente la query SQL
@@ -163,7 +159,6 @@ public class ObjectDAO {
             System.err.println("Errore durante l'aggiornamento: " + e.getMessage());
         }
     }
-
 
     public void aggiorna(Object object) {
         String nomeTabella = object.getClass().getSimpleName();

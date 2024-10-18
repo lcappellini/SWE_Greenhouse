@@ -19,9 +19,6 @@ public class GestioneAttuatori {
         dao.registraAzione(a, descrizione, data);
     }
 
-
-
-
     //FIXME ritornare Operatore non va bene
     public Operatore richiediAttuatoreLibero(String tipoAttuatore) {
         Scanner sc = new Scanner(System.in);

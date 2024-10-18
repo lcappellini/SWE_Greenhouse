@@ -43,6 +43,7 @@ public class IrrigatoreDAO extends AttuatoreDAO{
 
         return attuatore;
     }
+
     /*
 
     @Override

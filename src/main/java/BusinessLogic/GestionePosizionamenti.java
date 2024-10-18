@@ -27,12 +27,9 @@ public class GestionePosizionamenti {
 
     }
 
-
-
     public void visualizza() {
        // objectDAO.visualizza("Posizionamento", new HashMap<>());
     }
-
 
     public ArrayList<Posizionamento> eliminaPosizionamentiByOrdine(int idOrdine) throws SQLException {
         Map<String, Object> m  = new HashMap<>();

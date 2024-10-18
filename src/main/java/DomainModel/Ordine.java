@@ -46,22 +46,17 @@ public class Ordine {
         return i;
     }
 
-
     public Ordine(int id_cliente, String piante, String stato, String dataConsegna) {
         this.stato = stato;
         this.dataConsegna = LocalDate.parse(dataConsegna);
         setPiante(piante);
         this.cliente = id_cliente;
     }
+
     public Ordine(int id, int id_cliente, String piante, String stato, String dataConsegna) {
         this(id_cliente, piante, stato, dataConsegna);
         this.id = id;
     }
-
-
-
-
-
 
     public int getId() {
         return id;

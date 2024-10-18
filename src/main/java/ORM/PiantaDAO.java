@@ -109,7 +109,6 @@ public class PiantaDAO {
         }
     }
 
-
     public boolean elimina(int id_ordine) throws SQLException {
         /*
         if (pianta == null || pianta.getId() <= 0) {
@@ -138,7 +137,6 @@ public class PiantaDAO {
             return false; // Ritorna false se non ci sono righe da eliminare
         }
     }
-
 
     public ArrayList<Pianta> inserisci(ArrayList<Pianta> piante, int id_ordine) throws SQLException {
         String queryInserimento = "INSERT INTO \"Pianta\" (tipo, descrizione, datainizio, stato, costo, ordine) VALUES (?, ?, ?, ?, ?, ?)";

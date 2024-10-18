@@ -55,7 +55,6 @@ public class PosizioneDAO {
         return posizioni;
     }
 
-
     public void creaPosizione(int idAmbiente) {
         String query = "INSERT INTO \"Posizione\" (assegnata, ambiente) VALUES (?, ?)";
 
@@ -122,6 +121,7 @@ public class PosizioneDAO {
     public void monitoraPosizione(int idPosizione) {
         ///TODO un sacco di robba su
     }
+
     public void modificaPosizione(int idPosizione, String query, String valore, String attributo) {
         //FIXMe dai che attributo non ha molto senso...
 
@@ -178,7 +178,6 @@ public class PosizioneDAO {
         return posizioni;
     }
 
-
     public boolean verificaNonAssegnate(int i) {
         String query = "SELECT COUNT(*) FROM \"Posizione\" WHERE assegnata = false";
         boolean flag = false;
@@ -195,7 +194,6 @@ public class PosizioneDAO {
 
         return flag;  // Ritorna true se ci sono abbastanza posizioni non assegnate, altrimenti false
     }
-
 
     public ArrayList<Posizione> occupa(int nPiante) {
         String selectQuery = "SELECT * FROM \"Posizione\" WHERE assegnata = ? AND occupata = ?";
@@ -229,9 +227,6 @@ public class PosizioneDAO {
 
         return posizioni;  // Ritorna la lista degli ID delle posizioni aggiornate
     }
-
-
-
 
     public void assegna(int nPiante) {
         String query = "UPDATE \"Posizione\" "

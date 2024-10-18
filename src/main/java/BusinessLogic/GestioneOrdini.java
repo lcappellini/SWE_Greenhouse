@@ -16,7 +16,6 @@ public class GestioneOrdini {
     private PosizionamentoDAO posizionamentoDAO;
     private PiantaDAO piantaDAO;
 
-
     public GestioneOrdini() {
         ordineDAO = new OrdineDAO();
         posizioneDAO = new PosizioneDAO();
@@ -42,7 +41,6 @@ public class GestioneOrdini {
         }
         return false;
     }
-
 
     public Ordine getOrdineDaPosizionare() {
         Ordine o = null;
@@ -153,10 +151,6 @@ public class GestioneOrdini {
         }*/
     }
 
-
-
-
-
     public Ordine getOrdinePronto(Cliente cliente) {
         Ordine o = null;
         Scanner scanner1 = new Scanner(System.in);
@@ -172,7 +166,6 @@ public class GestioneOrdini {
         }
         return null;
     }
-
 
     public void prepara(Ordine ordine) {
         Map<String, Object> m = new HashMap<>();
