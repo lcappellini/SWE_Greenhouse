@@ -6,12 +6,12 @@ import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Impianto.*;
 import main.java.DomainModel.Ordine;
 import main.java.DomainModel.Pianta.Pianta;
-import main.java.ORM.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static java.lang.Integer.parseInt;
 import static java.lang.Thread.sleep;
 
 public class Main {
@@ -26,55 +26,81 @@ public class Main {
             e.printStackTrace();
         }
     }
-    private static String getMainMenu() {
-        return """
-                    \s
-                              GREENHOUSE
-                    \s
-                    [1]  Cliente
-                    [2]  Admin
-                    [3]  Esci
-                   \s""";
+
+    private static boolean askForSorN(String text) {
+        String input;
+        while (true) {
+            System.out.print(text + " (s/n): ");
+            input = scanner.nextLine();
+            switch (input) {
+                case "s" -> {return true;}
+                case "n" -> {return false;}
+                default -> System.out.println("Input invalido, si prega di riprovare.");
+            }
+        }
+    }
+
+    private static int askForChooseMenuOption(String title, String[] options) {
+        String input;
+        int index;
+
+        while (true) {
+            System.out.println(title);
+            System.out.println();
+            for (int i = 0; i < options.length; i++) {
+                System.out.printf("  [%d]  %s\n", i+1, options[i]);
+            }
+            System.out.println();
+            System.out.println("Scegli un'opzione: ");
+            input = scanner.nextLine();
+            try {
+                index = parseInt(input);
+                if (1 <= index && index <= options.length+1)
+                    return index;
+            } catch (NumberFormatException exc) {
+                System.out.println("Input invalido, si prega di riprovare.");
+            }
+        }
+    }
+
+    private static int askForInteger(String text){
+        String input;
+        while (true){
+            System.out.println(text);
+            input = scanner.nextLine();
+            try {
+                return parseInt(input);
+            } catch (NumberFormatException exc) {
+                System.out.println("Input invalido. Per favore inserisci un numero intero.");
+            }
+        }
     }
 
     public static void handleAction() throws Exception {
-        String input;
+        int index;
         do {
-            System.out.println(getMainMenu());
-            input = scanner.nextLine();
 
-            switch (input) {
-                case "1" -> handleClient();
-                case "2" -> handleAdmin();
-                case "3" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+            index = askForChooseMenuOption("    GREENHOUSE", new String[]{"Cliente", "Admin", "Esci"});
+
+            switch (index) {
+                case 1 -> handleClient();
+                case 2 -> handleAdmin();
+                case 3 -> System.exit(0);
             }
         } while (true);
 
     }
 
-    private static String getClientMenu() {
-        return """
-                \s
-                                 LOG IN / SIGN UP CLIENTE
-                      \s
-                      [1]  Registrati
-                      [2]  Accedi
-                      [3]  Indietro
-                      [4]  Esci
-                """;
-    }
-
     public static void handleClient() throws SQLException, ClassNotFoundException {
         GestioneCliente gestioneCliente = new GestioneCliente();
-        String input;
+        int index;
 
         do {
-            System.out.println(getClientMenu());
-            input = scanner.nextLine();
 
-            switch (input) {
-                case "1" -> {
+            index = askForChooseMenuOption("    LOG IN / SIGN UP CLIENTE:", new String[]{"Registrati", "Accedi", "Indietro", "Esci"});
+
+            switch (index) {
+                case 1 -> {
                     System.out.print("\nNome: ");
                     String nome = scanner.nextLine();
                     System.out.print("Cognome: ");
@@ -92,7 +118,7 @@ public class Main {
                         System.out.println("Registrazione fallita.");
                     }
                 }
-                case "2" -> {
+                case 2 -> {
                     System.out.print("\nEmail: ");
                     String email = scanner.nextLine();
                     System.out.print("Password: ");
@@ -106,86 +132,49 @@ public class Main {
                         System.out.println("Login non riuscito.");
                     }
                 }
-                case "3" -> {return;}
-                case "4" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+                case 3 -> {return;}
+                case 4 -> System.exit(0);
             }
 
         } while (true);
 
     }
     public static ArrayList<Pianta> handleSceltaPiante(){
-        String input, tipoPianta = "";
+        String tipoPianta = "";
 
-        System.out.println(
-                """
-                \s
-                 Scegli il tipo di pianta:
-                    [1]  Basilico
-                    [2]  Geranio
-                    [3]  Rosa
-                    [4]  Girasole
-               \s"""
-        );
+        int index = askForChooseMenuOption("Scegli il tipo di pianta:", new String[]{"Basilico", "Geranio", "Rosa", "Girasole"});
 
-        input = scanner.nextLine();
-
-        switch (input) {
-            case "1" -> {tipoPianta = "Basilico";}
-            case "2" -> {tipoPianta = "Geranio";}
-            case "3" -> {tipoPianta = "Rosa";}
-            case "4" -> {tipoPianta = "Girasole";}
-            default -> System.out.println("Input invalido, si prega di riprovare.");
+        switch (index) {
+            case 1 -> {tipoPianta = "Basilico";}
+            case 2 -> {tipoPianta = "Geranio";}
+            case 3 -> {tipoPianta = "Rosa";}
+            case 4 -> {tipoPianta = "Girasole";}
         }
 
-        System.out.println("\nQuantità: ");
-        int nPiante = Integer.parseInt(scanner.nextLine());
+        int nPiante = askForInteger("Quantità: ");
 
         ArrayList<Pianta> piante = new ArrayList<>();
         for(int i = 0; i < nPiante; i++){
             piante.add(new Pianta(tipoPianta));
         }
 
-        System.out.print("Vuoi aggiungere altre piante? (s/n) ");
-        String input2 = scanner.nextLine();
-        switch (input2) {
-            case "s" -> {piante.addAll(handleSceltaPiante());}
-            case "n" -> {break;}
-            default -> System.out.println("Input invalido, si prega di riprovare.");
-        }
+        if (askForSorN("Vuoi aggiungere altre piante?"))
+            piante.addAll(handleSceltaPiante());
+
         return piante;
     }
 
     public static void handleClientAction(Cliente cliente) throws SQLException {
-
-        Scanner scanner = new Scanner(System.in);
-        GestioneOrdini gestioneOrdini = new GestioneOrdini();
-        GestionePosizioni gestionePosizioni = new GestionePosizioni();
-        GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
-        String input;
+        int index;
 
         do {
+            index = askForChooseMenuOption("    MAIN", new String[]{"ORDINI", "PROFILO", "Indietro", "Esci"});
 
-            System.out.println(
-                    """
-                    \s
-                                MAIN
-                                \s
-                    [1]  ORDINI
-                    [2]  PROFILO
-                    [3]  Indietro
-                    [4]  Esci
-                   \s"""
-            );
-
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> {handleClientOrders(cliente);}
-                case "2" -> {handleClienteProfile(cliente);}
-                case "3" -> {return;}
-                case "4" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+            switch (index) {
+                case 1 -> {handleClientOrders(cliente);}
+                case 2 -> {handleClienteProfile(cliente);}
+                case 3 -> {return;}
+                case 4 -> System.exit(0);
             }
 
         } while (true);
@@ -193,69 +182,40 @@ public class Main {
     }
 
     public static void handleClientOrders(Cliente cliente) throws SQLException {
-
-        Scanner scanner = new Scanner(System.in);
         GestioneOrdini gestioneOrdini = new GestioneOrdini();
-        GestionePosizioni gestionePosizioni = new GestionePosizioni();
-        GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
-        GestionePiante gestionePiante = new GestionePiante();
-        String input;
+        int index;
 
         do {
+            index = askForChooseMenuOption("ORDINI", new String[]{"Richiedi nuovo ordine", "Controlla i miei ordini", "Paga e ritira ordine", "Indietro", "Esci"});
 
-            System.out.println(
-                    """
-                    \s
-                                ORDINI
-                                \s
-                    [1]  Richiedi nuovo ordine
-                    [2]  Controlla i miei ordini
-                    [3]  Paga e ritira ordine
-                    [4]  Indietro
-                    [5]  Esci
-                   \s"""
-            );
-
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> {
+            switch (index) {
+                case 1 -> {
                     if(gestioneOrdini.creazioneOrdine(new Ordine(cliente.getId(), handleSceltaPiante()))){
                         System.out.println("Ordine accettato!");
                     }else {
                         System.out.println("Ordine non accettato!");
                     };
                 }
-                case "2" -> {
+
+                case 2 -> {
                     Map<String, Object> c = new HashMap<>();
                     c.put("cliente", cliente.getId());
                     gestioneOrdini.visualizzaOrdini(c);}
-                case "3" -> {
+
+                case 3 -> {
                     //FIXME aggiorna la funzione in base ai cambiamenti fatti...
                     Map<String, Object> cc = new HashMap<>();
                     cc.put("stato", "da ritirare");
+
                     if(gestioneOrdini.visualizzaOrdini(cc)){
-                        System.out.print("\nID Ordine da ritirare: ");
-                        int idOrdine = -1; // Valore predefinito per l'ID ordine
-                        boolean inputValido = false; // Flag per verificare se l'input è valido
-                        while (!inputValido) { // Continua a richiedere l'input finché non è valido
-                            try {
-                                idOrdine = Integer.parseInt(scanner.nextLine()); // Prova a convertire l'input in un intero
-                                inputValido = true; // L'input è valido, esci dal ciclo
-                            } catch (NumberFormatException e) {
-                                // Se l'input non è un numero, mostra un messaggio di errore
-                                System.out.println("Input errato. Per favore inserisci un numero intero.");
-                                System.out.print("ID Ordine da posizionare: "); // Richiedi di nuovo l'input
-                            }
-                        }
+                        int idOrdine = askForInteger("ID Ordine da ritirare: ");
+                        //FIXME CHECK IF VALID ID
                         Ordine o = gestioneOrdini.getbyId(idOrdine);
                         gestioneOrdini.ritira(o);
                     }else{return;}
-                    //gestioneOrdini.pagaERitiraOrdine(cliente, gestioneOrdini.getOrdinePronto(cliente),gestioneAttuatori.richiediAttuatoreLibero("Operatore"));
                 }
-                case "4" -> {return;}
-                case "5" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+                case 4 -> {return;}
+                case 5 -> System.exit(0);
             }
 
         } while (true);
@@ -263,83 +223,43 @@ public class Main {
     }
 
     public static void handleClienteProfile(Cliente cliente){
-
-        Scanner scanner = new Scanner(System.in);
-        GestioneOrdini gestioneOrdini = new GestioneOrdini();
-        GestionePosizioni gestionePosizioni = new GestionePosizioni();
-        GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
-        String input;
-
+        int index;
         do {
+            index = askForChooseMenuOption("    PROFILO", new String[]{"Modifica Profilo (TBD)", "Visualizza Profilo (TBD)", "Indietro", "Esci"});
 
-            System.out.println(
-                    """
-                    \s
-                                PROFILO
-                                \s
-                    [1]  Modifica Profilo (TBD)
-                    [2]  Visualizza Profilo (TBD)
-                    [3]  Indietro
-                    [5]  Esci
-                   \s"""
-            );
-
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> {}
-                case "2" -> {}
-                case "3" -> {return;}
-                case "4" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+            switch (index) {
+                case 1 -> {}
+                case 2 -> {}
+                case 3 -> {return;}
+                case 4 -> System.exit(0);
             }
 
         } while (true);
-
     }
 
 
-
     public static void handleAdmin() throws Exception {
-
-        Scanner scanner = new Scanner(System.in);
         GestioneAdmin gestioneAdmin = new GestioneAdmin();
-        String input;
-
+        int index;
         do {
+            index = askForChooseMenuOption("    LOG IN PERSONALE LAVORATIVO", new String[]{"Accedi", "Indietro", "Esci"});
 
-            System.out.println(
-                    """
-                             \s
-                                        LOG IN PERSONALE LAVORATIVO
-                                \s
-                              [1]  Accedi
-                              [2]  Indietro
-                              [3]  Esci
-                            \s"""
-            );
-
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> {
-                    Scanner scanner1 = new Scanner(System.in);
-
+            switch (index) {
+                case 1 -> {
                     System.out.print("\nEmail: ");
-                    String email = scanner1.nextLine();
+                    String email = scanner.nextLine();
                     System.out.print("Password: ");
-                    String password = scanner1.nextLine();
+                    String password = scanner.nextLine();
 
                     Admin admin = gestioneAdmin.accedi(email, password);
 
                     if (admin != null)
                         handleAdminAction();
                 }
-                case "2" -> {
+                case 2 -> {
                     return;
                 }
-                case "3" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+                case 3 -> System.exit(0);
             }
 
         } while (true);
@@ -348,34 +268,16 @@ public class Main {
 
 
     public static void handleAdminAction() throws Exception {
-
-        Scanner scanner = new Scanner(System.in);
-        String input;
-
+        int index;
         do {
+            index = askForChooseMenuOption("    MAIN", new String[]{"ORIDINI & POSIZIONAMENTI", "IMPIANTO", "PIANTE", "Indietro", "Esci"});
 
-            System.out.println(
-                    """
-                    \s
-                                        MAIN
-                                        \s
-                    [1]  ORIDINI & POSIZIONAMENTI
-                    [2]  IMPIANTO
-                    [3]  PIANTE
-                    [4]  Indietro
-                    [5]  Esci
-                   \s"""
-            );
-
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> handleOrdini();
-                case "2" -> handleSpazi();
-                case "3" -> handlePiante();
-                case "4" -> {return;}
-                case "5" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+            switch (index) {
+                case 1 -> handleOrdini();
+                case 2 -> handleSpazi();
+                case 3 -> handlePiante();
+                case 4 -> {return;}
+                case 5 -> System.exit(0);
             }
 
         } while (true);
@@ -390,47 +292,21 @@ public class Main {
         GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
         GestionePiante gestionePiante = new GestionePiante();
 
-        String input;
+        int index;
         do {
 
-            System.out.println(
-                    """
-                    \s
-                                    ORDINI & POSIZIONAMENTI
-                                    \s
-                     [1]  VISUALIZZA
-                     [2]  Posiziona ordine
-                     [3]  Sistema ordini pronti
-                     [4]  Modifica ordine
-                     [5]  Indietro
-                     [6]  Esci
-                   \s"""
-            );
+            index = askForChooseMenuOption("    ORDINI & POSIZIONAMENTI", new String[]{"VISUALIZZA", "Posiziona ordine", "Sistema ordini pronti", "Modifica ordine", "Indietro", "Esci"});
 
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> {visualizzaOrdini_Posizionamenti();}
-                case "2" -> {
+            switch (index) {
+                case 1 -> {visualizzaOrdini_Posizionamenti();}
+                case 2 -> {
                     //Ricerca Ordine da posizionare
                     //Ordine ordine = gestioneOrdini.getOrdineDaPosizionare();
                     //Scelta ordine da preparare
                     Map<String, Object> cc = new HashMap<>();
                     cc.put("stato", "da posizionare");
                     if(gestioneOrdini.visualizzaOrdini(cc)){
-                        System.out.print("\nID Ordine da posizionare: ");
-                        int idOrdine = -1; // Valore predefinito per l'ID ordine
-                        boolean inputValido = false; // Flag per verificare se l'input è valido
-                        while (!inputValido) { // Continua a richiedere l'input finché non è valido
-                            try {
-                                idOrdine = Integer.parseInt(scanner.nextLine()); // Prova a convertire l'input in un intero
-                                inputValido = true; // L'input è valido, esci dal ciclo
-                            } catch (NumberFormatException e) {
-                                // Se l'input non è un numero, mostra un messaggio di errore
-                                System.out.println("Input errato. Per favore inserisci un numero intero.");
-                                System.out.print("ID Ordine da posizionare: "); // Richiedi di nuovo l'input
-                            }
-                        }
+                        int idOrdine = askForInteger("ID Ordine da posizionare: ");
                         Ordine o = gestioneOrdini.getbyId(idOrdine);
 
                         //Ricerca Operatore libero
@@ -456,14 +332,14 @@ public class Main {
                         }
                     }else{return;}
                 }
-                case "3" -> {
+                case 3 -> {
                     //FIXMe le piante non vengono eliminate correttamente
                     //Scelta ordine da preparare
                     Map<String, Object> c1 = new HashMap<>();
                     c1.put("stato", "da preparare");
                     gestioneOrdini.visualizzaOrdini(c1);
-                    System.out.print("\nID Ordine da preparare: ");
-                    int idOrdine = Integer.parseInt(scanner.nextLine());
+
+                    int idOrdine = askForInteger("ID Ordine da preparare: ");
 
                     //Ricerca Operatore libero
                     Operatore operatore = gestioneAttuatori.richiediAttuatoreLibero("Operatore");
@@ -490,81 +366,57 @@ public class Main {
 
                     System.out.println("L'ordine è pronto per essere ritirato dal cliente. ");
                 }
-                case "4" ->{
+                case 4 ->{
                     gestioneOrdini.visualizzaOrdini(new HashMap<>());
-                    System.out.print("\nID Ordine da modificare: ");
-                    int idOrdine = Integer.parseInt(scanner.nextLine());
-                    System.out.println(
-                            """
-                            \s
-                             Scegli quale parametro modificare:
-                             [1]  Cliente
-                             [2]  Data Consegna
-                             [3]  Piante
-                             [4]  Totale
-                             [5]  Stato
-                             [6]  Indietro
-                             [7]  Esci
-                           \s"""
-                    );
-                    String in = scanner.nextLine();
-                    switch (in){
-                        case "1" -> {}
-                        case "2" -> {}
-                        case "3" -> {}
-                        case "4" -> {}
-                        case "5" -> {
-                            System.out.println(
-                                    """
-                                    \s
-                                     Quale stato impostare:
-                                     [1]  da posizionare
-                                     [2]  posizionato
-                                     [3]  da preparare
-                                     [4]  da ritirare
-                                     [5]  ritirato
-                                     [6]  Indietro
-                                     [7]  Esci
-                                   \s"""
-                            );
-                            String in2 = scanner.nextLine();
+
+                    int idOrdine = askForInteger("ID Ordine da modificare: ");
+
+                    index = askForChooseMenuOption("Scegli quale parametro modificare", new String[]{"Cliente", "Data Consegna", "Piante", "Totale", "Stato", "Indietro", "Esci"});
+
+                    switch (index){
+                        case 1 -> {}
+                        case 2 -> {}
+                        case 3 -> {}
+                        case 4 -> {}
+                        case 5 -> {
+                            index = askForChooseMenuOption("Scegli quale stato impostare", new String[]{"da posizionare", "posizionato", "da preparare", "da ritirare", "ritirato", "Indietro", "Esci"});
+
                             Map<String, Object> mm = new HashMap<>();
-                            switch (in2) {
-                                case "1" -> {
+                            switch (index) {
+                                case 1 -> {
                                     mm.put("stato", "da posizionare");
                                     gestioneOrdini.aggiorna(idOrdine, mm);
                                 }
-                                case "2" -> {
+                                case 2 -> {
                                     mm.put("stato", "posizionato");
                                     gestioneOrdini.aggiorna(idOrdine, mm);
                                 }
-                                case "3" -> {
+                                case 3 -> {
                                     mm.put("stato", "da preparare");
                                     gestioneOrdini.aggiorna(idOrdine, mm);
                                 }
-                                case "4" -> {
+                                case 4 -> {
                                     mm.put("stato", "da ritirare");
                                     gestioneOrdini.aggiorna(idOrdine, mm);
                                 }
-                                case "5" -> {
+                                case 5 -> {
                                     mm.put("stato", "ritirato");
                                     gestioneOrdini.aggiorna(idOrdine, mm);
                                 }
-                                case "6" -> {
+                                case 6 -> {
                                     return;
                                 }
-                                case "7" -> {
+                                case 7 -> {
                                     System.exit(0);
                                 }
                             }
                         }
-                        case "6" -> {return;}
-                        case "7" -> {System.exit(0);}
+                        case 6 -> {return;}
+                        case 7 -> {System.exit(0);}
                     }
                 }
-                case "5" -> {return;}
-                case "6" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+                case 5 -> {return;}
+                case 6 -> System.exit(0);
             }
         } while (true);
     }
@@ -572,29 +424,15 @@ public class Main {
     public static void visualizzaOrdini_Posizionamenti(){
         GestioneOrdini gestioneOrdini = new GestioneOrdini();
         GestionePosizionamenti gestionePosizionamenti = new GestionePosizionamenti();
-        String input;
+        int index;
         do {
+            index = askForChooseMenuOption("VISUALIZZA", new String[]{"Ordini", "Posizionamenti", "Indietro", "Esci"});
 
-            System.out.println(
-                    """
-                    \s
-                                    VISUALIZZA
-                                    \s
-                     [1]  Ordini
-                     [2]  Posizionamenti
-                     [3]  Indietro
-                     [4]  Esci
-                   \s"""
-            );
-
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> {gestioneOrdini.visualizzaOrdini(new HashMap<>());}
-                case "2" -> {gestionePosizionamenti.visualizza();}
-                case "3" -> {return;}
-                case "4" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+            switch (index) {
+                case 1 -> {gestioneOrdini.visualizzaOrdini(new HashMap<>());}
+                case 2 -> {gestionePosizionamenti.visualizza();}
+                case 3 -> {return;}
+                case 4 -> System.exit(0);
             }
         } while (true);
     }
@@ -602,147 +440,94 @@ public class Main {
 
 
     private static void handleSpazi() {
-        String input;
+        int index;
         GestioneSpazi gestioneSpazi = new GestioneSpazi();
         do {
+            index = askForChooseMenuOption("SPAZI", new String[]{"Visualizza", "Gestisci Settori di uno Spazio", "Indietro", "Esci"});
 
-            System.out.println(
-                    """
-                    \s
-                                    SPAZI
-                                    \s
-                    [1]  Visualizza
-                    [2]  Gestisci Settori di uno Spazio
-                    [3]  Indietro
-                    [4]  Esci
-                   \s"""
-            );
-
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> {gestioneSpazi.visualizzaSpazi();}
-                case "2" -> {
+            switch (index) {
+                case 1 -> {gestioneSpazi.visualizzaSpazi();}
+                case 2 -> {
                     gestioneSpazi.visualizzaSpazi();
-                    System.out.println("ID Spazio del quale gestire i settori : ");
-                    Scanner scanner1 = new Scanner(System.in);
-                    int idSpazio = Integer.parseInt(scanner1.nextLine());
+
+                    int idSpazio = askForInteger("ID Spazio del quale gestire i settori: ");
+
                     Spazio spazio = gestioneSpazi.getSpazio(idSpazio);
                     if(spazio != null) {
                         handleSettori(spazio);
                     }
                 }
-                case "3" -> {return;}
-                case "4" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+                case 3 -> {return;}
+                case 4 -> System.exit(0);
             }
 
         } while (true);
     }
     private static void handleSettori(Spazio spazio) {
-        String input;
         GestioneSettori gestioneSettori = new GestioneSettori();
+        int index;
         do {
 
-            System.out.println(
-                    """
-                    \s
-                                        SETTORI
-                                        \s
-                    [1]  Visualizza
-                    [2]  Monitora
-                    [3]  Gestisci Posizioni di un Settore (FIXME)
-                    [4]  Indietro
-                    [5]  Esci
-                   \s"""
-            );
+            index = askForChooseMenuOption("SETTORI", new String[]{"Visualizza", "Monitora", "Gestisci Posizioni di un Settore (FIXME)", "Indietro", "Esci"});
 
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> {gestioneSettori.visualizzaSettori(spazio.getId());}
-                case "2" -> {
+            switch (index) {
+                case 1 -> {gestioneSettori.visualizzaSettori(spazio.getId());}
+                case 2 -> {
                     Settore settore = gestioneSettori.richiediSettore(spazio);
                     if(settore != null){gestioneSettori.avviaMonitoraggio(settore);}
                     else {System.out.println("Settore non trovato");}
                 }
-                case "3" ->{
+                case 3 ->{
                     Settore settore = gestioneSettori.richiediSettore(spazio);
                     if(settore != null) {handlePozioni(settore);}
                 }
-                case "4" -> {return;}
-                case "5" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+                case 4 -> {return;}
+                case 5 -> System.exit(0);
             }
 
         } while (true);
     }
 
     private static void handlePozioni(Settore settore) {
-        Scanner scanner = new Scanner(System.in);
-        String input;
+        int index;
         GestionePosizioni gestionePosizioni = new GestionePosizioni();
         settore.setPosizioni(gestionePosizioni.getPosizioniBySettore(settore.getId()));
         do {
+            index = askForChooseMenuOption("POSIZIONI", new String[]{"Visualizza", "Monitora Posizone (TBD)", "Modifica Posizione (TBD)", "Indietro", "Esci"});
 
-            System.out.println(
-                    """
-                    \s
-                                    POSIZIONI
-                                    \s
-                    [1]  Visualizza
-                    [2]  Monitora Posizone (TBD)
-                    [3]  Modifica Posizione (TBD)
-                    [4]  Indietro
-                    [5]  Esci
-                   \s"""
-            );
-
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> {
+            switch (index) {
+                case 1 -> {
                     gestionePosizioni.visualizzaPosizioni(settore.getId());
                 }
-                case "2" -> {
-                    Scanner scanner1 = new Scanner(System.in);
-                    System.out.println("Inserire ID della posizione da monitorare: ");
-                    int idPosizione = Integer.parseInt(scanner1.nextLine());
+                case 2 -> {
+                    int idPosizione = askForInteger("Inserire ID della posizione da monitorare: ");
                     gestionePosizioni.monitoraPosizone(idPosizione);
                 }
-                case "3" ->{
+                case 3 ->{
                     //FIXME
-                    Scanner scanner1 = new Scanner(System.in);
-                    System.out.println("ID Posizione da modificare: ");
-                    int idPosizione = Integer.parseInt(scanner1.nextLine());
+                    int idPosizione = askForInteger("ID Posizione da modificare: ");
 
-                    Scanner scanner2 = new Scanner(System.in);
                     StringBuilder queryBuilder = new StringBuilder("UPDATE \"Posizione\" SET ");
 
-                    System.out.println("Quale attributo vuoi modificare? (assegnata, settore, irriatore, igrometroTerreno)");
-                    String attributo = scanner2.nextLine();
+                    int index_attributo = askForChooseMenuOption("Quale attributo vuoi modificare?", new String[]{"assegnata", "settore", "irrigatore", "igrometroTerreno"});
 
                     System.out.println("Inserisci il nuovo valore:");
-                    String valore = scanner2.nextLine();
+                    String valore = scanner.nextLine();
 
-                    // Validate and format the value based on attribute type
-                    if ("assegnata".equalsIgnoreCase(attributo)) {
-                        queryBuilder.append(attributo).append(" = ? ");
-                    } else if ("settore".equalsIgnoreCase(attributo) || "irriatore".equalsIgnoreCase(attributo) || "igrometroTerreno".equalsIgnoreCase(attributo)) {
-                        queryBuilder.append(attributo).append(" = ? ");
-                    } else {
-                        System.out.println("Attributo non valido.");
-                        return;
+                    switch (index_attributo){
+                        case 1 -> {queryBuilder.append("assegnata").append(" = ? ");}
+                        case 2 -> {queryBuilder.append("settore").append(" = ? ");}
+                        case 3 -> {queryBuilder.append("irrigatore").append(" = ? ");}
+                        case 4 -> {queryBuilder.append("igrometroTerreno").append(" = ? ");}
                     }
 
                     queryBuilder.append("WHERE id = ?");
 
                     String query = queryBuilder.toString();
-                    gestionePosizioni.modificaPosizione(idPosizione, query, valore, attributo);
+                    gestionePosizioni.modificaPosizione(idPosizione, query, valore, index_attributo);
                 }
-                case "4" -> {return;}
-                case "5" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+                case 4 -> {return;}
+                case 5 -> System.exit(0);
             }
 
         } while (true);
@@ -750,32 +535,15 @@ public class Main {
 
 
     public static void handlePiante() throws Exception {
-        Scanner scanner = new Scanner(System.in);
-        String input;
+        int index;
         GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
         GestionePiante gestionePiante = new GestionePiante();
-
         do {
+            index = askForChooseMenuOption("PIANTE", new String[]{"Visualizza (TBF)", "Check-up", "Aggiungi tipo di pianta (TBD)", "Rimuovi tipo di pianta (TBD)", "Indietro", "Esci"});
 
-            System.out.println(
-                    """
-                    \s
-                                PIANTE
-                                \s
-                     [1]  Visualizza (TBF)
-                     [2]  Check-up
-                     [3]  Aggiungi tipo di pianta (TBD)
-                     [4]  Rimuovi tipo di pianta (TBD)
-                     [5]  Indietro
-                     [6]  Esci
-                   \s"""
-            );
-
-            input = scanner.nextLine();
-
-            switch (input) {
-                case "1" -> {}
-                case "2" -> {
+            switch (index) {
+                case 1 -> {}
+                case 2 -> {
                     Operatore operatore = gestioneAttuatori.richiediAttuatoreLibero("Operatore");
                     if(operatore != null){
                         System.out.println(operatore.esegui(2));
@@ -792,11 +560,10 @@ public class Main {
                         System.out.println(operatore.esegui(-1));
                     }
                 }
-                case "3" -> {}
-                case "4" -> {}
-                case "5" -> {return;}
-                case "6" -> System.exit(0);
-                default -> System.out.println("Input invalido, si prega di riprovare.");
+                case 3 -> {}
+                case 4 -> {}
+                case 5 -> {return;}
+                case 6 -> System.exit(0);
             }
 
         } while (true);

@@ -59,11 +59,11 @@ public class PosizioneDAO {
         ///TODO un sacco di robba su
     }
 
-    public void modificaPosizione(int idPosizione, String query, String valore, String attributo) {
+    public void modificaPosizione(int idPosizione, String query, String valore, int index_attr) {
         //FIXMe dai che attributo non ha molto senso...
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            if ("assegnata".equalsIgnoreCase(attributo)) {
+            if (index_attr == 1) {
                 pstmt.setBoolean(1, Boolean.parseBoolean(valore));
             } else {
                 pstmt.setInt(1, Integer.parseInt(valore));

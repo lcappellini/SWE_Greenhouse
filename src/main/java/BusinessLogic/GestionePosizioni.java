@@ -50,8 +50,8 @@ public class GestionePosizioni {
     public void monitoraPosizone(int idPosizione) {
         posizioneDAO.monitoraPosizione(idPosizione);
     }
-    public void modificaPosizione(int idPosizione, String query, String valore, String attributo) {
-        posizioneDAO.modificaPosizione(idPosizione, query, valore, attributo);
+    public void modificaPosizione(int idPosizione, String query, String valore, int index_attr) {
+        posizioneDAO.modificaPosizione(idPosizione, query, valore, index_attr);
     }
 
     public List<Posizione> getPosizioniLibere(int i) {
