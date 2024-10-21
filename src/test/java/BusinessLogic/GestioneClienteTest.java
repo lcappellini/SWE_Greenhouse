@@ -1,7 +1,7 @@
 package test.java.BusinessLogic;
 
 import main.java.BusinessLogic.LoginClienteController;
-import org.junit.Test;
+//import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import main.java.BusinessLogic.GestioneCliente;

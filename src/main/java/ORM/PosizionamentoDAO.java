@@ -160,20 +160,12 @@ public class PosizionamentoDAO {
                     int ordineId = resultSet.getInt("ordine");
                     int piantaId = resultSet.getInt("pianta");
 
-                    // Usa i DAO per recuperare i dati necessari
-                    PosizioneDAO posizioneDAO = new PosizioneDAO();
-                    PiantaDAO piantaDAO = new PiantaDAO();
-                    OrdineDAO ordineDAO = new OrdineDAO();
-
-                    Posizione posizione = posizioneDAO.getById(posizioneId);
-                    Ordine ordine = ordineDAO.getById(ordineId);
-                    Pianta pianta = piantaDAO.getById(piantaId);
 
                     posizionamenti.add(new Posizionamento(
                             resultSet.getInt("id"),
-                            posizione.getId(),
-                            ordine.getId(),
-                            pianta.getId()
+                            posizioneId,
+                            piantaId,
+                            ordineId
                     ));
                 }
             }

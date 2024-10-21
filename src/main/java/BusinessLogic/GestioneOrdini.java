@@ -5,7 +5,6 @@ import main.java.DomainModel.Impianto.Operatore;
 import main.java.DomainModel.Ordine;
 import main.java.DomainModel.Pianta.Pianta;
 import main.java.ORM.*;
-import org.mockito.internal.matchers.Or;
 
 
 import java.sql.ParameterMetaData;

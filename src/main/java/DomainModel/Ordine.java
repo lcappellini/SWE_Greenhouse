@@ -90,12 +90,22 @@ public class Ordine {
 
     public void setPiante(String piante_string) {
         this.piante = new ArrayList<>();
-        for (String line : piante_string.split("\n")) {
-            String[] parts = line.split(" x ");
-            int n = Integer.parseInt(parts[1]);
-            for (int i = 0; i < n; i++)
-                this.piante.add(new Pianta(parts[0]));
+        if(piante_string.contains("\n")){
+            for (String line : piante_string.split("\n")) {
+                String[] parts = line.split(" x ");
+                int n = Integer.parseInt(parts[1]);
+                for (int i = 0; i < n; i++)
+                    this.piante.add(new Pianta(parts[0]));
+            }
+        }else if(piante_string.contains(", ")){
+            for (String line : piante_string.split(", ")) {
+                String[] parts = line.split(" x ");
+                int n = Integer.parseInt(parts[1]);
+                for (int i = 0; i < n; i++)
+                    this.piante.add(new Pianta(parts[0]));
+            }
         }
+
     }
     public void setPiante(ArrayList<Pianta> piante) { this.piante =piante; }
 
@@ -123,6 +133,24 @@ public class Ordine {
         }
         //System.out.println(tp.substring(0, tp.length() - 1));
         return tp.substring(0, tp.length() - 1);
+    }
+    public String getPianteforDB() {
+        HashMap<String, Integer> counter = new HashMap<>();
+        for(Pianta p : piante){
+            if (counter.containsKey(p.getTipoPianta()))
+                counter.put(p.getTipoPianta(), counter.get(p.getTipoPianta())+1);
+            else
+                counter.put(p.getTipoPianta(), 1);
+        }
+        StringBuilder tp = new StringBuilder();
+        for (var entry : counter.entrySet()) {
+            tp.append(entry.getKey()).append(" x ");
+            tp.append(entry.getValue());
+            tp.append(", ");
+        }
+
+        //System.out.println(tp.substring(0, tp.length() - 1));
+        return tp.substring(0, tp.length() - 2);
     }
 
     double setTotale(){

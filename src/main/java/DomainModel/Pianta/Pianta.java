@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 public class Pianta {
     private int id;
     private String tipoPianta;
-    private LocalDateTime dataInizio;
+    private LocalDate dataInizio;
     private String descrizione;
     private String stato;
     private double costo;
@@ -34,7 +34,7 @@ public class Pianta {
         this.id = id;
         this.tipoPianta = tipoPianta;
         this.descrizione = descrizione;
-        this.dataInizio = LocalDateTime.parse(dataInizio);
+        this.dataInizio = LocalDate.parse(dataInizio);
         this.stato = stato;
         setCosto(tipoPianta);
     }
@@ -54,7 +54,7 @@ public class Pianta {
     public Pianta(int id, String tipoPianta) {
         this(tipoPianta);
         this.id = id;
-        this.dataInizio = LocalDateTime.now();
+        this.dataInizio = LocalDate.now();
         this.descrizione = "["+dataInizio.toString()+"]: Piantata. ";
     }
 
@@ -98,7 +98,7 @@ public class Pianta {
         this.descrizione = descrizione;
     }
 
-    public void setDataInizio(LocalDateTime now) {
+    public void setDataInizio(LocalDate now) {
         this.dataInizio = now;
     }
 

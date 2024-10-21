@@ -29,7 +29,7 @@ public class OrdineDAO {
             // Set parameters for the prepared statement
             preparedStatement.setInt(1, ordine.getCliente());
             preparedStatement.setString(2, ordine.getStringDataConsegna());  // Assuming you have this method
-            preparedStatement.setString(3, ordine.getPianteString());        // Assuming this returns the right format
+            preparedStatement.setString(3, ordine.getPianteforDB());        // Assuming this returns the right format
             preparedStatement.setDouble(4, ordine.getTotale());
             preparedStatement.setString(5, ordine.getStato());
 

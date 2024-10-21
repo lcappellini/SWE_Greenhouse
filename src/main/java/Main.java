@@ -169,7 +169,7 @@ public class Main {
         }
     }
 
-    public static void handleOrdini() throws Exception {
+    /*public static void handleOrdini() throws Exception {
         // Passa i DAO alle classi di gestione
         GestioneOrdini gestioneOrdini = new GestioneOrdini();
         GestionePosizionamenti gestionePosizionamenti = new GestionePosizionamenti();
@@ -281,7 +281,7 @@ public class Main {
             else if (index == 6)
                 System.exit(0);
         }
-    }
+    }*/
 
     // OPERATORE
     //TODO
@@ -294,17 +294,19 @@ public class Main {
             }
             else if (index == 2) {
                 Ordine ordine = handleSceltaOrdineDaPiantare();
-                if (ordine != null)
+                if (ordine != null) {
                     System.out.println(operatore.esegui(2));
                     if (operatoreController.posizionaOrdine(ordine, operatore))
                         System.out.println("Ordine piantato con successo!");
                     else
                         System.out.println("C'è stato un problema nel piantare l'ordine.");
                     System.out.println(operatore.esegui(-1));
+                }
             }
             else if (index == 3) {
                 Ordine ordine = handleSceltaOrdineDaCompletare();
                 if (ordine != null)
+                    System.out.println(operatore.esegui(2));
                     operatoreController.completaOrdine(ordine, operatore);
             }
             else if (index == 4) {
@@ -452,16 +454,12 @@ public class Main {
                 System.out.println("Ordine non accettato!");
         }
         else if (index == 2) {
-            Map<String, Object> c = new HashMap<>();
-            c.put("cliente", cliente.getId());
-            gestioneOrdini.visualizzaOrdini(c);
+            gestioneOrdini.visualizzaOrdini(Map.of("cliente", cliente.getId()));
         }
         else if (index == 3) {
             //FIXME aggiorna la funzione in base ai cambiamenti fatti...
-            Map<String, Object> cc = new HashMap<>();
-            cc.put("stato", "da ritirare");
 
-            if (gestioneOrdini.visualizzaOrdini(cc)) {
+            if (gestioneOrdini.visualizzaOrdini(Map.of("stato", "da ritirare"))) {
                 int idOrdine = askForInteger("ID Ordine da ritirare: ");
                 //FIXME CHECK IF VALID ID
                 Ordine o = gestioneOrdini.getbyId(idOrdine);
@@ -531,7 +529,7 @@ public class Main {
         }
     }
 
-    public static void visualizzaOrdini_Posizionamenti() {
+    /*public static void visualizzaOrdini_Posizionamenti() {
         GestioneOrdini gestioneOrdini = new GestioneOrdini();
         GestionePosizionamenti gestionePosizionamenti = new GestionePosizionamenti();
         int index;
@@ -549,7 +547,7 @@ public class Main {
         }
     }
 
-    /*private static void handleSpazi() {
+    private static void handleSpazi() {
         int index;
         GestioneSpazi gestioneSpazi = new GestioneSpazi();
         index = askForChooseMenuOption("SPAZI", new String[]{"Visualizza", "Gestisci Settori di uno Spazio", "Indietro", "Esci"});
@@ -573,7 +571,7 @@ public class Main {
             case 4:
                 System.exit(0);
         }
-    }*/
+    }
 
     private static void handleSettori(Spazio spazio) {
         GestioneSettori gestioneSettori = new GestioneSettori();
@@ -654,6 +652,6 @@ public class Main {
             case 5:
                 System.exit(0);
         }
-    }
+    }*/
 
 }

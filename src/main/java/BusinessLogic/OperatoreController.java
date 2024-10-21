@@ -30,6 +30,7 @@ public class OperatoreController {
 
         ArrayList<Posizione> libere = posizioneDAO.get(Map.of("assegnata",true));
         if (libere.size() < ordine.getnPiante()) {
+            System.out.println(1);
             return false;
         } else {
             ArrayList<Posizionamento> pos = new ArrayList<>();
@@ -57,21 +58,16 @@ public class OperatoreController {
         PiantaDAO piantaDAO = new PiantaDAO();
         PosizionamentoDAO posizionamentoDAO = new PosizionamentoDAO();
 
-        Map<String, Object> pos_by_ordine  = new HashMap<>();
-        pos_by_ordine.put("ordine", ordine.getId());
-        ArrayList<Posizionamento> pos = posizionamentoDAO.get(pos_by_ordine);
+        ArrayList<Posizionamento> pos = posizionamentoDAO.get(Map.of("ordine", ordine.getId()));
         if(pos != null && !pos.isEmpty()){
-            Map<String, Object> libera_posizione  = Map.of("occupata", false,"assegnata", false);
-            Map<String, Object> libera_pianta  = Map.of("stato", "da ritirare");
-
             for(Posizionamento posizionamento : pos){
-                posizioneDAO.aggiorna(posizionamento.getIdPosizione(), libera_posizione);
-                piantaDAO.aggiorna(posizionamento.getIdPianta(), libera_pianta);
+                posizioneDAO.aggiorna(posizionamento.getIdPosizione(), Map.of("occupata", false,"assegnata", false));
+                piantaDAO.aggiorna(posizionamento.getIdPianta(), Map.of("stato", "da ritirare"));
             }
-            ordineDAO.aggiorna(ordine.getId(), libera_pianta);
+            ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "da ritirare"));
             posizionamentoDAO.eliminaPosizionamentiByOrdine(ordine.getId());
+            operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
         }
-        operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
     }
 
     public ArrayList<Pianta> checkupPiante(Operatore operatore) throws InterruptedException {
@@ -80,9 +76,11 @@ public class OperatoreController {
         PosizionamentoDAO posizionamentoDAO = new PosizionamentoDAO();
         ArrayList<Posizionamento> posizionamenti = posizionamentoDAO.get(new HashMap<>());
         ArrayList<Pianta> pianteDaCurare = new ArrayList<>();
+
         for (Posizionamento p : posizionamenti){
             Pianta pianta = piantaDAO.get(Map.of("id", p.getIdPianta())).get(0);
             System.out.println(pianta.generaStato());
+            piantaDAO.aggiorna(p.getIdPianta(), Map.of("stato", pianta.getStato()));
             if(pianta.haBisogno()) {
                 pianteDaCurare.add(pianta);
             }
@@ -96,6 +94,7 @@ public class OperatoreController {
         PiantaDAO piantaDAO = new PiantaDAO();
         OperazioneDAO operazioneDAO = new OperazioneDAO();
         pianta.cura(operatore.getId(), LocalDateTime.now());
+        piantaDAO.aggiorna(pianta.getId(), Map.of("stato", "Curata, sta crescendo"));
         piantaDAO.aggiornaDescrizione(pianta.getId(), pianta.getDescrizione());
         operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
     }

@@ -130,6 +130,7 @@ public class PosizioneDAO {
         return posizioni;  // Ritorna la lista degli ID delle posizioni aggiornate
     }
 
+
     public void assegna(int nPiante) {
         String query = "UPDATE \"Posizione\" "
                 + "SET assegnata = true "
@@ -139,6 +140,7 @@ public class PosizioneDAO {
             statement.setInt(1, nPiante); // Imposta il limite di posizioni da aggiornare
             int rowsUpdated = statement.executeUpdate(); // Esegui l'update
             System.out.println("Assegnate " + rowsUpdated + " posizioni.");
+            connection.commit();
         } catch (SQLException e) {
             System.err.println("Errore durante la sistemazione delle posizioni: " + e.getMessage());
         }
