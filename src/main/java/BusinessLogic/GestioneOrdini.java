@@ -38,11 +38,8 @@ public class GestioneOrdini {
         return false;
     }
 
-    public void visualizzaOrdiniDaPosizionare(){
-        Map<String, Object> criteria = new HashMap<>();;
-        criteria.put("stato", "da posizionare");
-       // ordineDAO.visualizza(criteria);
-    }
+
+
     public boolean visualizzaOrdini(Map<String, Object> criteri) {
         ArrayList<Ordine> ordini = ordineDAO.get(criteri);
         if (ordini.isEmpty()) {
@@ -55,37 +52,18 @@ public class GestioneOrdini {
         System.out.println("|--------|---------|------------|--------|----------------|--------------------------|");
 
         for (Ordine o : ordini) {
-            // Ottieni la stringa delle piante
-            String piante = o.getPianteString();
-
-            // Suddividi la stringa in righe di massimo 14 caratteri
-            List<String> pianteLinee = spezzaStringa(piante, 24);
-
-            // Stampa la prima riga con i dati principali
+            String pianteString = o.getPianteString();
+            String[] pianteLinee = pianteString.split("\n");
             System.out.printf("| %-6d | %-7d | %-10s | %-6s | %-14s | %-24s |\n",
-                    o.getId(), o.getCliente(), o.getStringDataConsegna(), o.getTotale(), o.getStato(), pianteLinee.get(0)
+                    o.getId(), o.getCliente(), o.getStringDataConsegna(), o.getTotale(), o.getStato(), pianteLinee[0]
             );
-
-            // Stampa le righe successive con le piante spezzate, mantenendo gli altri campi vuoti
-            for (int i = 1; i < pianteLinee.size(); i++) {
-                System.out.printf("| %-6s | %-7s | %-10s | %-6s | %-14s | %-24s |\n", "", "", "", "", "", pianteLinee.get(i));
+            for (int i = 1; i < pianteLinee.length; i++) {
+                System.out.printf("| %-6s | %-7s | %-10s | %-6s | %-14s | %-24s |\n", "", "", "", "", "", pianteLinee[i]);
             }
         }
 
         System.out.println("+------------------------------------------------------------------------------------+");
         return true;
-    }
-
-    // Metodo per spezzare una stringa in linee di lunghezza massima
-    private List<String> spezzaStringa(String s, int maxLunghezza) {
-        List<String> linee = new ArrayList<>();
-        int lunghezza = s.length();
-
-        for (int i = 0; i < lunghezza; i += maxLunghezza) {
-            linee.add(s.substring(i, Math.min(lunghezza, i + maxLunghezza)));
-        }
-
-        return linee;
     }
 
     public void ritira(Ordine o) {
@@ -128,25 +106,30 @@ public class GestioneOrdini {
         }*/
     }
 
-    public void prepara(Ordine ordine) {
+    public void prepara(int idOrdine) {
+        /*
         Map<String, Object> m = new HashMap<>();
         m.put("stato", "da ritirare");
-        ordineDAO.aggiorna(ordine.getId(),m);
+        ordineDAO.aggiorna(idOrdine,m);
+        */
     }
 
     public void aggiorna(int idOrdine, Map<String, Object> criteri) {
+        OrdineDAO ordineDAO = new OrdineDAO();
         ordineDAO.aggiorna(idOrdine,criteri);
     }
 
     public Ordine getbyId(int idOrdine) {
-        Ordine o = null;
-        Map<String, Object> c = new HashMap<>();
-        c.put("id", idOrdine);
-        o = ordineDAO.get(c).get(0);
-        if(o == null){
+        PiantaDAO piantaDAO = new PiantaDAO();
+        OrdineDAO ordineDAO = new OrdineDAO();
+
+        Ordine ordine = ordineDAO.getById(idOrdine);
+        ordine.setPiante(piantaDAO.get(Map.of("ordine",idOrdine)));
+
+        if (ordine == null){
             System.out.println("Ordine con id = "+idOrdine+" non trovato");
         }
-        return o;
+        return ordine;
     }
 
     public void posiziona(Ordine ordine) {

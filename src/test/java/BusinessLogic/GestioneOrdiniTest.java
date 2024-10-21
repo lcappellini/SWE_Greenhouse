@@ -36,7 +36,7 @@ class GestioneOrdiniTest {
         gestioneOrdini.setPosizioneDAO(mockPosizioneDAO);
         gestioneOrdini.setOrdineDAO(mockOrdineDAO);
 
-        cliente = new Cliente(2, "Luigi", "Verdi", "luigi@email.it", "123");
+        cliente = new Cliente(2, "Luigi", "Verdi", "luigi@email.it"); */
     }
 
     @Test

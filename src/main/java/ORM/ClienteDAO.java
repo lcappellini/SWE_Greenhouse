@@ -17,7 +17,7 @@ public class ClienteDAO {
         }
     }
 
-    public Cliente registraCliente(String nome, String cognome, String email, String password) throws SQLException{
+    public boolean registra(String nome, String cognome, String email, String password) throws SQLException{
         // Verifica se l'email è già presente nel database
         String checkQuery = "SELECT id FROM \"Cliente\" WHERE email = ?";
         String insertQuery = "INSERT INTO \"Cliente\" (nome, cognome, email, password) VALUES (?, ?, ?, ?) RETURNING id";
@@ -61,8 +61,6 @@ public class ClienteDAO {
         }
     }
 
-
-
     public Cliente accedi(String email, String password){
         String query = "SELECT * FROM \"Cliente\" WHERE email = ? AND password = ?";
 
@@ -100,6 +98,23 @@ public class ClienteDAO {
         }catch(SQLException e){
             System.err.println("Errore durante la rimozione del cliente:" + e.getMessage());
         }
+    }
+
+    public boolean modificaAttributo(int clienteId, String name, String newValue){
+        String query = "UPDATE \"Cliente\" SET " + name + " = ? WHERE id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, newValue);
+            statement.setInt(2, clienteId);
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'aggiornamento dell'attributo del cliente: " + e.getMessage());
+        }
+        return false;
     }
 }
 

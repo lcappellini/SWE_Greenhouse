@@ -70,11 +70,11 @@ public class GestionePosizioni {
         return posizioni.subList(0,i);
     }
 
-    public void libera(Posizione posizione) throws SQLException {
+    public void libera(int idPosizione) throws SQLException {
         Map<String, Object> m = new HashMap<>();
         m.put("assegnata", false);
         m.put("occupata", false);
-        posizioneDAO.aggiorna(posizione.getId(), m);
+        posizioneDAO.aggiorna(idPosizione, m);
     }
 
     public void occupa(List<Posizione> posizioni) throws SQLException {

@@ -30,6 +30,17 @@ public class Operatore extends Attuatore {
         tipoLavoro.put(-1, "");
     }
 
+    public Operatore(int id, String email, boolean working) {
+        super(id, working);
+        tipoLavoro = new HashMap<>();
+        tipoLavoro.put(0,"posizionamento");
+        tipoLavoro.put(1, "liberazione");
+        tipoLavoro.put(2, "controllo");
+        tipoLavoro.put(3, "cura della pianta");
+        tipoLavoro.put(-1, "");
+        this.email = email;
+    }
+
     @Override
     public String tipoAttuatore() {
         return "Operatore";

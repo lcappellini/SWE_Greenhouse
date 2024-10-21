@@ -1,5 +1,6 @@
 package main.java.ORM;
 
+import main.java.DomainModel.Admin;
 import main.java.DomainModel.Impianto.Operatore;
 
 import java.sql.*;
@@ -34,4 +35,24 @@ public class OperatoreDAO extends AttuatoreDAO{
         return op;
     }
 
+    public Operatore accedi(String email, String password) {
+        String query = "SELECT * FROM \"Operatore\" WHERE email = ? AND password = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            statement.setString(2, password);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    // Estrai i dati dell'admin dal result set e costruisci un oggetto Operatore
+                    Operatore operatore = new Operatore(rs.getInt("id"), rs.getString("email"), false);
+                    return operatore;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'accesso dell'operatore: " + e.getMessage());
+        }
+
+        return null; // Se non viene trovato alcun operatore con le credenziali fornite, restituisci null
+    }
 }

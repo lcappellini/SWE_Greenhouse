@@ -61,7 +61,6 @@ public class PosizioneDAO {
 
     public void modificaPosizione(int idPosizione, String query, String valore, int index_attr) {
         //FIXMe dai che attributo non ha molto senso...
-
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             if (index_attr == 1) {
                 pstmt.setBoolean(1, Boolean.parseBoolean(valore));

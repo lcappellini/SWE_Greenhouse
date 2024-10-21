@@ -3,6 +3,7 @@ import main.java.DomainModel.Pianta.Pianta;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Ordine {
     private int id;
@@ -87,34 +88,14 @@ public class Ordine {
         this.id = id;
     }
 
-    public void setPiante(String piante) {
-
-        // Controlla che la stringa non sia vuota o nulla
-        if (piante == null || piante.trim().isEmpty()) {
-            throw new IllegalArgumentException("Errore: La stringa delle piante è vuota.");
+    public void setPiante(String piante_string) {
+        this.piante = new ArrayList<>();
+        for (String line : piante_string.split("\n")) {
+            String[] parts = line.split(" x ");
+            int n = Integer.parseInt(parts[1]);
+            for (int i = 0; i < n; i++)
+                this.piante.add(new Pianta(parts[0]));
         }
-
-        // Dividi la stringa delle piante in base alla virgola (anche se ci sono spazi aggiuntivi)
-        String[] nomiPiante = piante.split("\\s*,\\s*");
-
-        // Crea una lista di oggetti Pianta
-        ArrayList<Pianta> listaPiante = new ArrayList<>();
-
-        // Trasforma ogni nome in un oggetto Pianta e aggiungilo alla lista
-        for (String nome : nomiPiante) {
-            // Verifica che il nome non sia vuoto dopo il trim
-            if (!nome.trim().isEmpty()) {
-                listaPiante.add(new Pianta(nome.trim())); // Crea una nuova Pianta solo se il nome non è vuoto
-            }
-        }
-
-        // Se la lista risultante è vuota, segnala un errore
-        if (listaPiante.isEmpty()) {
-            throw new IllegalArgumentException("Errore: Nessuna pianta valida trovata nella stringa fornita.");
-        }
-
-        // Imposta la lista delle piante nella classe
-        this.piante = listaPiante;
     }
 
     public void setStato(String stato) {
@@ -126,12 +107,21 @@ public class Ordine {
     }
 
     public String getPianteString() {
-        StringBuilder tp = new StringBuilder();
+        HashMap<String, Integer> counter = new HashMap<>();
         for(Pianta p : piante){
-            tp.append(p.getTipoPianta()).append(", ");
+            if (counter.containsKey(p.getTipoPianta()))
+                counter.put(p.getTipoPianta(), counter.get(p.getTipoPianta())+1);
+            else
+                counter.put(p.getTipoPianta(), 1);
         }
-        tp = new StringBuilder(tp.substring(0, tp.length() - 2));
-        return tp.toString();
+        StringBuilder tp = new StringBuilder();
+        for (var entry : counter.entrySet()) {
+            tp.append(entry.getKey()).append(" x ");
+            tp.append(entry.getValue());
+            tp.append("\n");
+        }
+        //System.out.println(tp.substring(0, tp.length() - 1));
+        return tp.substring(0, tp.length() - 1);
     }
 
     double setTotale(){

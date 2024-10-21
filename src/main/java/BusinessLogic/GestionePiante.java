@@ -25,13 +25,16 @@ public class GestionePiante {
         ArrayList<Pianta> pianteDaCurare = new ArrayList<>();
         while(p != null){
             System.out.println(p.generaStato());
-            if(p.haBisogno()){ pianteDaCurare.add(p); }
+            if( p.haBisogno()) {
+                pianteDaCurare.add(p);
+            }
             sleep(1000);
             i++;
             p = piantaDAO.getById(i);
         }
         return pianteDaCurare;
     }
+
     public void aggiornaDescrizione(int idPianta, String descrizione) {
         piantaDAO.aggiornaDescrizione(idPianta, descrizione);
     }

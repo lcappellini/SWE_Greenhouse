@@ -1,5 +1,6 @@
 package test.java.BusinessLogic;
 
+import main.java.BusinessLogic.LoginClienteController;
 import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,10 +13,10 @@ public class GestioneClienteTest {
 
     @Test
     public void registrationTest(){
-        GestioneCliente gestioneCliente = new GestioneCliente();
+        LoginClienteController loginClienteController = new LoginClienteController();
 
         String nome, cognome, email, password;
-        Cliente cliente;
+        boolean result;
 
         //Nuovo cliente non presente nel db
         nome = "Giuseppe";
@@ -25,15 +26,10 @@ public class GestioneClienteTest {
 
         System.out.println("--Test Registrazione--");
 
-        try{
-            System.out.println("1) Registrazione nuovo cliente");
-            cliente = gestioneCliente.registraCliente(nome, cognome, email, password);
-            assertNotNull(cliente);
-            System.out.println("Rimozione cliente per futuri test");
-            gestioneCliente.rimuoviCliente(email);
-        }catch(SQLException | ClassNotFoundException e){
-            System.err.println(e.getMessage());
-        }
+        System.out.println("1) Registrazione nuovo cliente");
+        result = loginClienteController.registrati(nome, cognome, email, password);
+        assertTrue(result);
+        System.out.println("Rimozione cliente per futuri test");//loginClienteController.rimuovi(email);
 
         //Cliente già presente nel db
         nome = "Mario";
@@ -41,14 +37,9 @@ public class GestioneClienteTest {
         email = "mario@email.it";
         password = "123";
 
-        try{
-            System.out.println("2) Registrazione cliente già registrato");
-            cliente = gestioneCliente.registraCliente(nome, cognome, email, password);
-            assertNull(cliente);
-        }catch(SQLException | ClassNotFoundException e){
-            System.err.println(e.getMessage());
-        }
-
+        System.out.println("2) Registrazione cliente già registrato");
+        result = loginClienteController.registrati(nome, cognome, email, password);
+        assertFalse(result);
     }
 
     @Test

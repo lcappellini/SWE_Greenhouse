@@ -6,9 +6,8 @@ import java.time.LocalDateTime;
 public class Pianta {
     private int id;
     private String tipoPianta;
-    private LocalDate dataInizio;
+    private LocalDateTime dataInizio;
     private String descrizione;
-    //FIXME statoooo
     private String stato;
     private double costo;
     private int giorni_crescita;
@@ -34,10 +33,17 @@ public class Pianta {
         this.setCosto(tipoPianta);
     }
 
+    public Pianta(String tipoPianta, String stato) {
+        this.tipoPianta = tipoPianta;
+        this.stato = stato;
+        this.setGiorni_crescitaDaTipo(tipoPianta);
+        this.setCosto(tipoPianta);
+    }
+
     public Pianta(int id, String tipoPianta) {
         this(tipoPianta);
         this.id = id;
-        this.dataInizio = LocalDate.now();
+        this.dataInizio = LocalDateTime.now();
         this.descrizione = "["+dataInizio.toString()+"]: Piantata. ";
     }
 
@@ -81,7 +87,7 @@ public class Pianta {
         this.descrizione = descrizione;
     }
 
-    public void setDataInizio(LocalDate now) {
+    public void setDataInizio(LocalDateTime now) {
         this.dataInizio = now;
     }
 

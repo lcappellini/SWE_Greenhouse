@@ -21,8 +21,8 @@ public class OrdineDAO {
         }
     }
 
-    public void inserisciOrdine(Ordine ordine) {
-        String sql = "INSERT INTO \"Ordine\" (cliente, dataConsegna, piante, totale, stato) VALUES (?, ?, ?, ?, ?)";
+    public int inserisciOrdine(Ordine ordine) {
+        String sql = "INSERT INTO \"Ordine\" (cliente, dataConsegna, piante, totale, stato) VALUES (?, ?, ?, ?, ?) RETURNING id";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             // Set parameters for the prepared statement
@@ -33,9 +33,12 @@ public class OrdineDAO {
             preparedStatement.setString(5, ordine.getStato());
 
             // Execute the insert operation
-            preparedStatement.executeUpdate();
+            ResultSet rs = preparedStatement.executeQuery();
 
-            System.out.println("Ordine inserito correttamente.");
+            if (rs.next()) {
+                System.out.println("Ordine inserito correttamente.");
+                return rs.getInt("id");
+            }
         } catch (SQLException e) {
             System.err.println("Errore durante l'inserimento dell'ordine: " + e.getMessage());
         }
@@ -64,7 +67,6 @@ public class OrdineDAO {
                     paramIndex++;
                 }
             }
-            PiantaDAO piantaDAO = new PiantaDAO();
 
             // Esegui la query e gestisci il ResultSet
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -122,9 +124,11 @@ public class OrdineDAO {
     }
 
     public Ordine getById(int idOrdine) {
-        Map<String, Object> m = new HashMap<>();
-        m.put("id", idOrdine);
-        return get(m).get(0);
+        ArrayList<Ordine> ordini = get(Map.of("id", idOrdine));
+        if (ordini.isEmpty())
+            return null;
+        else
+            return ordini.get(0);
     }
 
     public void aggiornaOrdine(Ordine ordine) throws SQLException {

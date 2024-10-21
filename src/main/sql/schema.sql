@@ -72,6 +72,10 @@ CREATE TABLE IF NOT EXISTS "Cliente" (
 
 CREATE TABLE IF NOT EXISTS "Operatore"(
     id SERIAL PRIMARY KEY,
+    nome VARCHAR(50),
+    cognome VARCHAR(50),
+    email VARCHAR(50),
+    password varchar(50),
     working BOOLEAN,
     ruolo VARCHAR(50)
                                       );

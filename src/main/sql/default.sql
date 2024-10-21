@@ -8,10 +8,10 @@ INSERT INTO "Cliente" (nome, cognome, email, password) VALUES
     ('Luigi', 'Verdi', 'luigi@email.it', '123'),
     ('Giovanna', 'Bianchi', 'giovanna@email.it', '123');
 
-INSERT INTO "Operatore" (working, ruolo)
-VALUES (false, 'Cassiere'),
-       (false, 'Cassiere'),
-       (false,'Tecnico Agronomo');
+INSERT INTO "Operatore" (nome, cognome, email, password, working)
+VALUES ('Alessandro', 'Ferrari', 'ferrari@email.it', '123', false),
+       ('Francesca', 'Romano', 'romano@email.it', '123', false),
+       ('Matteo', 'Greco', 'greco@email.it', '123', false);
 
 INSERT into "Termometro" (id)
 values (1), (2),(3),(4),(5),(6),

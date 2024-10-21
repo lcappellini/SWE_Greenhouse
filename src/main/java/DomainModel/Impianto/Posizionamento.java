@@ -5,24 +5,24 @@ import main.java.DomainModel.Pianta.Pianta;
 
 public class Posizionamento {
     private int id;
-    private Posizione posizione;
-    private Pianta pianta;
-    private Ordine ordine;
+    private int idPosizione;
+    private int idPianta;
+    private int idOrdine;
 
-    public Posizionamento(Posizione posizione, Pianta pianta, Ordine ordine) {
-        this.posizione = posizione;
-        this.pianta = pianta;
-        this.ordine = ordine;
+    public Posizionamento(int idPosizione, int idPianta, int idOrdine) {
+        this.idPosizione = idPosizione;
+        this.idPianta = idPianta;
+        this.idOrdine = idOrdine;
     }
 
-    public Posizionamento(int id, Posizione posizione, Ordine ordine, Pianta pianta) {
-        this(posizione, pianta, ordine);
+    public Posizionamento(int id, int idPosizione, int idPianta, int idOrdine) {
+        this(idPosizione, idPianta, idOrdine);
         this.id = id;
     }
 
-    public Posizione getPosizione() { return posizione; }
+    public int getIdPosizione() { return idPosizione; }
 
-    public Pianta getPianta() { return pianta; }
+    public int getIdPianta() { return idPianta; }
 
-    public Ordine getOrdine() { return this.ordine;}
+    public int getIdOrdine() { return idOrdine;}
 }

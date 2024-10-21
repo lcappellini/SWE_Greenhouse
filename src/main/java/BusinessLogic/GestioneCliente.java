@@ -13,8 +13,8 @@ public class GestioneCliente {
         clienteDAO = new ClienteDAO();
     }
 
-    public Cliente registraCliente(String nome, String cognome, String email, String password) throws SQLException, ClassNotFoundException {
-        return clienteDAO.registraCliente(nome, cognome, email, password);
+    public boolean registraCliente(String nome, String cognome, String email, String password) throws SQLException, ClassNotFoundException {
+        return clienteDAO.registra(nome, cognome, email, password);
     }
 
     public Cliente accedi(String email, String password) throws SQLException, ClassNotFoundException {

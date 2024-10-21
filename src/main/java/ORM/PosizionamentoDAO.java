@@ -29,9 +29,9 @@ public class PosizionamentoDAO {
 
             for (Posizionamento p : posizionamenti) {
                 statementInserimento.clearParameters();
-                statementInserimento.setInt(1, p.getPianta().getId());  // Considera di usare l'indice i o un'altra logica appropriata
-                statementInserimento.setInt(2, p.getPosizione().getId());
-                statementInserimento.setInt(3, p.getOrdine().getId());
+                statementInserimento.setInt(1, p.getIdPianta());  // Considera di usare l'indice i o un'altra logica appropriata
+                statementInserimento.setInt(2, p.getIdPosizione());
+                statementInserimento.setInt(3, p.getIdOrdine());
                 statementInserimento.executeUpdate();
             }
 
@@ -112,9 +112,9 @@ public class PosizionamentoDAO {
 
                     posizionamenti.add(new Posizionamento(
                             resultSet.getInt("id"),
-                            posizione,
-                            ordine,
-                            pianta
+                            posizione.getId(),
+                            ordine.getId(),
+                            pianta.getId()
                     ));
                 }
             }
