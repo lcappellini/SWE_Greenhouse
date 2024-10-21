@@ -335,6 +335,32 @@ public class Main {
         }
 
     }
+    private static Ordine handleSceltaOrdineDaPiantare() {
+        GestioneOrdini gestioneOrdini = new GestioneOrdini();
+        while (true) {
+            if (!gestioneOrdini.visualizzaOrdini(Map.of("stato", "da piantare"))) {
+                System.out.println("Non ci sono ordini da piantare!");
+                return null;
+            }
+            int idOrdine = askForInteger("ID Ordine da piantare: ");
+            Ordine ord = gestioneOrdini.getbyId(idOrdine);
+            if (ord.getStato().equals("da piantare"))
+                return ord;
+        }
+    }
+    private static Ordine handleSceltaOrdineDaCompletare() {
+        GestioneOrdini gestioneOrdini = new GestioneOrdini();
+        while (true) {
+            if (!gestioneOrdini.visualizzaOrdini(Map.of("stato", "da completare"))) {
+                System.out.println("Non ci sono ordini da completare!");
+                return null;
+            }
+            int idOrdine = askForInteger("ID Ordine da completare: ");
+            Ordine ord = gestioneOrdini.getbyId(idOrdine);
+            if (ord.getStato().equals("da completare"))
+                return ord;
+        }
+    }
 
     // CLIENTE
     public static void handleClientLogin() throws SQLException, ClassNotFoundException {

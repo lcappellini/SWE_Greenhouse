@@ -1,11 +1,13 @@
 package main.java.ORM;
 
 import main.java.DomainModel.Impianto.Posizionamento;
+import main.java.DomainModel.Ordine;
 import main.java.DomainModel.Pianta.Pianta;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public class PiantaDAO {
@@ -128,4 +130,70 @@ public class PiantaDAO {
         return piante;
     }
 
+    public void aggiorna(int id_pianta, Map<String, Object> criterio) {
+        // Aggiungi condizioni se ci sono criteri
+        String str = "UPDATE \"Pianta\" SET ";
+        StringBuilder query = new StringBuilder(str);
+        if (criterio != null && !criterio.isEmpty()) {
+            for (String key : criterio.keySet()) {
+                query.append(key).append(" = ?, ");
+            }
+            query.setLength(query.length() - 2);  // Rimuove l'ultimo " AND "
+        }
+        query.append(" WHERE id = ?");
+
+        try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+            int paramIndex = 1;
+            for (Object value : criterio.values()) {
+                statement.setObject(paramIndex, value);
+                paramIndex++;
+            }
+            statement.setInt(paramIndex, id_pianta);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'aggiornamento della pianta: " + e.getMessage());
+        }
+    }
+
+    public ArrayList<Pianta> get(Map<String, Object> criteri) {
+        StringBuilder query = new StringBuilder("SELECT * FROM \"Pianta\"");
+
+        // Aggiungi condizioni se ci sono criteri
+        if (criteri != null && !criteri.isEmpty()) {
+            query.append(" WHERE ");
+            for (String key : criteri.keySet()) {
+                query.append(key).append(" = ? AND ");
+            }
+            query.setLength(query.length() - 5);  // Rimuove l'ultimo " AND "
+        }
+
+        ArrayList<Pianta> piante = new ArrayList<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+            // Imposta i parametri se ci sono criteri
+            if (criteri != null && !criteri.isEmpty()) {
+                int paramIndex = 1;
+                for (Object value : criteri.values()) {
+                    statement.setObject(paramIndex, value);
+                    paramIndex++;
+                }
+            }
+
+            // Esegui la query e gestisci il ResultSet
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    piante.add(new Pianta(resultSet.getInt("id"),
+                            resultSet.getString("tipo"), resultSet.getString("descrizione"), resultSet.getString("dataInizio"),
+                            resultSet.getString("stato")));
+                }
+            }
+        } catch (SQLException e) {
+            // Logga l'errore
+            System.err.println("Errore durante il recupero delle piante: " + e.getMessage());
+            e.printStackTrace(); // Mostra la traccia dello stack per una diagnostica più dettagliata
+        }
+
+        return piante;
+    }
 }

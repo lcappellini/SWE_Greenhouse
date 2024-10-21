@@ -138,7 +138,7 @@ public class PosizioneDAO {
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, nPiante); // Imposta il limite di posizioni da aggiornare
             int rowsUpdated = statement.executeUpdate(); // Esegui l'update
-            System.out.println("Aggiornate " + rowsUpdated + " posizioni.");
+            System.out.println("Assegnate " + rowsUpdated + " posizioni.");
         } catch (SQLException e) {
             System.err.println("Errore durante la sistemazione delle posizioni: " + e.getMessage());
         }
@@ -190,7 +190,7 @@ public class PosizioneDAO {
         return posizioni;
     }
 
-    public void aggiorna(int id, Map<String, Object> m) throws SQLException {
+    public void aggiorna(int id, Map<String, Object> m) {
         if (m == null || m.isEmpty()) {
             System.out.println("Nessun dato da aggiornare.");
             return; // Non ci sono dati da aggiornare
@@ -225,7 +225,6 @@ public class PosizioneDAO {
             }
         } catch (SQLException e) {
             System.err.println("Errore durante l'aggiornamento della posizione: " + e.getMessage());
-            throw e; // Rilancia l'eccezione per gestione successiva
         }
     }
 

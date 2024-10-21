@@ -21,7 +21,7 @@ public class Ordine {
         this.cliente = cliente;
         this.piante = piante;
         this.dataConsegna = LocalDate.now().plusDays(maxGiorniRichiesti());
-        this.stato = "da posizionare";
+        this.stato = "da piantare";
         this.totale = setTotale();
     }
 
@@ -97,6 +97,7 @@ public class Ordine {
                 this.piante.add(new Pianta(parts[0]));
         }
     }
+    public void setPiante(ArrayList<Pianta> piante) { this.piante =piante; }
 
     public void setStato(String stato) {
         this.stato = stato;

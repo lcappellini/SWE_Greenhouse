@@ -25,7 +25,7 @@ class GestioneOrdiniTest {
     private OrdineDAO mockOrdineDAO;       // Mock per OrdineDAO
 
     @BeforeEach
-    void setUp() {
+    void setUp() {/*
         gestioneOrdini = new GestioneOrdini();  // Istanza della classe GestioneOrdini
 
         // Creazione dei mock per i DAO

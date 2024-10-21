@@ -135,5 +135,7 @@ CREATE TABLE IF NOT EXISTS "Operazione" (
 
 CREATE TABLE IF NOT EXISTS "Admin"(
     email VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(100)
+    password VARCHAR(100),
+    nome VARCHAR(50),
+    cognome VARCHAR(50)
 )

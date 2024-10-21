@@ -1,6 +1,7 @@
 package main.java.ORM;
 
 import main.java.DomainModel.Ordine;
+import main.java.DomainModel.Pianta.Pianta;
 
 
 import java.sql.*;
@@ -42,6 +43,7 @@ public class OrdineDAO {
         } catch (SQLException e) {
             System.err.println("Errore durante l'inserimento dell'ordine: " + e.getMessage());
         }
+        return -1;
     }
 
     public ArrayList<Ordine> get(Map<String, Object> criteri) {
@@ -99,7 +101,7 @@ public class OrdineDAO {
             for (String key : criterio.keySet()) {
                 query.append(key).append(" = ?, ");
             }
-            query.setLength(query.length() - 5);  // Rimuove l'ultimo " AND "
+            query.setLength(query.length() - 2);  // Rimuove l'ultimo " AND "
         } else {
             return updated;
         }

@@ -1,7 +1,7 @@
 -- DA IMPLEMENTARE, è SOLO UN PLACEHOLDER
 
-INSERT INTO "Admin" (email, password)
-VALUES ('elion','123'), ('lorenzo', '123');
+INSERT INTO "Admin" (email, password, nome, cognome)
+VALUES ('elion','123', 'elion', 'karaboja'), ('lorenzo', '123', 'lorenzo', 'cappelletti');
 
 INSERT INTO "Cliente" (nome, cognome, email, password) VALUES
     ('Mario', 'Rossi', 'mario@email.it', '123'),

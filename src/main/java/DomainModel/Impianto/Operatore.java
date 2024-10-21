@@ -50,7 +50,7 @@ public class Operatore extends Attuatore {
         lavoro = "";
         StringBuilder descrizione = new StringBuilder("L'operatore ");
         descrizione.append(this.id);
-        if(richiesta > 0){
+        if(richiesta >= 0){
             descrizione.append(" sta eseguendo: ");
             descrizione.append(tipoLavoro.get(richiesta));
             descrizione.append(". ");

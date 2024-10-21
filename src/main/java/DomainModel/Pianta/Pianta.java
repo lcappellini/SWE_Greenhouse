@@ -1,7 +1,9 @@
 package main.java.DomainModel.Pianta;
-
+import javax.swing.text.DateFormatter;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Pianta {
     private int id;
@@ -26,6 +28,15 @@ public class Pianta {
             case "Geranio" -> giorni_crescita = 45;
             case "Girasole" -> giorni_crescita = 50;
         }
+    }
+
+    public Pianta(int id, String tipoPianta, String descrizione, String dataInizio, String stato) {
+        this.id = id;
+        this.tipoPianta = tipoPianta;
+        this.descrizione = descrizione;
+        this.dataInizio = LocalDateTime.parse(dataInizio);
+        this.stato = stato;
+        setCosto(tipoPianta);
     }
     public Pianta(String tipoPianta) {
         this.tipoPianta = tipoPianta;
@@ -95,9 +106,17 @@ public class Pianta {
         return this.stato.equals("ha bisogno di cure");
     }
 
-    public String cura(int id){
-        String c = "[" + LocalDateTime.now().toString()+ "]" + "Curata da Operatore("+id +") .";
+    public String cura(int id_operatore, LocalDateTime lt) {
+        // Creazione del DateTimeFormatter con il pattern desiderato
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        // Formattazione del LocalDateTime usando il formatter
+        String c = "[" + lt.format(formatter) + "] Curata da Operatore(" + id_operatore + ") .";
+
+        // Aggiunge la descrizione formattata all'attributo this.descrizione
         this.descrizione += c;
+
+        // Restituisce la descrizione formattata
         return c;
     }
 }

@@ -3,45 +3,38 @@ package main.java.BusinessLogic;
 import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Impianto.Operatore;
 import main.java.DomainModel.Ordine;
+import main.java.DomainModel.Pianta.Pianta;
 import main.java.ORM.*;
+import org.mockito.internal.matchers.Or;
 
 
+import java.sql.ParameterMetaData;
 import java.sql.SQLException;
 import java.util.*;
 
 public class GestioneOrdini {
-    private OrdineDAO ordineDAO;
-    private PosizioneDAO posizioneDAO;
-    private PiantaDAO piantaDAO;
 
-    public GestioneOrdini() {
-        ordineDAO = new OrdineDAO();
-        posizioneDAO = new PosizioneDAO();
-        piantaDAO = new PiantaDAO();
-    }
+    public GestioneOrdini() {}
 
-    public void setPosizioneDAO(PosizioneDAO posizioneDAO) {
-        this.posizioneDAO = posizioneDAO;
-    }
-    public void setOrdineDAO(OrdineDAO ordineDAO) {
-        this.ordineDAO = ordineDAO;
-    }
 
     public boolean creazioneOrdine(Ordine ordine){
+        /*
         if (posizioneDAO.verificaNonAssegnate(ordine.getnPiante())) {
             ordineDAO.inserisciOrdine(ordine);
             posizioneDAO.assegna(ordine.getnPiante());
             return true;
         } else {
             System.out.println("Posizioni insufficienti per questo ordine.");
-        }
+        }*/
         return false;
     }
 
 
 
     public boolean visualizzaOrdini(Map<String, Object> criteri) {
+        OrdineDAO ordineDAO = new OrdineDAO();
         ArrayList<Ordine> ordini = ordineDAO.get(criteri);
+
         if (ordini.isEmpty()) {
             System.out.println("Non sono stati trovati ordini");
             return false;
@@ -67,7 +60,7 @@ public class GestioneOrdini {
     }
 
     public void ritira(Ordine o) {
-
+        /*
         if(o != null && o.getStato().equals("da ritirare")) {
             try{
                 piantaDAO.elimina(o.getId());
@@ -82,7 +75,7 @@ public class GestioneOrdini {
             System.out.println("Ritiro non effettuato.");
         }
 
-        /*if(ordine.getCliente() == cliente.getId() && !operatore.attivo() && ordine.getStato().equals("pronto")){
+        if(ordine.getCliente() == cliente.getId() && !operatore.attivo() && ordine.getStato().equals("pronto")){
             //L'operatore esegue 1 ( = eliminazione posizionamento e liberazione delle posizioni, simulato)
             String descrizione = operatore.esegui(1);
             System.out.println(descrizione);
@@ -133,8 +126,11 @@ public class GestioneOrdini {
     }
 
     public void posiziona(Ordine ordine) {
+        /*
         Map<String, Object> m = new HashMap<>();
-        m.put("stato", "posizionato");
+        /ém.put("stato", "posizionato");
         ordineDAO.aggiorna(ordine.getId(),m);
+
+         */
     }
 }
