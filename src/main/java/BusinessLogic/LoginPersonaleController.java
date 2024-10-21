@@ -6,7 +6,6 @@ import main.java.ORM.AdminDAO;
 import main.java.ORM.OperatoreDAO;
 
 public class LoginPersonaleController {
-
     public Admin loginAdmin(String email, String password) {
         AdminDAO adminDAO = new AdminDAO();
         return adminDAO.accedi(email, password);

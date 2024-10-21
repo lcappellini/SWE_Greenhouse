@@ -5,25 +5,24 @@ import main.java.ORM.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class GestioneSettori {
-    private SettoreDAO settoreDAO;
-    private SensoreDAO sensoreDAO;
-    private AttuatoreDAO attuatoreDAO;
     private ScheduledExecutorService executor;// Corrected: Added type declaration here
 
-    public GestioneSettori() {
-        settoreDAO = new SettoreDAO();
-        attuatoreDAO = new AttuatoreDAO();
-        sensoreDAO = new SensoreDAO();
+    public GestioneSettori() {}
+
+    public Settore getSettoreBySpazio(int idSpazio, int i){
+        SettoreDAO settoreDAO = new SettoreDAO();
+        return settoreDAO.getSettoreBySpazio(idSpazio, i);
     }
 
     public void visualizzaSettori(int idSpazio) {
-
+        SettoreDAO settoreDAO = new SettoreDAO();
         int i = 1;
         Settore s = settoreDAO.getSettoreBySpazio(idSpazio, i); // Supponiamo che il metodo recuperi i settori legati allo spazio
 
@@ -52,6 +51,8 @@ public class GestioneSettori {
     }
 
     public void monitoraSettore(Settore settore, LocalDateTime lt) {
+        SensoreDAO sensoreDAO = new SensoreDAO();
+        AttuatoreDAO attuatoreDAO = new AttuatoreDAO();
         settore.monitora(lt);
         for (Sensore<?> s : settore.getSensori()) {
             sensoreDAO.registraMisura(s);
@@ -129,8 +130,11 @@ public class GestioneSettori {
         }
     }
     public Settore getById(int id){
+        SettoreDAO settoreDAO = new SettoreDAO();
         return settoreDAO.getById(id);
     }
+
+    //TODO DA SPOSTARE NEL MAIN
     public Settore richiediSettore(Spazio spazio){
         Scanner scanner1 = new Scanner(System.in);
         //sensoreDAO.visualizza(spazio.getId());

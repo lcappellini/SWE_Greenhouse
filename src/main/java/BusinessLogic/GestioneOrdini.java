@@ -15,47 +15,9 @@ public class GestioneOrdini {
 
     public GestioneOrdini() {}
 
-
-    public boolean creazioneOrdine(Ordine ordine){
-        /*
-        if (posizioneDAO.verificaNonAssegnate(ordine.getnPiante())) {
-            ordineDAO.inserisciOrdine(ordine);
-            posizioneDAO.assegna(ordine.getnPiante());
-            return true;
-        } else {
-            System.out.println("Posizioni insufficienti per questo ordine.");
-        }*/
-        return false;
-    }
-
-
-
-    public boolean visualizzaOrdini(Map<String, Object> criteri) {
+    public ArrayList<Ordine> get(Map<String, Object> criteri) {
         OrdineDAO ordineDAO = new OrdineDAO();
-        ArrayList<Ordine> ordini = ordineDAO.get(criteri);
-
-        if (ordini.isEmpty()) {
-            System.out.println("Non sono stati trovati ordini");
-            return false;
-        }
-
-        System.out.println("+------------------------------------------------------------------------------------+");
-        System.out.println("|   ID   | Cliente | Consegna   | Totale | Stato          | Piante                   |");
-        System.out.println("|--------|---------|------------|--------|----------------|--------------------------|");
-
-        for (Ordine o : ordini) {
-            String pianteString = o.getPianteString();
-            String[] pianteLinee = pianteString.split("\n");
-            System.out.printf("| %-6d | %-7d | %-10s | %-6s | %-14s | %-24s |\n",
-                    o.getId(), o.getCliente(), o.getStringDataConsegna(), o.getTotale(), o.getStato(), pianteLinee[0]
-            );
-            for (int i = 1; i < pianteLinee.length; i++) {
-                System.out.printf("| %-6s | %-7s | %-10s | %-6s | %-14s | %-24s |\n", "", "", "", "", "", pianteLinee[i]);
-            }
-        }
-
-        System.out.println("+------------------------------------------------------------------------------------+");
-        return true;
+        return ordineDAO.get(criteri);
     }
 
     public void ritira(Ordine o) {
@@ -116,10 +78,12 @@ public class GestioneOrdini {
         OrdineDAO ordineDAO = new OrdineDAO();
 
         Ordine ordine = ordineDAO.getById(idOrdine);
-        ordine.setPiante(piantaDAO.get(Map.of("ordine",idOrdine)));
 
         if (ordine == null){
             System.out.println("Ordine con id = "+idOrdine+" non trovato");
+        }
+        else {
+            ordine.setPiante(piantaDAO.get(Map.of("ordine", idOrdine)));
         }
         return ordine;
     }

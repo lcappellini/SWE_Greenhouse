@@ -111,6 +111,7 @@ public class Main {
             System.out.print("\nEmail: ");
             //String email = scanner.nextLine();
             String email = "ferrari@email.it";  //TODO REMOVE, DEBUG ONLY
+            //String email = "lorenzo";  //TODO REMOVE, DEBUG ONLY
             System.out.print("Password: ");
             //String password = scanner.nextLine();  //TODO REMOVE, DEBUG ONLY
             String password = "123";
@@ -136,7 +137,6 @@ public class Main {
     // ADMIN
     public static void handleAdminAction(Admin admin) throws Exception {
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
-            //int index = askForChooseMenuOption("    ADMIN DASHBOARD", new String[]{"ORIDINI & POSIZIONAMENTI", "IMPIANTO", "PIANTE", "Logout", "Esci"});
             int index = askForChooseMenuOption("    ADMIN DASHBOARD", new String[]{"Visualizza", "Monitora", "Logout", "Esci"});
             if (index == 1)
                 handleViewTables();
@@ -151,17 +151,23 @@ public class Main {
 
     public static void handleViewTables() throws Exception {
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
-            int index = askForChooseMenuOption("    VISUALIZZA TABELLE", new String[]{"ORDINI", "SPAZI", "IMPIANTO", "PIANTE", "Indietro", "Esci"});
+            int index = askForChooseMenuOption("    VISUALIZZA TABELLE", new String[]{"ORDINI", "PIANTE", "IMPIANTO", "SPAZI", "Indietro", "Esci"});
             if (index == 1) {
                 GestioneOrdini gestioneOrdini = new GestioneOrdini();
-                gestioneOrdini.visualizzaOrdini(new HashMap<>());
+                ArrayList<Ordine> ordini = gestioneOrdini.get(null);
+                if (!ordini.isEmpty())
+                    printOrdini(ordini);
             }
-            else if (index == 2)
-                ;//handleSpazi();
+            else if (index == 2) {
+                GestionePiante gestionePiante = new GestionePiante();
+                ArrayList<Pianta> piante = gestionePiante.get(null);
+                if (!piante.isEmpty())
+                    printPiante(piante);
+            }
             else if (index == 3)
                 ;//handleSpazi();
             else if (index == 4)
-                ;//handlePiante();
+                ;//handleSpazi();
             else if (index == 5)
                 return;
             else if (index == 6)
@@ -284,7 +290,6 @@ public class Main {
     }*/
 
     // OPERATORE
-    //TODO
     public static void handleOperatoreAction(Operatore operatore) throws Exception {
         OperatoreController operatoreController = new OperatoreController(operatore);
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
@@ -305,9 +310,10 @@ public class Main {
             }
             else if (index == 3) {
                 Ordine ordine = handleSceltaOrdineDaCompletare();
-                if (ordine != null)
-                    System.out.println(operatore.esegui(2));
+                if (ordine != null) {
+                    System.out.println(operatore.esegui(4));
                     operatoreController.completaOrdine(ordine, operatore);
+                }
             }
             else if (index == 4) {
                 System.out.println(operatore.esegui(2));
@@ -335,28 +341,40 @@ public class Main {
             else if (index == 6)
                 System.exit(0);
         }
-
     }
+
     private static Ordine handleSceltaOrdineDaPiantare() {
         GestioneOrdini gestioneOrdini = new GestioneOrdini();
         while (true) {
-            if (!gestioneOrdini.visualizzaOrdini(Map.of("stato", "da piantare"))) {
+            //if (!gestioneOrdini.visualizzaOrdini(Map.of("stato", "da piantare"))) {
+            ArrayList<Ordine> ordiniDaPiantare = gestioneOrdini.get(Map.of("stato", "da piantare"));
+            if (ordiniDaPiantare.isEmpty()) {
                 System.out.println("Non ci sono ordini da piantare!");
                 return null;
             }
+            printOrdini(ordiniDaPiantare);
             int idOrdine = askForInteger("ID Ordine da piantare: ");
             Ordine ord = gestioneOrdini.getbyId(idOrdine);
-            if (ord.getStato().equals("da piantare"))
-                return ord;
+            if (ord == null) {
+                System.out.println("Nessun ordine trovato con questo id!");
+            } else {
+                if (ord.getStato().equals("da piantare"))
+                    return ord;
+                else
+                    System.out.println("Quest'ordine non è da piantare!");
+            }
         }
     }
     private static Ordine handleSceltaOrdineDaCompletare() {
         GestioneOrdini gestioneOrdini = new GestioneOrdini();
         while (true) {
-            if (!gestioneOrdini.visualizzaOrdini(Map.of("stato", "da completare"))) {
+            //if (!gestioneOrdini.visualizzaOrdini(Map.of("stato", "da completare"))) {
+            ArrayList<Ordine> ordiniDaCompletare = gestioneOrdini.get(Map.of("stato", "da completare"));
+            if (ordiniDaCompletare.isEmpty()) {
                 System.out.println("Non ci sono ordini da completare!");
                 return null;
             }
+            printOrdini(ordiniDaCompletare);
             int idOrdine = askForInteger("ID Ordine da completare: ");
             Ordine ord = gestioneOrdini.getbyId(idOrdine);
             if (ord.getStato().equals("da completare"))
@@ -365,9 +383,7 @@ public class Main {
     }
 
     // CLIENTE
-    public static void handleClientLogin() throws SQLException, ClassNotFoundException {
-        GestioneCliente gestioneCliente = new GestioneCliente();
-
+    public static void handleClientLogin() throws SQLException {
         int index = askForChooseMenuOption("    LOG IN / SIGN UP CLIENTE:", new String[]{"Registrati", "Accedi", "Indietro", "Esci"});
 
         if (index == 1) {
@@ -394,7 +410,8 @@ public class Main {
             //String password = scanner.nextLine();
             String password = "123"; //TODO REMOVE, DEBUG ONLY
 
-            Cliente cliente = gestioneCliente.accedi(email, password);
+            LoginClienteController loginClienteController = new LoginClienteController();
+            Cliente cliente = loginClienteController.accedi(email, password);
 
             if (cliente != null) {
                 handleClientAction(cliente);
@@ -454,12 +471,15 @@ public class Main {
                 System.out.println("Ordine non accettato!");
         }
         else if (index == 2) {
-            gestioneOrdini.visualizzaOrdini(Map.of("cliente", cliente.getId()));
+            //gestioneOrdini.visualizzaOrdini(Map.of("cliente", cliente.getId()));
+            printOrdini(gestioneOrdini.get(Map.of("cliente", cliente.getId())));
         }
         else if (index == 3) {
             //FIXME aggiorna la funzione in base ai cambiamenti fatti...
-
-            if (gestioneOrdini.visualizzaOrdini(Map.of("stato", "da ritirare"))) {
+            //if (printOrdini(gestioneOrdini.visualizzaOrdini(Map.of("stato", "da ritirare")))) {
+            ArrayList<Ordine> ordiniDaRitirare = gestioneOrdini.get(Map.of("stato", "da ritirare"));
+            if (!ordiniDaRitirare.isEmpty()) {
+                printOrdini(ordiniDaRitirare);
                 int idOrdine = askForInteger("ID Ordine da ritirare: ");
                 //FIXME CHECK IF VALID ID
                 Ordine o = gestioneOrdini.getbyId(idOrdine);
@@ -603,7 +623,7 @@ public class Main {
         }
     }
 
-    private static void handlePozioni(Settore settore) {
+    private static void handlePosizioni(Settore settore) {
         GestionePosizioni gestionePosizioni = new GestionePosizioni();
         settore.setPosizioni(gestionePosizioni.getPosizioniBySettore(settore.getId()));
         int index = askForChooseMenuOption("POSIZIONI", new String[]{"Visualizza", "Monitora Posizone (TBD)", "Modifica Posizione (TBD)", "Indietro", "Esci"});
@@ -654,4 +674,74 @@ public class Main {
         }
     }*/
 
+    public static void printOrdini(ArrayList<Ordine> ordini) {
+        System.out.println("+------+---------+------------+--------+----------------+--------------------------+");
+        System.out.println("|  ID  | Cliente | Consegna   | Totale | Stato          | Piante                   |");
+
+        for (Ordine o : ordini) {
+            System.out.println("+------+---------+------------+--------+----------------+--------------------------+");
+            String[] pianteLinee = o.getPianteString().split("\n");
+
+            System.out.printf("| %-4d | %-7d | %-10s | %-6s | %-14s | %-24s |\n",
+                    o.getId(), o.getCliente(), o.getStringDataConsegna(), o.getTotale(), o.getStato(), pianteLinee[0]
+            ); // Stampa la prima riga con i dati principali
+
+            // Stampa le righe successive con le piante spezzate, mantenendo gli altri campi vuoti
+            for (int i = 1; i < pianteLinee.length; i++) {
+                System.out.printf("| %-4s | %-7s | %-10s | %-6s | %-14s | %-24s |\n", "", "", "", "", "", pianteLinee[i]);
+            }
+        }
+        System.out.println("+------+---------+------------+--------+----------------+--------------------------+");
+    }
+
+    public static void printPiante(ArrayList<Pianta> piante) {
+        System.out.println("+------+---------+------------+--------+---------+-------------------------------+");
+        System.out.println("|  ID  | Tipo    | Piantato   | Stato  | Costo   | Descrizione                   |");
+
+        for (Pianta p : piante) {
+            System.out.println("+------+---------+------------+--------+---------+-------------------------------+");
+            System.out.printf("| %-4d | %-7s | %-10s | %-6s | %-14s | %-24s |\n",
+                    p.getId(), p.getTipoPianta(), p.getDataInizio().toString(), p.getStato(), p.getCosto(), p.getDescrizione()
+            ); // Stampa la prima riga con i dati principali
+
+            //ArrayList<String> pianteLinee = spezzaStringa(p.getDescrizione(), 24); //TODO RESTORE LOST METHOD "spezzaStringa"
+            ArrayList<String> pianteLinee = new ArrayList<>(); //TODO REMOVE AFTER RESTORE "spezzaStringa"
+            pianteLinee.add(p.getDescrizione()); //TODO REMOVE AFTER RESTORE "spezzaStringa"
+
+            // Stampa le righe successive con le piante spezzate, mantenendo gli altri campi vuoti
+            for (int i = 1; i < pianteLinee.size(); i++) {
+                System.out.printf("| %-4s | %-7s | %-10s | %-6s | %-14s | %-24s |\n", "", "", "", "", "", pianteLinee.get(i));
+            }
+        }
+        System.out.println("+------+---------+------------+--------+----------------+--------------------------+");
+    }
+
+    public static void printSpazio(Spazio spazio) {
+        GestioneSettori gestioneSettori = new GestioneSettori();
+        int i = 1;
+        Settore s = gestioneSettori.getSettoreBySpazio(spazio.getId(), i);
+
+        if (s == null) {
+            System.out.println("  N/A   "); // Se non ci sono settori, stampa N/A
+        } else {
+            System.out.println("+------------------------------------------------------------------------------------------+");
+            System.out.println("|   ID   | Spazio | Termometro |  Fotosensore | Climatizzazione | Lampada | Igrometro aria |");
+            System.out.println("|--------|--------|------------|--------------|-----------------|---------|----------------|");
+            // Ciclo che continua fino a quando non ci sono più settori
+            do {
+                System.out.printf("| %-6d | %-6d | %-10s | %-12s | %-15s | %-7s | %-14s |\n",
+                        s.getId(), spazio.getId(),
+                        (s.getTermometro() != null ? s.getTermometro().getId() : "N/A"),
+                        (s.getFotosensore() != null ? s.getFotosensore().getId() : "N/A"),
+                        (s.getClimatizzazione() != null ? (s.getClimatizzazione().isWorking() ? "ON" : "OFF") : "N/A"),
+                        (s.getLampada() != null ? (s.getLampada().isWorking() ? "ON" : "OFF") : "N/A"),
+                        (s.getIgrometroAria() != null ? s.getIgrometroAria().getId() : "N/A")
+                );
+                i++;
+                s = gestioneSettori.getSettoreBySpazio(spazio.getId(), i); // Ottiene il settore successivo dello spazio specificato
+            } while (s != null);
+        }
+
+        System.out.println("+------------------------------------------------------------------------------------------+");
+    }
 }

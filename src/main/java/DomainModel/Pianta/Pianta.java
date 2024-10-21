@@ -8,15 +8,16 @@ import java.time.format.DateTimeFormatter;
 public class Pianta {
     private int id;
     private String tipoPianta;
-    private LocalDate dataInizio;
+
+    public LocalDateTime getDataInizio() {
+        return dataInizio;
+    }
+
+    private LocalDateTime dataInizio;
     private String descrizione;
     private String stato;
     private double costo;
     private int giorni_crescita;
-
-    public String getTipoPianta() {
-        return tipoPianta;
-    }
 
     public int getGiorni_crescita() {
         return giorni_crescita;
@@ -34,7 +35,7 @@ public class Pianta {
         this.id = id;
         this.tipoPianta = tipoPianta;
         this.descrizione = descrizione;
-        this.dataInizio = LocalDate.parse(dataInizio);
+        this.dataInizio = LocalDateTime.parse(dataInizio);
         this.stato = stato;
         setCosto(tipoPianta);
     }
@@ -54,7 +55,7 @@ public class Pianta {
     public Pianta(int id, String tipoPianta) {
         this(tipoPianta);
         this.id = id;
-        this.dataInizio = LocalDate.now();
+        this.dataInizio = LocalDateTime.now();
         this.descrizione = "["+dataInizio.toString()+"]: Piantata. ";
     }
 
@@ -88,6 +89,11 @@ public class Pianta {
         }
         return "Stato " + tipoPianta + "[" + id + "] -> " + stato;
     }
+
+    public String getTipoPianta() {
+        return tipoPianta;
+    }
+
     public int getId() {return this.id;}
 
     public String getStato() {return this.stato;}
@@ -98,7 +104,7 @@ public class Pianta {
         this.descrizione = descrizione;
     }
 
-    public void setDataInizio(LocalDate now) {
+    public void setDataInizio(LocalDateTime now) {
         this.dataInizio = now;
     }
 
@@ -107,16 +113,9 @@ public class Pianta {
     }
 
     public String cura(int id_operatore, LocalDateTime lt) {
-        // Creazione del DateTimeFormatter con il pattern desiderato
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-        // Formattazione del LocalDateTime usando il formatter
         String c = "[" + lt.format(formatter) + "] Curata da Operatore(" + id_operatore + ") .";
-
-        // Aggiunge la descrizione formattata all'attributo this.descrizione
         this.descrizione += c;
-
-        // Restituisce la descrizione formattata
         return c;
     }
 }

@@ -59,7 +59,7 @@ public class OperatoreController {
         PosizionamentoDAO posizionamentoDAO = new PosizionamentoDAO();
 
         ArrayList<Posizionamento> pos = posizionamentoDAO.get(Map.of("ordine", ordine.getId()));
-        if(pos != null && !pos.isEmpty()){
+        if (pos != null && !pos.isEmpty()){
             for(Posizionamento posizionamento : pos){
                 posizioneDAO.aggiorna(posizionamento.getIdPosizione(), Map.of("occupata", false,"assegnata", false));
                 piantaDAO.aggiorna(posizionamento.getIdPianta(), Map.of("stato", "da ritirare"));

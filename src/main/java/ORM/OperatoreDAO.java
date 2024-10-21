@@ -15,24 +15,23 @@ public class OperatoreDAO extends AttuatoreDAO{
             System.err.println("Error: " + e.getMessage());
         }
     }
+
     public Operatore getById(int id) {
         String query = "SELECT * FROM \"Operatore\" WHERE id = ?";
-        Operatore op = null;
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
 
-            ResultSet resultSet= statement.executeQuery();
-            if(resultSet.next()){
-                op = new Operatore(resultSet.getInt("id"),
-                        resultSet.getBoolean("working"));
+            ResultSet rs= statement.executeQuery();
+            if(rs.next()){
+                return new Operatore(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getString("email"), rs.getBoolean("working"));
             }
 
 
         } catch (SQLException e) {
             System.err.println("Errore durante la creazione dell'operatore: " + e.getMessage());
         }
-        return op;
+        return null;
     }
 
     public Operatore accedi(String email, String password) {
@@ -45,8 +44,7 @@ public class OperatoreDAO extends AttuatoreDAO{
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     // Estrai i dati dell'admin dal result set e costruisci un oggetto Operatore
-                    Operatore operatore = new Operatore(rs.getInt("id"), rs.getString("email"), false);
-                    return operatore;
+                    return new Operatore(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getString("email"), false);
                 }
             }
         } catch (SQLException e) {

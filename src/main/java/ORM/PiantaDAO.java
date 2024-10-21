@@ -138,7 +138,7 @@ public class PiantaDAO {
             for (String key : criterio.keySet()) {
                 query.append(key).append(" = ?, ");
             }
-            query.setLength(query.length() - 2);  // Rimuove l'ultimo " AND "
+            query.setLength(query.length() - 2);  // Rimuove l'ultima ", "
         }
         query.append(" WHERE id = ?");
 
