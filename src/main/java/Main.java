@@ -4,12 +4,9 @@ import main.java.BusinessLogic.*;
 import main.java.DomainModel.*;
 import main.java.DomainModel.Impianto.*;
 import main.java.DomainModel.Pianta.*;
-import main.java.ORM.ClienteDAO;
 
 
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.lang.Integer.parseInt;
@@ -136,12 +133,13 @@ public class Main {
 
     // ADMIN
     public static void handleAdminAction(Admin admin) throws Exception {
+        AdminController adminController = new AdminController();
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
             int index = askForChooseMenuOption("    ADMIN DASHBOARD", new String[]{"Visualizza", "Monitora", "Logout", "Esci"});
             if (index == 1)
                 handleViewTables();
             else if (index == 2)
-                ;//handleSpazi();
+                adminController.monitora();
             else if (index == 3)
                 return;
             else if (index == 4)
@@ -301,7 +299,7 @@ public class Main {
                 Ordine ordine = handleSceltaOrdineDaPiantare();
                 if (ordine != null) {
                     System.out.println(operatore.esegui(2));
-                    if (operatoreController.posizionaOrdine(ordine, operatore))
+                    if (operatoreController.piantaOrdine(ordine, operatore))
                         System.out.println("Ordine piantato con successo!");
                     else
                         System.out.println("C'è stato un problema nel piantare l'ordine.");
@@ -365,6 +363,7 @@ public class Main {
             }
         }
     }
+
     private static Ordine handleSceltaOrdineDaCompletare() {
         GestioneOrdini gestioneOrdini = new GestioneOrdini();
         while (true) {
@@ -481,9 +480,11 @@ public class Main {
             if (!ordiniDaRitirare.isEmpty()) {
                 printOrdini(ordiniDaRitirare);
                 int idOrdine = askForInteger("ID Ordine da ritirare: ");
-                //FIXME CHECK IF VALID ID
-                Ordine o = gestioneOrdini.getbyId(idOrdine);
-                gestioneOrdini.ritira(o);
+                //FIXME CHECK IF VALID ID, Hint: printOrdini potrebbe ritornare un array degli id degli elementi visualizzati
+                //  tra i quali far scegliere
+                Ordine ordine = gestioneOrdini.getbyId(idOrdine);
+                clienteController.pagaEritiraOrdine(ordine);
+                //gestioneOrdini.ritira(o);
             } else
                 return;
         }

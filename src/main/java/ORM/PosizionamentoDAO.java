@@ -41,7 +41,7 @@ public class PosizionamentoDAO {
             System.err.println("Errore durante la creazione dei posizionamenti: " + e.getMessage());
         }
     }
-        /*
+
     public boolean eliminaPosizionamentiByOrdine(int idOrdine){
         String deleteQuery = "DELETE FROM \"Posizionamento\" WHERE ordine = ?";
 
@@ -69,7 +69,7 @@ public class PosizionamentoDAO {
             System.err.println("Errore durante l'eliminazione dei posizionamenti: " + e.getMessage());
         }
         return false;
-    }*/
+    } /*
         public boolean eliminaPosizionamentiByOrdine(int idOrdine) {
             String sql =
                     "WITH deleted_pos AS ( " +
@@ -105,7 +105,7 @@ public class PosizionamentoDAO {
                 if (affectedRows > 0) {
                     // La query ha avuto successo, commit della transazione
                     connection.commit();
-                    System.out.println("Posizionamenti eliminati e tabelle aggiornate correttamente.");
+                    System.out.println("Posizionamenti eliminati.");
                     return true;
                 } else {
                     // Nessun record eliminato, commit comunque per la transazione vuota
@@ -131,7 +131,7 @@ public class PosizionamentoDAO {
             return false;
         }
 
-
+*/
     public ArrayList<Posizionamento> get(Map<String, Object> criteria){
         ArrayList<Posizionamento> posizionamenti = new ArrayList<>();
 

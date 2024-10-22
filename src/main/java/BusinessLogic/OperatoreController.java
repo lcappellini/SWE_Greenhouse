@@ -21,7 +21,7 @@ public class OperatoreController {
         this.operatore = operatore;
     }
 
-    public boolean posizionaOrdine(Ordine ordine, Operatore operatore){
+    public boolean piantaOrdine(Ordine ordine, Operatore operatore){
         OperazioneDAO operazioneDAO = new OperazioneDAO();
         OrdineDAO ordineDAO = new OrdineDAO();
         PosizionamentoDAO posizionamentoDAO = new PosizionamentoDAO();
@@ -59,13 +59,13 @@ public class OperatoreController {
         PosizionamentoDAO posizionamentoDAO = new PosizionamentoDAO();
 
         ArrayList<Posizionamento> pos = posizionamentoDAO.get(Map.of("ordine", ordine.getId()));
-        if (pos != null && !pos.isEmpty()){
+        if (pos != null && !pos.isEmpty() && posizionamentoDAO.eliminaPosizionamentiByOrdine(ordine.getId())){
             for(Posizionamento posizionamento : pos){
                 posizioneDAO.aggiorna(posizionamento.getIdPosizione(), Map.of("occupata", false,"assegnata", false));
                 piantaDAO.aggiorna(posizionamento.getIdPianta(), Map.of("stato", "da ritirare"));
             }
             ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "da ritirare"));
-            posizionamentoDAO.eliminaPosizionamentiByOrdine(ordine.getId());
+            ;
             operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
         }
     }
