@@ -227,14 +227,26 @@ public class Main {
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
             int index = askForChooseMenuOption("    VISUALIZZA TABELLE", new String[]{"ORDINI", "PIANTE", "CLIENTI", "Indietro", "Esci"});
             if (index == 1) {
-                GestioneOrdini gestioneOrdini = new GestioneOrdini();
-                ArrayList<Ordine> ordini = gestioneOrdini.get(null);
+                ArrayList<Ordine> ordini;
+                if(isAdmin){
+                    AdminController adminController = new AdminController();
+                    ordini = adminController.getOrdini(null);
+                }else{
+                    OperatoreController operatoreController = new OperatoreController();
+                    ordini = operatoreController.getOrdini(null);
+                }
                 if (!ordini.isEmpty())
                     printOrdini(ordini);
             }
             else if (index == 2) {
-                GestionePiante gestionePiante = new GestionePiante();
-                ArrayList<Pianta> piante = gestionePiante.get(null);
+                ArrayList<Pianta> piante;
+                if(isAdmin){
+                    AdminController adminController = new AdminController();
+                    piante = adminController.getPiante(null);
+                }else{
+                    OperatoreController operatoreController = new OperatoreController();
+                    piante = operatoreController.getPiante(null);
+                }
                 if (!piante.isEmpty())
                     printPiante(piante);
             }
@@ -267,7 +279,7 @@ public class Main {
                 handleViewTables(false);
             }
             else if (index == 2) {
-                Ordine ordine = handleSceltaOrdineDaPiantare();
+                Ordine ordine = handleSceltaOrdineDaPiantare(operatoreController);
                 if (ordine != null) {
                     System.out.println(operatore.esegui(2));
                     if (operatoreController.piantaOrdine(ordine, operatore))
@@ -278,7 +290,7 @@ public class Main {
                 }
             }
             else if (index == 3) {
-                Ordine ordine = handleSceltaOrdineDaCompletare();
+                Ordine ordine = handleSceltaOrdineDaCompletare(operatoreController);
                 if (ordine != null) {
                     System.out.println(operatore.esegui(4));
                     operatoreController.completaOrdine(ordine, operatore);
@@ -287,8 +299,9 @@ public class Main {
             else if (index == 4) {
                 System.out.println(operatore.esegui(2));
 
-                GestionePiante gestionePiante = new GestionePiante();
-                gestionePiante.generaStatoPiante();
+                //GestionePiante gestionePiante = new GestionePiante();
+                operatoreController.generaStatoPiante();
+                //gestionePiante.generaStatoPiante();
                 ArrayList<Pianta> pianteDaCurare = operatoreController.checkupPiante(operatore, 1000);
                 if(pianteDaCurare != null && !pianteDaCurare.isEmpty()) {
                     System.out.printf("%d Piante hanno bisogno di cure.\n", pianteDaCurare.size());
@@ -316,18 +329,16 @@ public class Main {
         }
     }
 
-    private static Ordine handleSceltaOrdineDaPiantare() {
-        GestioneOrdini gestioneOrdini = new GestioneOrdini();
+    private static Ordine handleSceltaOrdineDaPiantare(OperatoreController operatoreController){
         while (true) {
-            //if (!gestioneOrdini.visualizzaOrdini(Map.of("stato", "da piantare"))) {
-            ArrayList<Ordine> ordiniDaPiantare = gestioneOrdini.get(Map.of("stato", "da piantare"));
+            ArrayList<Ordine> ordiniDaPiantare = operatoreController.getOrdini(Map.of("stato", "da piantare"));
             if (ordiniDaPiantare.isEmpty()) {
                 System.out.println("Non ci sono ordini da piantare!");
                 return null;
             }
             printOrdini(ordiniDaPiantare);
             int idOrdine = askForInteger("ID Ordine da piantare: ");
-            Ordine ord = gestioneOrdini.getById(idOrdine);
+            Ordine ord = operatoreController.getOrdineById(idOrdine);
             if (ord == null) {
                 System.out.println("Nessun ordine trovato con questo id!");
             } else {
@@ -339,18 +350,16 @@ public class Main {
         }
     }
 
-    private static Ordine handleSceltaOrdineDaCompletare() {
-        GestioneOrdini gestioneOrdini = new GestioneOrdini();
+    private static Ordine handleSceltaOrdineDaCompletare(OperatoreController operatoreController) {
         while (true) {
-            //if (!gestioneOrdini.visualizzaOrdini(Map.of("stato", "da completare"))) {
-            ArrayList<Ordine> ordiniDaCompletare = gestioneOrdini.get(Map.of("stato", "da completare"));
+            ArrayList<Ordine> ordiniDaCompletare = operatoreController.getOrdini(Map.of("stato", "da completare"));
             if (ordiniDaCompletare.isEmpty()) {
                 System.out.println("Non ci sono ordini da completare!");
                 return null;
             }
             printOrdini(ordiniDaCompletare);
             int idOrdine = askForInteger("ID Ordine da completare: ");
-            Ordine ord = gestioneOrdini.getById(idOrdine);
+            Ordine ord = operatoreController.getOrdineById(idOrdine);
             if (ord.getStato().equals("da completare"))
                 return ord;
         }
@@ -435,7 +444,6 @@ public class Main {
 
     public static void handleClientOrders(Cliente cliente) {
         ClienteController clienteController = new ClienteController(cliente);
-        GestioneOrdini gestioneOrdini = new GestioneOrdini();
         int index = askForChooseMenuOption("    ORDINI", new String[]{"Richiedi nuovo ordine", "Controlla i miei ordini", "Paga e ritira ordine", "Indietro", "Esci"});
 
         if (index == 1){
@@ -445,14 +453,14 @@ public class Main {
                 System.out.println("Ordine non accettato!");
         }
         else if (index == 2) {
-            printOrdini(gestioneOrdini.get(Map.of("cliente", cliente.getId())));
+            printOrdini(clienteController.getOrdini(new HashMap<>()));
         }
         else if (index == 3) {
-            ArrayList<Ordine> ordiniDaRitirare = gestioneOrdini.get(Map.of("stato", "da ritirare", "cliente", cliente.getId()));
+            ArrayList<Ordine> ordiniDaRitirare = clienteController.getOrdini(Map.of("stato", "da ritirare"));
             if (!ordiniDaRitirare.isEmpty()) {
                 printOrdini(ordiniDaRitirare);
                 int idOrdine = askForInteger("ID Ordine da ritirare: ");
-                Ordine ordine = gestioneOrdini.getById(idOrdine);
+                Ordine ordine = clienteController.getOrdini(Map.of("id",idOrdine)).get(0);
                 if (ordine != null && ordine.getCliente() == cliente.getId()) {
                     if (clienteController.pagaEritiraOrdine(ordine)) {
                         System.out.println("Ordine pagato! Può ritirare l'ordine.");

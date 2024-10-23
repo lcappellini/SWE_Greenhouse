@@ -2,6 +2,7 @@ package main.java.BusinessLogic;
 
 import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Impianto.*;
+import main.java.DomainModel.Ordine;
 import main.java.DomainModel.Pianta;
 import main.java.DomainModel.Posizionamento;
 import main.java.ORM.*;
@@ -90,5 +91,14 @@ public class AdminController {
     public ArrayList<Settore> getSettori(Map<String, Object> criteri) {
         SettoreDAO settoreDAO = new SettoreDAO();
         return settoreDAO.get(criteri);
+    }
+    public ArrayList<Ordine> getOrdini(Map<String, Object> criteri) {
+        OrdineDAO ordineDAO = new OrdineDAO();
+        return ordineDAO.get(criteri);
+    }
+
+    public ArrayList<Pianta> getPiante(Map<String, Object> criteri) {
+        PiantaDAO piantaDAO = new PiantaDAO();
+        return piantaDAO.get(criteri);
     }
 }

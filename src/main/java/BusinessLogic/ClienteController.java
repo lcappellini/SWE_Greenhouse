@@ -8,6 +8,8 @@ import main.java.ORM.PiantaDAO;
 import main.java.ORM.PosizioneDAO;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClienteController {
@@ -54,5 +56,13 @@ public class ClienteController {
         }catch (SQLException ignored) {
 
         }
+    }
+    public ArrayList<Ordine> getOrdini(Map<String, Object> criteri) {
+        OrdineDAO ordineDAO = new OrdineDAO();
+        if(criteri == null){
+            criteri = new HashMap<>();
+        }
+        criteri.put("cliente", cliente.getId());
+        return ordineDAO.get(criteri);
     }
 }

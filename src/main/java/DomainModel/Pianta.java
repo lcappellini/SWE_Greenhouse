@@ -96,7 +96,11 @@ public class Pianta {
     public String cura(int id_operatore, LocalDateTime lt) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         String c = "[" + lt.format(formatter) + "] Curata da Operatore(" + id_operatore + ") .";
-        this.descrizione += c;
+        if(descrizione.isEmpty()){
+            this.descrizione = c;
+        }else{
+            this.descrizione += c;
+        }
         this.stato = "Curata, sta crescendo";
         return c;
     }

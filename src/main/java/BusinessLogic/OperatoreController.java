@@ -78,7 +78,7 @@ public class OperatoreController {
             Pianta pianta = piantaDAO.get(Map.of("id", p.getIdPianta())).get(0);
             String stato = pianta.getStato();
             System.out.printf("Stato %s [%d] -> %s\n", pianta.getTipoPianta(), pianta.getId(), stato);
-            if(pianta.haBisogno()) {
+            if(pianta.getStato().equals("ha bisogno di cure")) {
                 pianteDaCurare.add(pianta);
             }
             try {
@@ -103,5 +103,29 @@ public class OperatoreController {
     public ArrayList<Cliente> getClienti(Map<String, Object> criteri) {
         ClienteDAO clienteDAO = new ClienteDAO();
         return clienteDAO.get(criteri);
+    }
+    public ArrayList<Ordine> getOrdini(Map<String, Object> criteri) {
+        OrdineDAO ordineDAO = new OrdineDAO();
+        return ordineDAO.get(criteri);
+    }
+    public Ordine getOrdineById(int idOrdine) {
+        ArrayList<Ordine> ordini = getOrdini(Map.of("id",idOrdine));
+        if (ordini.isEmpty())
+            return null;
+        else
+            return ordini.get(0);
+    }
+    public void generaStatoPiante(){
+        PiantaDAO piantaDAO = new PiantaDAO();
+        ArrayList<Pianta> piante = piantaDAO.get(null);
+        for (Pianta pianta : piante) {
+            pianta.generaStato();
+            piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
+        }
+    }
+
+    public ArrayList<Pianta> getPiante(Map<String, Object> criteri) {
+        PiantaDAO piantaDAO = new PiantaDAO();
+        return piantaDAO.get(criteri);
     }
 }
