@@ -59,11 +59,6 @@ public class Pianta {
         this.descrizione = "["+dataInizio.toString()+"]: Piantata. ";
     }
 
-    public Pianta(int id, String tipoPianta, String descrizione) {
-        this(id, tipoPianta);
-        this.descrizione += descrizione;
-    }
-
     public double getCosto(){ return costo; }
     public void setCosto(String tipoPianta){
         switch (tipoPianta){

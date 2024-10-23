@@ -4,6 +4,7 @@ import main.java.DomainModel.Pianta.Pianta;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Ordine {
     private int id;
@@ -25,11 +26,11 @@ public class Ordine {
         this.totale = setTotale();
     }
 
-    public Ordine(int id, int cliente, String piante, String stato, String dataConsegna, double totale) {
+    public Ordine(int id, int cliente, ArrayList<Pianta> piante, String stato, String dataConsegna, double totale) {
         this.id = id;
+        this.piante = piante;
         this.stato = stato;
         this.dataConsegna = LocalDate.parse(dataConsegna);
-        setPiante(piante);
         this.cliente = cliente;
         this.totale = totale;
     }
@@ -107,7 +108,7 @@ public class Ordine {
         }
 
     }
-    public void setPiante(ArrayList<Pianta> piante) { this.piante =piante; }
+    public void setPiante(ArrayList<Pianta> piante) { this.piante = piante; }
 
     public void setStato(String stato) {
         this.stato = stato;

@@ -2,21 +2,20 @@ package main.java.DomainModel.Impianto;
 
 import java.time.LocalDateTime;
 
-public abstract class Sensore<T>{
+public abstract class Sensore{
     protected int id;
-    protected T valore;
+    protected Float valore;
     protected LocalDateTime data;
 
-    public Sensore(int id) {
+    public Sensore(int id, LocalDateTime data, float valore) {
         this.id = id;
+        this.data = data;
+        this.valore = valore;
     }
 
-    Sensore(int id, LocalDateTime lt){
+    Sensore(int id){
         this.id = id;
-        this.data = lt;
     }
-    // Metodo astratto per generare una misura
-   // public abstract void misura();
 
     // Getter e setter per gli attributi comuni
     public int getId() {
@@ -27,7 +26,9 @@ public abstract class Sensore<T>{
         this.id = id;
     }
 
-    public T getValore() {
+    public float getValore() {
+        /*String str = String.format("%.1f", this.valore).replace(",", ".");;
+        return Float.parseFloat(str);*/
         return this.valore;
     }
 
@@ -40,9 +41,9 @@ public abstract class Sensore<T>{
     }
 
 
-    public abstract T misura(LocalDateTime lt, boolean attuatore_acceso);
+    public abstract float misura(LocalDateTime lt, boolean attuatore_acceso);
 
-    public abstract String tipoSensore() ;
+    public abstract String getTipoSensore() ;
 
 
 

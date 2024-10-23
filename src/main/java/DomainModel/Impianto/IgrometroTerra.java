@@ -1,34 +1,33 @@
 package main.java.DomainModel.Impianto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
 
-public class IgrometroTerra extends Sensore<Integer> {
-    LocalDateTime lt;
-    public IgrometroTerra(int id) {
-        super(id); // Chiama il costruttore della classe Sensore
-    }
+public class IgrometroTerra extends Sensore {
 
-
-    public IgrometroTerra(int id, int percAcqua, String data) {
+    public IgrometroTerra(int id, String dataString, float valore) {
         super(id);
-        this.valore = percAcqua;
-        if(data != null){
-            LocalDateTime lt = LocalDateTime.parse(data);
-        }else{
-            lt = LocalDateTime.now();
+        this.valore = valore;
+        if (dataString == null)
+            this.data = null;
+        else
+            this.data = LocalDateTime.parse(dataString);
+    }
+
+    @Override
+    public float misura(LocalDateTime lt, boolean attuatori_accesi) {
+        if (attuatori_accesi) {
+            this.valore += 10;
         }
+        else {
+            this.valore -= (float)(Math.random()*5);
+        }
+        this.data = lt;
+        this.valore = Math.max(0, Math.min(this.valore, 100));
+        return valore;
     }
 
     @Override
-    public Integer misura(LocalDateTime lt, boolean attuatori_accesi) {
-        this.valore = 30 + (int)Math.random() * 70;
-        return 0;
-    }
-
-    @Override
-    public String tipoSensore(){
+    public String getTipoSensore(){
         return "IgrometroTerra";
     }
 }

@@ -86,13 +86,13 @@ CREATE TABLE IF NOT EXISTS "Ambiente" (
     nPosizioniMax INT NOT NULL,
     termometro INT,
     fotosensore INT,
-    climatizzazione INT,
+    climatizzatore INT,
     lampada INT,
     igrometroAria INT,
     FOREIGN KEY (spazio_id) REFERENCES "Spazio"(id),
     FOREIGN KEY (termometro) REFERENCES  "Termometro"(id),
     FOREIGN KEY (fotosensore) REFERENCES "Fotosensore"(id),
-    FOREIGN KEY (climatizzazione) REFERENCES  "Climatizzatore"(id),
+    FOREIGN KEY (climatizzatore) REFERENCES  "Climatizzatore"(id),
     FOREIGN KEY (lampada) REFERENCES "Lampada"(id),
     FOREIGN KEY (igrometroAria) REFERENCES "IgrometroAria"(id)
 );

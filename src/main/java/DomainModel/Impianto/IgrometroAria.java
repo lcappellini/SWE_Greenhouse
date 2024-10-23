@@ -3,13 +3,18 @@ package main.java.DomainModel.Impianto;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-public class IgrometroAria extends Sensore<Float> {
-    public IgrometroAria(int id) {
-        super(id); // Chiama il costruttore della classe Sensore
+public class IgrometroAria extends Sensore {
+    public IgrometroAria(int id, String dataString, float valore) {
+        super(id);
+        this.valore = valore;
+        if (dataString == null)
+            this.data = null;
+        else
+            this.data = LocalDateTime.parse(dataString);
     }
 
     @Override
-    public Float misura(LocalDateTime lt, boolean attuatore_acceso) {
+    public float misura(LocalDateTime lt, boolean attuatore_acceso) {
         Random rand = new Random();
 
         // Estrai l'ora dal LocalDateTime per adattare la media
@@ -29,13 +34,13 @@ public class IgrometroAria extends Sensore<Float> {
         float valoreGenerato = (float) (media + rand.nextGaussian() * deviazione);
 
         // Assicurati che il valore sia sempre entro i limiti fisici (0% - 100% umidità)
+        this.data = lt;
         this.valore = Math.max(0, Math.min(valoreGenerato, 100));
-
         return this.valore;
     }
 
 
-    public String tipoSensore(){
+    public String getTipoSensore(){
         return "IgrometroAria";
     }
 }

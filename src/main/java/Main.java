@@ -4,9 +4,15 @@ import main.java.BusinessLogic.*;
 import main.java.DomainModel.*;
 import main.java.DomainModel.Impianto.*;
 import main.java.DomainModel.Pianta.*;
+import main.java.ORM.AttuatoreDAO;
+import main.java.ORM.SensoreDAO;
+import org.postgresql.core.Tuple;
 
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static java.lang.Integer.parseInt;
@@ -15,6 +21,13 @@ import static java.lang.Thread.sleep;
 public class Main {
 
     private static final Scanner scanner = new Scanner(System.in);
+
+    public static String RedString(String str){
+        return "\u001B[41m" + str + "\u001B[0m";
+    }
+    public static String GreenString(String str){
+        return "\u001B[42m" + str +"\u001B[0m";
+    }
 
     public static void main(String[] args){
         try {
@@ -106,12 +119,15 @@ public class Main {
         int index = askForChooseMenuOption("    " + role_string, new String[]{"Accedi", "Indietro", "Esci"});
         if (index == 1) {
             System.out.print("\nEmail: ");
-            //String email = scanner.nextLine();
-            String email = "ferrari@email.it";  //TODO REMOVE, DEBUG ONLY
-            //String email = "lorenzo";  //TODO REMOVE, DEBUG ONLY
+            //String email = scanner.nextLine(); //TODO REENABLE
+            String email; //TODO REMOVE, DEBUG ONLY
+            if (role == 1) //TODO REMOVE, DEBUG ONLY
+                email = "ferrari@email.it";  //TODO REMOVE, DEBUG ONLY
+            else //TODO REMOVE, DEBUG ONLY
+                email = "lorenzo";  //TODO REMOVE, DEBUG ONLY
             System.out.print("Password: ");
-            //String password = scanner.nextLine();  //TODO REMOVE, DEBUG ONLY
-            String password = "123";
+            //String password = scanner.nextLine(); //TODO REENABLE
+            String password = "123"; //TODO REMOVE, DEBUG ONLY
 
             LoginPersonaleController loginPersonaleController = new LoginPersonaleController();
             if (role == 0) {
@@ -135,11 +151,11 @@ public class Main {
     public static void handleAdminAction(Admin admin) throws Exception {
         AdminController adminController = new AdminController();
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
-            int index = askForChooseMenuOption("    ADMIN DASHBOARD", new String[]{"Visualizza", "Monitora", "Logout", "Esci"});
+            int index = askForChooseMenuOption("    ADMIN DASHBOARD", new String[]{"Visualizza", "Monitora Settore", "Logout", "Esci"});
             if (index == 1)
                 handleViewTables();
             else if (index == 2)
-                adminController.monitora();
+                handleMonitoraSettore();
             else if (index == 3)
                 return;
             else if (index == 4)
@@ -147,9 +163,65 @@ public class Main {
         }
     }
 
+    private static void handleMonitoraSettore() {
+        GestioneSettori gestioneSettori = new GestioneSettori();
+        ArrayList<Settore> settori = gestioneSettori.get(null);
+        if (settori.isEmpty()) {
+            System.out.println("Non ci sono settori!");
+            return;
+        }
+        //printSettori(settori);
+        System.out.printf("Sono stati trovati %d settori, con i seguenti ID:\n", settori.size());
+        for (Settore settore : settori)
+            System.out.printf("%d, ", settore.getId());
+        System.out.println();
+        int idSettore = askForInteger("ID Settore da monitorare: ");
+        Settore settoreScelto = gestioneSettori.getById(idSettore);
+        if (settoreScelto == null) {
+            System.out.println("Nessun ordine trovato con questo id!");
+        } else {
+
+            boolean conPosizioni = askForSorN("Vuoi monitorare anche le Posizioni di questo settore?");
+
+            LocalDateTime lt = LocalDateTime.now();
+            AdminController adminController = new AdminController();
+            try {
+                while (true){
+
+                    try {
+                        // Chiama la funzione monitoraSettore con l'ora simulata
+                        System.out.println("TIME: " + lt.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm:ss")));  // Stampa il tempo formattato
+
+                        Settore settore = adminController.monitoraSettore(idSettore, lt);
+                        printSettore(settore);
+                        if (conPosizioni) {
+                            ArrayList<Map.Entry<Posizione, Pianta>> posizioni_piante = adminController.monitoraPosizioniBySettoreId(idSettore, lt);
+                            printPosizioniInSettore(posizioni_piante);
+                        }
+
+                        // Aggiunge 1 ora a ogni iterazione
+                        lt = lt.plusMinutes(15);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    System.out.println("Premi Invio per interrompere il monitoraggio...");
+                    if (System.in.available() > 0) {
+                        String input = scanner.nextLine();
+                        System.out.println("Invio premuto! Arresto monitoraggio...");
+                        System.out.println("Monitoraggio terminato.");
+                        break;
+                    }
+                    Thread.sleep(2500);
+                }
+            } catch (InterruptedException | IOException ignored) {}
+        }
+
+    }
+
     public static void handleViewTables() throws Exception {
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
-            int index = askForChooseMenuOption("    VISUALIZZA TABELLE", new String[]{"ORDINI", "PIANTE", "IMPIANTO", "SPAZI", "Indietro", "Esci"});
+            int index = askForChooseMenuOption("    VISUALIZZA TABELLE", new String[]{"ORDINI", "PIANTE", "SPAZI", "Indietro", "Esci"});
             if (index == 1) {
                 GestioneOrdini gestioneOrdini = new GestioneOrdini();
                 ArrayList<Ordine> ordini = gestioneOrdini.get(null);
@@ -165,10 +237,8 @@ public class Main {
             else if (index == 3)
                 ;//handleSpazi();
             else if (index == 4)
-                ;//handleSpazi();
-            else if (index == 5)
                 return;
-            else if (index == 6)
+            else if (index == 5)
                 System.exit(0);
         }
     }
@@ -352,7 +422,7 @@ public class Main {
             }
             printOrdini(ordiniDaPiantare);
             int idOrdine = askForInteger("ID Ordine da piantare: ");
-            Ordine ord = gestioneOrdini.getbyId(idOrdine);
+            Ordine ord = gestioneOrdini.getById(idOrdine);
             if (ord == null) {
                 System.out.println("Nessun ordine trovato con questo id!");
             } else {
@@ -375,7 +445,7 @@ public class Main {
             }
             printOrdini(ordiniDaCompletare);
             int idOrdine = askForInteger("ID Ordine da completare: ");
-            Ordine ord = gestioneOrdini.getbyId(idOrdine);
+            Ordine ord = gestioneOrdini.getById(idOrdine);
             if (ord.getStato().equals("da completare"))
                 return ord;
         }
@@ -482,9 +552,13 @@ public class Main {
                 int idOrdine = askForInteger("ID Ordine da ritirare: ");
                 //FIXME CHECK IF VALID ID, Hint: printOrdini potrebbe ritornare un array degli id degli elementi visualizzati
                 //  tra i quali far scegliere
-                Ordine ordine = gestioneOrdini.getbyId(idOrdine);
-                clienteController.pagaEritiraOrdine(ordine);
-                //gestioneOrdini.ritira(o);
+                Ordine ordine = gestioneOrdini.getById(idOrdine);
+                if(clienteController.pagaEritiraOrdine(ordine)){
+                    System.out.println("Ordine pagato! Può ritirare l'ordine.");
+                }else {
+                    System.out.println("Il pagamento non è andato a buon fine");
+                }
+
             } else
                 return;
         }
@@ -675,6 +749,49 @@ public class Main {
         }
     }*/
 
+    public static void printSettore(Settore settore) {
+
+        System.out.println("+-----+---------+---------+----------+---------+---------+");
+        System.out.println("| ID  | Temp.   | Umidità | Luce     | A/C     | Lampada |");
+        System.out.println("+-----+---------+---------+----------+---------+---------+");
+
+        // Valori corrispondenti
+        System.out.printf("| %-3d | %-4.1f °C | %-4.1f  %% | %-4.1f l | %s | %s |\n",
+                settore.getId(),
+                settore.getTermometro().getValore(),
+                settore.getIgrometroAria().getValore(),
+                settore.getFotosensore().getValore(),
+                settore.getClimatizzatore().isWorking() ? GreenString("  ON   ") : RedString("  OFF  "),
+                settore.getLampada().isWorking() ? GreenString("  ON   ") : RedString("  OFF  "));
+
+        System.out.println("+-----+---------+---------+----------+---------+---------+");
+    }
+
+    public static void printPosizioniInSettore(ArrayList<Map.Entry<Posizione, Pianta>> posizioni_piante) {
+        System.out.println("+-----------+--------+------------+---------------------+-------------------+-------------+");
+        System.out.println("| Posizione | Pianta |    Tipo    |        Stato        | Igrometro (Terra) | Irrigatore  |");
+        System.out.println("+-----------+--------+------------+---------------------+-------------------+-------------+");
+
+        for (var posizione_pianta : posizioni_piante) {
+            Posizione posizione = posizione_pianta.getKey();
+            Pianta pianta = posizione_pianta.getValue();
+
+
+            // Valori corrispondenti
+            System.out.printf("| %-9d | %-6d | %-10s | %-19s | %-15.1f %% | %-11s |\n",
+                    posizione.getId(),
+                    pianta.getId(),
+                    pianta.getTipoPianta(),
+                    pianta.getStato(),
+                    posizione.getIgrometroTerra().getValore(),
+                    posizione.getIrrigatore().isWorking() ? GreenString("    ON     ") : RedString("    OFF    "));
+
+            System.out.println("+-----------+--------+------------+---------------------+-------------------+-------------+");
+
+        }
+
+    }
+
     public static void printOrdini(ArrayList<Ordine> ordini) {
         System.out.println("+------+---------+------------+--------+----------------+--------------------------+");
         System.out.println("|  ID  | Cliente | Consegna   | Totale | Stato          | Piante                   |");
@@ -683,7 +800,7 @@ public class Main {
             System.out.println("+------+---------+------------+--------+----------------+--------------------------+");
             String[] pianteLinee = o.getPianteString().split("\n");
 
-            System.out.printf("| %-4d | %-7d | %-10s | %-6s | %-14s | %-24s |\n",
+            System.out.printf("| %-4d | %-7d | %-10s | %-6.1f | %-14s | %-24s |\n",
                     o.getId(), o.getCliente(), o.getStringDataConsegna(), o.getTotale(), o.getStato(), pianteLinee[0]
             ); // Stampa la prima riga con i dati principali
 
@@ -701,7 +818,7 @@ public class Main {
 
         for (Pianta p : piante) {
             System.out.println("+------+---------+------------+--------+---------+-------------------------------+");
-            System.out.printf("| %-4d | %-7s | %-10s | %-6s | %-14s | %-24s |\n",
+            System.out.printf("| %-4d | %-7s | %-10s | %-6s | %-14.1f | %-24s |\n",
                     p.getId(), p.getTipoPianta(), p.getDataInizio().toString(), p.getStato(), p.getCosto(), p.getDescrizione()
             ); // Stampa la prima riga con i dati principali
 
@@ -726,7 +843,7 @@ public class Main {
             System.out.println("  N/A   "); // Se non ci sono settori, stampa N/A
         } else {
             System.out.println("+------------------------------------------------------------------------------------------+");
-            System.out.println("|   ID   | Spazio | Termometro |  Fotosensore | Climatizzazione | Lampada | Igrometro aria |");
+            System.out.println("|   ID   | Spazio | Termometro |  Fotosensore | Climatizzatore | Lampada | Igrometro aria |");
             System.out.println("|--------|--------|------------|--------------|-----------------|---------|----------------|");
             // Ciclo che continua fino a quando non ci sono più settori
             do {
@@ -734,7 +851,7 @@ public class Main {
                         s.getId(), spazio.getId(),
                         (s.getTermometro() != null ? s.getTermometro().getId() : "N/A"),
                         (s.getFotosensore() != null ? s.getFotosensore().getId() : "N/A"),
-                        (s.getClimatizzazione() != null ? (s.getClimatizzazione().isWorking() ? "ON" : "OFF") : "N/A"),
+                        (s.getClimatizzatore() != null ? (s.getClimatizzatore().isWorking() ? "ON" : "OFF") : "N/A"),
                         (s.getLampada() != null ? (s.getLampada().isWorking() ? "ON" : "OFF") : "N/A"),
                         (s.getIgrometroAria() != null ? s.getIgrometroAria().getId() : "N/A")
                 );

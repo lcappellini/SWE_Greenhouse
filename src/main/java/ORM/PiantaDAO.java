@@ -32,10 +32,9 @@ public class PiantaDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
-                    Pianta pianta = new Pianta(resultSet.getInt("id"),
-                            resultSet.getString("tipo"),
-                            resultSet.getString("descrizione"));
-                    return pianta;
+                    return new Pianta(resultSet.getInt("id"),
+                            resultSet.getString("tipo"), resultSet.getString("descrizione"), resultSet.getString("dataInizio"),
+                            resultSet.getString("stato"));
                 }
             }
             return null;

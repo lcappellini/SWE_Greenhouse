@@ -3,13 +3,19 @@ package main.java.DomainModel.Impianto;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-public class Termometro extends Sensore<Float> {
-    public Termometro(int id) {
+public class Termometro extends Sensore {
+
+    public Termometro(int id, String dataString, float valore) {
         super(id);
+        this.valore = valore;
+        if (dataString == null)
+            this.data = null;
+        else
+            this.data = LocalDateTime.parse(dataString);
     }
 
     @Override
-    public Float misura(LocalDateTime lt, boolean attuatore_acceso) {
+    public float misura(LocalDateTime lt, boolean attuatore_acceso) {
         int ora = lt.getHour();
         float temperatura;
 
@@ -44,13 +50,13 @@ public class Termometro extends Sensore<Float> {
             }
         }
 
-        // Assegna il valore generato alla variabile membro e restituisce il risultato
+        this.data = lt;
         this.valore = temperatura;
         return this.valore;
     }
 
     @Override
-    public String tipoSensore(){
+    public String getTipoSensore(){
         return "Termometro";
     }
 }

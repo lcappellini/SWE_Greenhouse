@@ -3,12 +3,10 @@ package main.java.ORM;
 import main.java.DomainModel.Impianto.IgrometroTerra;
 import main.java.DomainModel.Impianto.Irrigatore;
 import main.java.DomainModel.Impianto.Posizione;
-import main.java.DomainModel.Ordine;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class PosizioneDAO {
@@ -33,53 +31,6 @@ public class PosizioneDAO {
         return instance;
     }
 
-    public ArrayList<Posizione> getPosizioniBySettore(int idAmbiente) {
-        ArrayList<Posizione> posizioni = new ArrayList<>();
-        String query = "SELECT * FROM \"Posizione\" WHERE settore = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, idAmbiente);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    int id = resultSet.getInt("id");
-                    posizioni.add(new Posizione(id, new Irrigatore(resultSet.getInt("irrigatore")),
-                            new IgrometroTerra(resultSet.getInt("igrometroterreno")),
-                            resultSet.getBoolean("assegnata"), resultSet.getBoolean("occupata")));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Errore durante il completamento dello ambiente: " + e.getMessage());
-        }
-
-        return posizioni;
-    }
-
-    public void monitoraPosizione(int idPosizione) {
-        ///TODO un sacco di robba su
-    }
-
-    public void modificaPosizione(int idPosizione, String query, String valore, int index_attr) {
-        //FIXMe dai che attributo non ha molto senso...
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            if (index_attr == 1) {
-                pstmt.setBoolean(1, Boolean.parseBoolean(valore));
-            } else {
-                pstmt.setInt(1, Integer.parseInt(valore));
-            }
-            pstmt.setInt(2, idPosizione);
-
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("Record aggiornato con successo.");
-            } else {
-                System.out.println("Nessun record trovato con l'id specificato.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public boolean verificaNonAssegnate(int i) {
         String query = "SELECT COUNT(*) FROM \"Posizione\" WHERE assegnata = false";
         boolean flag = false;
@@ -96,40 +47,6 @@ public class PosizioneDAO {
 
         return flag;  // Ritorna true se ci sono abbastanza posizioni non assegnate, altrimenti false
     }
-
-    public ArrayList<Posizione> occupa(int nPiante) {
-        String selectQuery = "SELECT * FROM \"Posizione\" WHERE assegnata = ? AND occupata = ?";
-        String updateQuery = "UPDATE \"Posizione\" SET occupata = ? WHERE id = ?";
-        ArrayList<Posizione> posizioni = new ArrayList<>();
-
-        try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
-             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
-
-            // Imposta i parametri per la query di selezione
-            selectStatement.setBoolean(1, true);
-            selectStatement.setBoolean(2, false);
-
-            // Esegui la query di selezione
-            ResultSet resultSet = selectStatement.executeQuery();
-
-            // Raccogli le posizioni disponibili e limitale a nPiante
-            while (resultSet.next() && posizioni.size() < nPiante) {
-                posizioni.add(new Posizione(resultSet.getInt("id"), new Irrigatore(resultSet.getInt("irrigatore")),
-                        new IgrometroTerra(resultSet.getInt("igrometroTerreno")), resultSet.getBoolean("assegnata"),
-                        true));
-                updateStatement.setBoolean(1, true);  // Imposta occupata a true
-                updateStatement.setInt(2, resultSet.getInt("id"));        // Aggiorna la posizione con l'id specifico
-                updateStatement.executeUpdate();      // Esegui l'aggiornamento
-            }
-
-
-        } catch (SQLException e) {
-            System.err.println("Errore durante la sistemazione delle posizioni: " + e.getMessage());
-        }
-
-        return posizioni;  // Ritorna la lista degli ID delle posizioni aggiornate
-    }
-
 
     public void assegna(int nPiante) {
         String query = "UPDATE \"Posizione\" "
@@ -181,11 +98,11 @@ public class PosizioneDAO {
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
                 int id = resultSet.getInt("id");
-                Irrigatore irrigatore = irrigatoreDAO.getById(resultSet.getInt("irrigatore"));
-                IgrometroTerra igrometroTerra = igrometroTerraDAO.getById(resultSet.getInt("igrometroterreno"));
                 boolean assegnata = resultSet.getBoolean("assegnata");
                 boolean occupata = resultSet.getBoolean("occupata");
-                posizioni.add(new Posizione(id, irrigatore, igrometroTerra, assegnata, occupata));
+                Irrigatore irrigatore = (Irrigatore)attuatoreDAO.getById(resultSet.getInt("irrigatore"));
+                IgrometroTerra igrometroTerra = (IgrometroTerra)sensoreDAO.getById(resultSet.getInt("igrometroterra"));
+                posizioni.add(new Posizione(id, assegnata, occupata, igrometroTerra, irrigatore));
             }
         }catch (SQLException ignored){
         }

@@ -73,10 +73,12 @@ public class OrdineDAO {
             // Esegui la query e gestisci il ResultSet
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
+                    int idOrdine = resultSet.getInt("id");
+                    ArrayList<Pianta> piante = piantaDAO.get(Map.of("ordine", idOrdine));
                     ordini.add(new Ordine(
-                            resultSet.getInt("id"),
+                            idOrdine,
                             resultSet.getInt("cliente"),
-                            resultSet.getString("piante"),
+                            piante,
                             resultSet.getString("stato"),
                             resultSet.getString("dataConsegna"),
                             resultSet.getDouble("totale")
