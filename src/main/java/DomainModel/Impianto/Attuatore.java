@@ -7,12 +7,6 @@ public abstract class Attuatore {
     protected String tipoAttuatore; // Tipo dell'attuatore (es. "Climatizzatore", "Lampada", ecc.)
     protected String lavoro; // Descrizione del lavoro che svolge (es. "Raffreddamento", "Illuminazione")
 
-    // Costruttore della classe Attuatore
-    public Attuatore(int id) {
-        this.id = id;
-        this.working = false;
-    }
-
     public Attuatore(int id, boolean working) {
         this.id = id;
         this.working = working;
@@ -23,24 +17,12 @@ public abstract class Attuatore {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public boolean isWorking() {
         return working;
     }
 
-    public void setWorking(boolean working) {
-        this.working = working;
-    }
-
     public String getLavoro() {
         return lavoro;
-    }
-
-    public void setLavoro(String lavoro) {
-        this.lavoro = lavoro;
     }
 
     // Metodo che esegue l'azione dell'attuatore in base al valore
@@ -54,15 +36,8 @@ public abstract class Attuatore {
         }
         return lavoro;
     }
-    // Metodo per ottenere il tipo dell'attuatore
-    public abstract String tipoAttuatore() ;
 
-    // Metodo per controllare se l'attuatore è attivo
-    public boolean attivo() {
-        return working;
-    }
-
-    public String getDescrizione() {
-        return lavoro;
+    public String getTipoAttuatore(){
+        return tipoAttuatore;
     }
 }

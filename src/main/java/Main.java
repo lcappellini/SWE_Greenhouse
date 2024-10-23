@@ -128,12 +128,12 @@ public class Main {
             LoginPersonaleController loginPersonaleController = new LoginPersonaleController();
             if (role == 0) {
                 Admin a = loginPersonaleController.loginAdmin(email, password);
-                if(a != null)
-                    handleAdminAction(a);
+                if (a != null)
+                    handleAdminAction();
             }
             else if (role == 1) {
                 Operatore o = loginPersonaleController.loginOperatore(email, password);
-                if(o != null)
+                if (o != null)
                     handleOperatoreAction(o);
             }
         }
@@ -144,12 +144,11 @@ public class Main {
     }
 
     // ADMIN
-    public static void handleAdminAction(Admin admin) throws Exception {
-        AdminController adminController = new AdminController();
+    public static void handleAdminAction() {
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
             int index = askForChooseMenuOption("    ADMIN DASHBOARD", new String[]{"Visualizza", "Monitora Settore", "Logout", "Esci"});
             if (index == 1)
-                handleViewTables();
+                handleViewTables(true);
             else if (index == 2)
                 handleMonitoraSettore();
             else if (index == 3)
@@ -160,8 +159,8 @@ public class Main {
     }
 
     private static void handleMonitoraSettore() {
-        GestioneSettori gestioneSettori = new GestioneSettori();
-        ArrayList<Settore> settori = gestioneSettori.get(null);
+        AdminController adminController = new AdminController();
+        ArrayList<Settore> settori = adminController.getSettori(null);
         if (settori.isEmpty()) {
             System.out.println("Non ci sono settori!");
             return;
@@ -172,15 +171,23 @@ public class Main {
             System.out.printf("%d, ", settore.getId());
         System.out.println();
         int idSettore = askForInteger("ID Settore da monitorare: ");
-        Settore settoreScelto = gestioneSettori.getById(idSettore);
-        if (settoreScelto == null) {
-            System.out.println("Nessun ordine trovato con questo id!");
+
+        boolean valid = false;
+        for (Settore settore : settori) {
+            if (idSettore == settore.getId()) {
+                valid = true;
+                break;
+            }
+        }
+
+        if (!valid) {
+            System.out.println("Nessun settore trovato con questo id!");
         } else {
 
             boolean conPosizioni = askForSorN("Vuoi monitorare anche le Posizioni di questo settore?");
 
             LocalDateTime lt = LocalDateTime.now();
-            AdminController adminController = new AdminController();
+
             try {
                 while (true){
 
@@ -203,7 +210,7 @@ public class Main {
 
                     System.out.println("Premi Invio per interrompere il monitoraggio...");
                     if (System.in.available() > 0) {
-                        String input = scanner.nextLine();
+                        scanner.nextLine();
                         System.out.println("Invio premuto! Arresto monitoraggio...");
                         System.out.println("Monitoraggio terminato.");
                         break;
@@ -216,7 +223,7 @@ public class Main {
 
     }
 
-    public static void handleViewTables() throws Exception {
+    public static void handleViewTables(boolean isAdmin) {
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
             int index = askForChooseMenuOption("    VISUALIZZA TABELLE", new String[]{"ORDINI", "PIANTE", "CLIENTI", "Indietro", "Esci"});
             if (index == 1) {
@@ -232,10 +239,17 @@ public class Main {
                     printPiante(piante);
             }
             else if (index == 3) {
-                GestioneClienti gestioneClienti = new GestioneClienti();
-                ArrayList<Cliente> clienti = gestioneClienti.get(null);
-                if (!clienti.isEmpty())
-                    printClienti(clienti);
+                if (isAdmin) {
+                    AdminController adminController = new AdminController();
+                    ArrayList<Cliente> clienti = adminController.getClienti(null);
+                    if (!clienti.isEmpty())
+                        printClienti(clienti);
+                } else {
+                    OperatoreController operatoreController = new OperatoreController();
+                    ArrayList<Cliente> clienti = operatoreController.getClienti(null);
+                    if (!clienti.isEmpty())
+                        printClienti(clienti);
+                }
             }
             else if (index == 4)
                 return;
@@ -246,11 +260,11 @@ public class Main {
 
     // OPERATORE
     public static void handleOperatoreAction(Operatore operatore) throws Exception {
-        OperatoreController operatoreController = new OperatoreController(operatore);
+        OperatoreController operatoreController = new OperatoreController();
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
             int index = askForChooseMenuOption("    OPERATORE DASHBOARD", new String[]{"VISUALIZZA", "Pianta Ordine", "Completa Ordine", "Check-Up Piante", "Logout", "Esci"});
             if (index == 1) {
-                handleViewTables();
+                handleViewTables(false);
             }
             else if (index == 2) {
                 Ordine ordine = handleSceltaOrdineDaPiantare();
@@ -699,15 +713,13 @@ public class Main {
         System.out.println("+------+---------+------------+--------+----------------+--------------------------+");
     }
 
+    //TODO FIX PRINT FORMAT AND DESCRIZIONE SPLIT
     public static void printPiante(ArrayList<Pianta> piante) {
         System.out.println("+------+--------------+------------+-----------------------+---------+-------------------------------+");
         System.out.println("|  ID  | Tipo         | Piantato   | Stato                 | Costo   | Descrizione                   |");
         System.out.println("+------+--------------+------------+-----------------------+---------+-------------------------------+");
 
         for (Pianta p : piante) {
-            System.out.printf("| %-4d | %-12s | %-10s | %-21s | %-7.1f | %-29s |\n",
-                    p.getId(), p.getTipoPianta(), p.getDataInizio().toString(), p.getStato(), p.getCosto(), p.getDescrizione()
-            ); // Stampa la prima riga con i dati principali
 
             ArrayList<String> pianteLinee = new ArrayList<>();
             String descrizione = p.getDescrizione();
@@ -721,6 +733,16 @@ public class Main {
                 pianteLinee.add(descrizione.substring(start, end));
                 start += lunghezzaMax;
             }
+
+            String firstLine;
+            if (pianteLinee.isEmpty())
+                firstLine = p.getDescrizione();
+            else
+                firstLine = pianteLinee.get(0);
+
+            System.out.printf("| %-4d | %-12s | %-10s | %-21s | %-7.1f | %-29s |\n",
+                    p.getId(), p.getTipoPianta(), p.getDataInizio().toString(), p.getStato(), p.getCosto(), firstLine
+            ); // Stampa la prima riga con i dati principali
 
             // Stampa le righe successive con le piante spezzate, mantenendo gli altri campi vuoti
             for (int i = 1; i < pianteLinee.size(); i++) {
@@ -747,7 +769,7 @@ public class Main {
     }
 
 
-    public static void printSpazio(Spazio spazio) {
+    /*public static void printSpazio(Spazio spazio) {
         GestioneSettori gestioneSettori = new GestioneSettori();
         int i = 1;
         Settore s = gestioneSettori.getSettoreBySpazio(spazio.getId(), i);
@@ -774,5 +796,5 @@ public class Main {
         }
 
         System.out.println("+------------------------------------------------------------------------------------------+");
-    }
+    }*/
 }

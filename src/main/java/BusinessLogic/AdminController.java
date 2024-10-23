@@ -1,7 +1,9 @@
 package main.java.BusinessLogic;
 
+import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Impianto.*;
 import main.java.DomainModel.Pianta;
+import main.java.DomainModel.Posizionamento;
 import main.java.ORM.*;
 
 import java.time.LocalDateTime;
@@ -42,13 +44,13 @@ public class AdminController {
     }
 
     public ArrayList<Map.Entry<Posizione, Pianta>> monitoraPosizioniBySettoreId(int idSettore, LocalDateTime lt){
-        GestionePosizioni gestionePosizioni = new GestionePosizioni();
         PiantaDAO piantaDAO = new PiantaDAO();
         PosizionamentoDAO posizionamentoDAO = new PosizionamentoDAO();
+        PosizioneDAO posizioneDAO = new PosizioneDAO();
 
         ArrayList<Map.Entry<Posizione, Pianta>> posizioni_piante = new ArrayList<>();
 
-        ArrayList<Posizione> posizioni = gestionePosizioni.get(Map.of("settore", idSettore));
+        ArrayList<Posizione> posizioni = posizioneDAO.get(Map.of("settore", idSettore));
 
         SensoreDAO sensoreDAO = new SensoreDAO();
         AttuatoreDAO attuatoreDAO = new AttuatoreDAO();
@@ -78,8 +80,15 @@ public class AdminController {
         }
 
         return posizioni_piante;
+    }
 
+    public ArrayList<Cliente> getClienti(Map<String, Object> criteri) {
+        ClienteDAO clienteDAO = new ClienteDAO();
+        return clienteDAO.get(criteri);
+    }
 
-
+    public ArrayList<Settore> getSettori(Map<String, Object> criteri) {
+        SettoreDAO settoreDAO = new SettoreDAO();
+        return settoreDAO.get(criteri);
     }
 }

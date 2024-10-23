@@ -23,7 +23,7 @@ public class OperazioneDAO {
         String query = "INSERT INTO \"Operazione\" (tipoAttuatore, idAttuatore, descrizione, data) VALUES (?,?,?,?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, attuatore.tipoAttuatore());
+            statement.setString(1, attuatore.getTipoAttuatore());
             statement.setInt(2, attuatore.getId());
             statement.setString(3, descrizione);
             statement.setString(4, data);

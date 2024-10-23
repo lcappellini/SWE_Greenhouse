@@ -27,8 +27,8 @@ public class AdminDAO {
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     // Estrai i dati dell'admin dal result set e costruisci un oggetto Admin
-                    Admin admin = new Admin(rs.getString("email"));
-                    return admin;
+                    return new Admin(rs.getInt("id"), rs.getString("nome"),
+                            rs.getString("cognome"), rs.getString("email"));
                 }
             }
         } catch (SQLException e) {

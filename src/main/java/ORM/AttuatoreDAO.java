@@ -28,7 +28,7 @@ public class AttuatoreDAO {
             // 2. Inserisci l'operazione nella tabella delle operazioni degli attuatori
             String insertOperazioneSQL = "INSERT INTO \"Operazione\" (tipoAttuatore, idAttuatore, descrizione, data) VALUES (?, ?, ?, ?)";
             PreparedStatement psInsert = connection.prepareStatement(insertOperazioneSQL);
-            psInsert.setString(1, attuatore.tipoAttuatore());
+            psInsert.setString(1, attuatore.getTipoAttuatore());
             psInsert.setInt(2, attuatore.getId());
             psInsert.setString(3, attuatore.getLavoro());
             psInsert.setString(4, data);

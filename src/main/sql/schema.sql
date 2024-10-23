@@ -91,8 +91,9 @@ CREATE TABLE IF NOT EXISTS "Operazione" (
                                             data VARCHAR(50)
 );
 CREATE TABLE IF NOT EXISTS "Admin"(
-                                      email VARCHAR(50) PRIMARY KEY,
-                                      password VARCHAR(100),
-                                      nome VARCHAR(50),
-                                      cognome VARCHAR(50)
+                                    id SERIAL PRIMARY KEY,
+                                    email VARCHAR(50),
+                                    password VARCHAR(100),
+                                    nome VARCHAR(50),
+                                    cognome VARCHAR(50)
 );

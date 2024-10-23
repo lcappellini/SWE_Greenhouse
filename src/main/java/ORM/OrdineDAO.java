@@ -92,6 +92,7 @@ public class OrdineDAO {
         return ordini;
     }
 
+    //TODO FIX USE ALSO ID_ORDINE TO FILTER QUERY RESULT AND SET ONLY 1 ORDINE
     public boolean aggiorna(int id_ordine, Map<String, Object> criterio) {
         boolean updated = false;
         // Aggiungi condizioni se ci sono criteri

@@ -11,7 +11,6 @@ public class Operatore extends Attuatore {
     private String cognome;
     private String email;
     protected Map<Integer, String> tipoLavoro;
-    String ruolo;
 
     public Operatore(int id, String nome, String cognome, String email, boolean working) {
         super(id, working);
@@ -25,11 +24,7 @@ public class Operatore extends Attuatore {
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
-    }
-
-    @Override
-    public String tipoAttuatore() {
-        return "Operatore";
+        this.tipoAttuatore = "Operatore";
     }
 
     public String esegui(int richiesta) {
@@ -48,13 +43,4 @@ public class Operatore extends Attuatore {
         lavoro = descrizione.toString();
         return lavoro;
     }
-
-    // inherits Utente
-
-    public int getId() {
-        return id;
-    }
-    public String getNome() {return nome;}
-    public String getCognome() {return cognome;}
-    public String getEmail() {return email;}
 }

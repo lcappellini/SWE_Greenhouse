@@ -12,12 +12,6 @@ public abstract class Utente {
         this.nome = nome;
         this.cognome = cognome;
     }
-    public Utente( String email) {
-        this.email = email;
-    }
-    public Utente(int id) {
-        this.id = id;
-    }
 
     public int getId() {
         return id;

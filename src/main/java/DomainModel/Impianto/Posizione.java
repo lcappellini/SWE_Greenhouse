@@ -9,7 +9,7 @@ public class Posizione {
     private IgrometroTerra igrometroTerra;
     private boolean assegnata;
     private boolean occupata;
-    private Map<String, Range<Float>> rangeAccettabili;
+    private Map<String, float[]> rangeAccettabili;
 
     public Posizione(int id, boolean assegnata, boolean occupata, IgrometroTerra igrometroTerra, Irrigatore irrigatore) {
         this(id);
@@ -21,21 +21,19 @@ public class Posizione {
     }
     public Posizione(int id) {
         this.id = id;
-        this.rangeAccettabili = new HashMap<>();
-        this.rangeAccettabili.put("IgrometroTerra", new Range<>(40.0f, 60.0f));  // Range:
+        this.rangeAccettabili = new HashMap<String, float[]>();
+        this.rangeAccettabili.put("IgrometroTerra", new float[]{40.0f, 60.0f});  // Range:
     }
 
     //getters
     public int getId() { return id; }
     public Irrigatore getIrrigatore() { return irrigatore; }
     public IgrometroTerra getIgrometroTerra() { return igrometroTerra; }
-    public boolean isAssegnata() { return assegnata; }
-    public boolean isOccupata() { return occupata; }
 
     public boolean isSensorValueInRange(String tipoSensore, float misura) {
         if (rangeAccettabili.containsKey(tipoSensore)) {
-            Range<Float> range = rangeAccettabili.get(tipoSensore);
-            return misura >= range.getMin() && misura <= range.getMax();
+            float[] range = rangeAccettabili.get(tipoSensore);
+            return misura >= range[0] && misura <= range[1];
         }
         return true;
     }

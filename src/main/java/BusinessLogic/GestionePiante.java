@@ -14,7 +14,7 @@ public class GestionePiante {
         return piantaDAO.get(criteri);
     }
 
-    // Funzione ai fini della simulazione
+    // Funzioni ai fini della simulazione
     public void generaStatoPiante(){
         PiantaDAO piantaDAO = new PiantaDAO();
         ArrayList<Pianta> piante = piantaDAO.get(null);
@@ -23,13 +23,11 @@ public class GestionePiante {
             piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
         }
     }
-
     public void setStatoPiantaNonHaBisgono(Pianta pianta){
         PiantaDAO piantaDAO = new PiantaDAO();
         pianta.setStatoNonHaBisogno();
         piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
     }
-
     public void setStatoPiantaHaBisgono(Pianta pianta){
         PiantaDAO piantaDAO = new PiantaDAO();
         pianta.setStatoHaBisogno();

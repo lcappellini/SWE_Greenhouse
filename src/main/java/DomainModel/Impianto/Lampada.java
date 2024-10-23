@@ -4,11 +4,8 @@ public class Lampada extends Attuatore{
 
     public Lampada(int id, boolean working) {
         super(id, working);
+        tipoAttuatore = "Lampada";
     }
-    public Lampada(int id){
-        super(id);
-    }
-
 
     @Override
     public String esegui(int i){
@@ -21,9 +18,5 @@ public class Lampada extends Attuatore{
             working = false;
         }
         return descrizione.toString();
-    }
-    @Override
-    public String tipoAttuatore(){
-        return "Lampada";
     }
 }

@@ -1,6 +1,6 @@
 package main.java.ORM;
 
-import main.java.DomainModel.Impianto.Posizionamento;
+import main.java.DomainModel.Posizionamento;
 
 import java.sql.*;
 import java.util.ArrayList;

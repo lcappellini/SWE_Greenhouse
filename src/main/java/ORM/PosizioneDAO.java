@@ -11,9 +11,6 @@ import java.util.Map;
 
 public class PosizioneDAO {
 
-    // Istanza privata statica dell'oggetto OrdineDAO
-    private static PosizioneDAO instance;
-
     private Connection connection;
 
     public PosizioneDAO(){
@@ -24,16 +21,8 @@ public class PosizioneDAO {
         }
     }
 
-    public static PosizioneDAO getInstance() {
-        if (instance == null) {
-            instance = new PosizioneDAO(); // Istanza creata solo la prima volta
-        }
-        return instance;
-    }
-
     public boolean verificaNonAssegnate(int i) {
         String query = "SELECT COUNT(*) FROM \"Posizione\" WHERE assegnata = false";
-        boolean flag = false;
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();  // Esegui la query e ottieni il ResultSet
@@ -50,7 +39,6 @@ public class PosizioneDAO {
 
     public int getNNonAssegnate() {
         String query = "SELECT COUNT(*) FROM \"Posizione\" WHERE assegnata = false";
-        boolean flag = false;
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
@@ -79,12 +67,6 @@ public class PosizioneDAO {
             System.err.println("Errore durante la sistemazione delle posizioni: " + e.getMessage());
         }
         return 0;
-    }
-
-    public Posizione getById(int posizioneId) {
-        Map<String, Object> m = new HashMap<>();
-        m.put("id", posizioneId);
-        return get(m).get(0);
     }
 
     public ArrayList<Posizione> get(Map<String, Object> criteri) {

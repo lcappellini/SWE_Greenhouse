@@ -12,10 +12,6 @@ public class Ordine {
     private String stato;
     private double totale;
 
-    public Ordine() {
-        piante = new ArrayList<Pianta>();
-    }
-
     public Ordine(int cliente, ArrayList<Pianta> piante) {
         this.cliente = cliente;
         this.piante = piante;
@@ -42,19 +38,6 @@ public class Ordine {
         }
         return i;
     }
-
-    public Ordine(int id_cliente, String piante, String stato, String dataConsegna) {
-        this.stato = stato;
-        this.dataConsegna = LocalDate.parse(dataConsegna);
-        setPiante(piante);
-        this.cliente = id_cliente;
-    }
-
-    public Ordine(int id, int id_cliente, String piante, String stato, String dataConsegna) {
-        this(id_cliente, piante, stato, dataConsegna);
-        this.id = id;
-    }
-
     public int getId() {
         return id;
     }
@@ -87,33 +70,8 @@ public class Ordine {
         this.id = id;
     }
 
-    public void setPiante(String piante_string) {
-        this.piante = new ArrayList<>();
-        if(piante_string.contains("\n")){
-            for (String line : piante_string.split("\n")) {
-                String[] parts = line.split(" x ");
-                int n = Integer.parseInt(parts[1]);
-                for (int i = 0; i < n; i++)
-                    this.piante.add(new Pianta(parts[0]));
-            }
-        }else if(piante_string.contains(", ")){
-            for (String line : piante_string.split(", ")) {
-                String[] parts = line.split(" x ");
-                int n = Integer.parseInt(parts[1]);
-                for (int i = 0; i < n; i++)
-                    this.piante.add(new Pianta(parts[0]));
-            }
-        }
-
-    }
-    public void setPiante(ArrayList<Pianta> piante) { this.piante = piante; }
-
     public void setStato(String stato) {
         this.stato = stato;
-    }
-
-    public void setCliente(int cliente) {
-        this.cliente = cliente;
     }
 
     public String getPianteString() {

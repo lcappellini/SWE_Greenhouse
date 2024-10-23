@@ -63,20 +63,6 @@ public class ClienteDAO {
         return null; // Se non viene trovato alcun cliente con le credenziali fornite, restituisci null
     }
 
-    public boolean rimuoviClienteById(int idCliente){
-        String query = "DELETE FROM \"Cliente\" WHERE id = ?";
-
-        try(PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setInt(1, idCliente);
-
-            statement.executeUpdate();
-            return true;
-        }catch(SQLException e){
-            System.err.println("Errore durante la rimozione del cliente:" + e.getMessage());
-        }
-        return false;
-    }
-
     public boolean modificaAttributo(int clienteId, String name, String newValue){
         String query = "UPDATE \"Cliente\" SET " + name + " = ? WHERE id = ?";
 

@@ -1,9 +1,7 @@
 package main.java.BusinessLogic;
 
-import main.java.DomainModel.Operatore;
-import main.java.DomainModel.Pianta;
+import main.java.DomainModel.*;
 import main.java.ORM.*;
-import main.java.DomainModel.Ordine;
 import main.java.DomainModel.Impianto.*;
 
 import java.sql.SQLException;
@@ -16,10 +14,8 @@ import java.util.Map;
 import static java.lang.Thread.sleep;
 
 public class OperatoreController {
-    Operatore operatore;
-    public OperatoreController(Operatore operatore) {
-        this.operatore = operatore;
-    }
+
+    public OperatoreController() {}
 
     public boolean piantaOrdine(Ordine ordine, Operatore operatore){
         OperazioneDAO operazioneDAO = new OperazioneDAO();
@@ -102,5 +98,10 @@ public class OperatoreController {
         piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
         piantaDAO.aggiornaDescrizione(pianta.getId(), pianta.getDescrizione());
         operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
+    }
+
+    public ArrayList<Cliente> getClienti(Map<String, Object> criteri) {
+        ClienteDAO clienteDAO = new ClienteDAO();
+        return clienteDAO.get(criteri);
     }
 }

@@ -50,7 +50,7 @@ public class SettoreDAO {
         return settore;
     }
 
-    public Settore getSettoreBySpazio(int idSpazio, int index) {
+    /*public Settore getSettoreBySpazio(int idSpazio, int index) {
         String query = "SELECT * FROM \"Settore\" WHERE spazio_id = ? LIMIT 1 OFFSET ?";
         Settore settore = null;
         SensoreDAO sensoreDAO = new SensoreDAO();
@@ -83,7 +83,7 @@ public class SettoreDAO {
         }
 
         return settore;
-    }
+    }*/
 
     public ArrayList<Settore> get(Map<String, Object> criteri) {
         StringBuilder query = new StringBuilder("SELECT * FROM \"Settore\"");

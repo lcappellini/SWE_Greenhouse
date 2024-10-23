@@ -1,6 +1,4 @@
 package main.java.DomainModel;
-import javax.swing.text.DateFormatter;
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +12,7 @@ public class Pianta {
     }
 
     private LocalDate dataInizio;
-    private String descrizione;
+    private String descrizione = "";
     private String stato;
     private double costo;
     private int giorni_crescita;
@@ -34,15 +32,11 @@ public class Pianta {
     public Pianta(int id, String tipoPianta, String descrizione, String dataInizio, String stato) {
         this.id = id;
         this.tipoPianta = tipoPianta;
-        this.descrizione = descrizione;
+        System.out.println(descrizione);
+        this.descrizione = descrizione == null ? "" : descrizione;
         this.dataInizio = LocalDate.parse(dataInizio);
         this.stato = stato;
         setCosto(tipoPianta);
-    }
-    public Pianta(String tipoPianta) {
-        this.tipoPianta = tipoPianta;
-        this.setGiorni_crescitaDaTipo(tipoPianta);
-        this.setCosto(tipoPianta);
     }
 
     public Pianta(String tipoPianta, String stato) {
@@ -50,13 +44,6 @@ public class Pianta {
         this.stato = stato;
         this.setGiorni_crescitaDaTipo(tipoPianta);
         this.setCosto(tipoPianta);
-    }
-
-    public Pianta(int id, String tipoPianta) {
-        this(tipoPianta);
-        this.id = id;
-        this.dataInizio = LocalDate.now();
-        this.descrizione = "["+dataInizio.toString()+"]: Piantata. ";
     }
 
     public double getCosto(){ return costo; }
@@ -101,14 +88,6 @@ public class Pianta {
     public String getStato() {return this.stato;}
 
     public void setId(int id) {this.id = id;}
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
-
-    public void setDataInizio(LocalDate now) {
-        this.dataInizio = now;
-    }
 
     public boolean haBisogno() {
         return this.stato.equals("ha bisogno di cure");

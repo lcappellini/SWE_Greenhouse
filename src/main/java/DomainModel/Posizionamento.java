@@ -1,4 +1,4 @@
-package main.java.DomainModel.Impianto;
+package main.java.DomainModel;
 
 public class Posizionamento {
     private int id;
