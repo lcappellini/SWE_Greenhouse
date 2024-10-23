@@ -1,8 +1,5 @@
 package main.java.DomainModel.Impianto;
 
-import main.java.DomainModel.Ordine;
-import main.java.DomainModel.Pianta.Pianta;
-
 public class Posizionamento {
     private int id;
     private int idPosizione;

@@ -1,7 +1,6 @@
 package main.java.ORM;
 
-import main.java.DomainModel.Admin;
-import main.java.DomainModel.Impianto.Operatore;
+import main.java.DomainModel.Operatore;
 
 import java.sql.*;
 

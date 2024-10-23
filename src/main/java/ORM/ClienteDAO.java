@@ -3,6 +3,8 @@ package main.java.ORM;
 import main.java.DomainModel.Cliente;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Map;
 
 
 public class ClienteDAO {
@@ -61,20 +63,18 @@ public class ClienteDAO {
         return null; // Se non viene trovato alcun cliente con le credenziali fornite, restituisci null
     }
 
-    public void rimuoviCliente(String email){
-        String query = "DELETE FROM \"Cliente\" WHERE email = ?";
+    public boolean rimuoviClienteById(int idCliente){
+        String query = "DELETE FROM \"Cliente\" WHERE id = ?";
 
         try(PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setString(1, email);
-            try{
-                statement.executeUpdate();
-                System.out.println("Cliente rimosso con successo.");
-            }catch (SQLException e){
-                System.err.println("Errore durante la rimozione del cliente:"+ e.getMessage());
-            }
+            statement.setInt(1, idCliente);
+
+            statement.executeUpdate();
+            return true;
         }catch(SQLException e){
             System.err.println("Errore durante la rimozione del cliente:" + e.getMessage());
         }
+        return false;
     }
 
     public boolean modificaAttributo(int clienteId, String name, String newValue){
@@ -92,6 +92,44 @@ public class ClienteDAO {
             System.err.println("Errore durante l'aggiornamento dell'attributo del cliente: " + e.getMessage());
         }
         return false;
+    }
+
+    public ArrayList<Cliente> get(Map<String, Object> criteri) {
+        StringBuilder query = new StringBuilder("SELECT * FROM \"Cliente\"");
+
+        if (criteri != null && !criteri.isEmpty()) {
+            query.append(" WHERE ");
+            for (String key : criteri.keySet()) {
+                query.append(key).append(" = ? AND ");
+            }
+            query.setLength(query.length() - 5);  // Rimuove l'ultimo " AND "
+        }
+
+        ArrayList<Cliente> clienti = new ArrayList<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+            if (criteri != null && !criteri.isEmpty()) {
+                int paramIndex = 1;
+                for (Object value : criteri.values()) {
+                    statement.setObject(paramIndex, value);
+                    paramIndex++;
+                }
+            }
+
+            // Esegui la query e gestisci il ResultSet
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    clienti.add(new Cliente(rs.getInt("id"), rs.getString("nome"),
+                            rs.getString("cognome"), rs.getString("email")));
+                }
+            }
+        } catch (SQLException e) {
+            // Logga l'errore
+            System.err.println("Errore durante il recupero delle piante: " + e.getMessage());
+            e.printStackTrace(); // Mostra la traccia dello stack per una diagnostica più dettagliata
+        }
+
+        return clienti;
     }
 }
 

@@ -70,9 +70,6 @@ public class Settore {
     }
 
     public ArrayList<Sensore> getSensori() {
-        System.out.println(termometro);
-        System.out.println(igrometroAria);
-        System.out.println(fotosensore);
         return new ArrayList<>(List.of(termometro, igrometroAria, fotosensore));
     }
 

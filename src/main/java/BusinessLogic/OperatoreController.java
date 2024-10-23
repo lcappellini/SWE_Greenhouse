@@ -1,7 +1,7 @@
 package main.java.BusinessLogic;
 
-import main.java.DomainModel.Impianto.Operatore;
-import main.java.DomainModel.Pianta.Pianta;
+import main.java.DomainModel.Operatore;
+import main.java.DomainModel.Pianta;
 import main.java.ORM.*;
 import main.java.DomainModel.Ordine;
 import main.java.DomainModel.Impianto.*;
@@ -37,7 +37,7 @@ public class OperatoreController {
 
             for (int i = 0; i < ordine.getnPiante(); i++) {
                 pos.add(new Posizionamento(libere.get(i).getId(), ordine.getPiante().get(i).getId(), ordine.getId()));
-                piantaDAO.aggiorna(ordine.getPiante().get(i).getId(), Map.of("stato", "piantata"));
+                piantaDAO.aggiorna(ordine.getPiante().get(i).getId(), Map.of("stato", "sta crescendo"));
                 posizioneDAO.aggiorna(libere.get(i).getId(), Map.of("occupata", true));
             }
             ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "posizionato"));
@@ -51,7 +51,7 @@ public class OperatoreController {
         }
     }
 
-    public void completaOrdine(Ordine ordine, Operatore operatore){
+    public boolean completaOrdine(Ordine ordine, Operatore operatore){
         OperazioneDAO operazioneDAO = new OperazioneDAO();
         OrdineDAO ordineDAO = new OrdineDAO();
         PosizioneDAO posizioneDAO = new PosizioneDAO();
@@ -65,12 +65,13 @@ public class OperatoreController {
                 piantaDAO.aggiorna(posizionamento.getIdPianta(), Map.of("stato", "da ritirare"));
             }
             ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "da ritirare"));
-            ;
             operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
+            return true;
         }
+        return false;
     }
 
-    public ArrayList<Pianta> checkupPiante(Operatore operatore) throws InterruptedException {
+    public ArrayList<Pianta> checkupPiante(Operatore operatore, int duration) {
         OperazioneDAO operazioneDAO = new OperazioneDAO();
         PiantaDAO piantaDAO = new PiantaDAO();
         PosizionamentoDAO posizionamentoDAO = new PosizionamentoDAO();
@@ -79,12 +80,16 @@ public class OperatoreController {
 
         for (Posizionamento p : posizionamenti){
             Pianta pianta = piantaDAO.get(Map.of("id", p.getIdPianta())).get(0);
-            System.out.println(pianta.generaStato());
-            piantaDAO.aggiorna(p.getIdPianta(), Map.of("stato", pianta.getStato()));
+            String stato = pianta.getStato();
+            System.out.printf("Stato %s [%d] -> %s\n", pianta.getTipoPianta(), pianta.getId(), stato);
             if(pianta.haBisogno()) {
                 pianteDaCurare.add(pianta);
             }
-            Thread.sleep(1000);
+            try {
+                Thread.sleep(duration);
+            } catch (InterruptedException ignored) {
+                return new ArrayList<>();
+            }
         }
         operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
         return pianteDaCurare;
@@ -94,7 +99,7 @@ public class OperatoreController {
         PiantaDAO piantaDAO = new PiantaDAO();
         OperazioneDAO operazioneDAO = new OperazioneDAO();
         pianta.cura(operatore.getId(), LocalDateTime.now());
-        piantaDAO.aggiorna(pianta.getId(), Map.of("stato", "Curata, sta crescendo"));
+        piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
         piantaDAO.aggiornaDescrizione(pianta.getId(), pianta.getDescrizione());
         operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
     }

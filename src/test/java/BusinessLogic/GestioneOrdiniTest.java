@@ -3,8 +3,8 @@ package test.java.BusinessLogic;
 import main.java.BusinessLogic.GestioneOrdini;
 import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Ordine;
-import main.java.DomainModel.Pianta.Pianta;
-import main.java.DomainModel.Impianto.Operatore;
+import main.java.DomainModel.Pianta;
+import main.java.DomainModel.Operatore;
 import main.java.ORM.OrdineDAO;
 import main.java.ORM.PosizioneDAO;
 

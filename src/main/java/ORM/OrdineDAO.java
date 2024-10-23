@@ -1,12 +1,11 @@
 package main.java.ORM;
 
 import main.java.DomainModel.Ordine;
-import main.java.DomainModel.Pianta.Pianta;
+import main.java.DomainModel.Pianta;
 
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -37,7 +36,6 @@ public class OrdineDAO {
             ResultSet rs = preparedStatement.executeQuery();
 
             if (rs.next()) {
-                System.out.println("Ordine inserito correttamente.");
                 return rs.getInt("id");
             }
         } catch (SQLException e) {
@@ -157,8 +155,8 @@ public class OrdineDAO {
             }*/
         } catch (SQLException e) {
             System.err.println("Errore durante l'aggiornamento dell'ordine: " + e.getMessage());
-            throw e;  // Rilancia l'eccezione per la gestione a livello superiore
         }
+        return false;
     }
 
 }

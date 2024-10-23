@@ -1,4 +1,4 @@
-package main.java.DomainModel.Pianta;
+package main.java.DomainModel;
 import javax.swing.text.DateFormatter;
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -60,6 +60,7 @@ public class Pianta {
     }
 
     public double getCosto(){ return costo; }
+
     public void setCosto(String tipoPianta){
         switch (tipoPianta){
             case "Basilico" -> this.costo = 1.5;
@@ -69,20 +70,26 @@ public class Pianta {
             default -> this.costo = 0;
         }
     }
+
     public String getDescrizione(){
         return descrizione;
     }
 
-    public String generaStato(){
-        float probabilitaOttimale = 0.93f; // Valore di base
-
-        // Genera stato
-        if (Math.random() < probabilitaOttimale) {
+    public void generaStato(){
+        float probabilita = 0.80f;
+        if (Math.random() < probabilita) {
             this.stato = "sta crescendo";
         } else {
             this.stato = "ha bisogno di cure";
         }
-        return "Stato " + tipoPianta + "[" + id + "] -> " + stato;
+    }
+
+    public void setStatoHaBisogno() {
+        this.stato = "ha bisogno di cure";
+    }
+
+    public void setStatoNonHaBisogno() {
+        this.stato = "sta crescendo";
     }
 
     public String getTipoPianta() {
@@ -111,6 +118,7 @@ public class Pianta {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         String c = "[" + lt.format(formatter) + "] Curata da Operatore(" + id_operatore + ") .";
         this.descrizione += c;
+        this.stato = "Curata, sta crescendo";
         return c;
     }
 }

@@ -3,10 +3,6 @@ package main.java;
 import main.java.BusinessLogic.*;
 import main.java.DomainModel.*;
 import main.java.DomainModel.Impianto.*;
-import main.java.DomainModel.Pianta.*;
-import main.java.ORM.AttuatoreDAO;
-import main.java.ORM.SensoreDAO;
-import org.postgresql.core.Tuple;
 
 
 import java.io.IOException;
@@ -213,6 +209,7 @@ public class Main {
                         break;
                     }
                     Thread.sleep(2500);
+                    System.out.println();
                 }
             } catch (InterruptedException | IOException ignored) {}
         }
@@ -221,7 +218,7 @@ public class Main {
 
     public static void handleViewTables() throws Exception {
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
-            int index = askForChooseMenuOption("    VISUALIZZA TABELLE", new String[]{"ORDINI", "PIANTE", "SPAZI", "Indietro", "Esci"});
+            int index = askForChooseMenuOption("    VISUALIZZA TABELLE", new String[]{"ORDINI", "PIANTE", "CLIENTI", "Indietro", "Esci"});
             if (index == 1) {
                 GestioneOrdini gestioneOrdini = new GestioneOrdini();
                 ArrayList<Ordine> ordini = gestioneOrdini.get(null);
@@ -234,128 +231,18 @@ public class Main {
                 if (!piante.isEmpty())
                     printPiante(piante);
             }
-            else if (index == 3)
-                ;//handleSpazi();
+            else if (index == 3) {
+                GestioneClienti gestioneClienti = new GestioneClienti();
+                ArrayList<Cliente> clienti = gestioneClienti.get(null);
+                if (!clienti.isEmpty())
+                    printClienti(clienti);
+            }
             else if (index == 4)
                 return;
             else if (index == 5)
                 System.exit(0);
         }
     }
-
-    /*public static void handleOrdini() throws Exception {
-        // Passa i DAO alle classi di gestione
-        GestioneOrdini gestioneOrdini = new GestioneOrdini();
-        GestionePosizionamenti gestionePosizionamenti = new GestionePosizionamenti();
-        GestionePosizioni gestionePosizioni = new GestionePosizioni();
-        GestioneAttuatori gestioneAttuatori = new GestioneAttuatori();
-        GestionePiante gestionePiante = new GestionePiante();
-
-        while (true) {
-            int index = askForChooseMenuOption("    ORDINI & POSIZIONAMENTI", new String[]{"VISUALIZZA", "Posiziona ordine", "Sistema ordini pronti", "Modifica ordine", "Indietro", "Esci"});
-
-            if (index == 1)
-                visualizzaOrdini_Posizionamenti();
-            else if (index == 2) {
-                //Ricerca Ordine da posizionare
-                //Ordine ordine = gestioneOrdini.getOrdineDaPosizionare();
-                //Scelta ordine da preparare
-                Map<String, Object> cc = new HashMap<>();
-                cc.put("stato", "da posizionare");
-                if (gestioneOrdini.visualizzaOrdini(cc)) {
-                    int idOrdine = askForInteger("ID Ordine da posizionare: ");
-                    Ordine o = gestioneOrdini.getbyId(idOrdine);
-
-                    //Ricerca Operatore libero
-                    Operatore operatore = gestioneAttuatori.richiediAttuatoreLibero("Operatore");
-
-                    if (operatore != null && o != null) {
-                        List<Posizione> posizioni = gestionePosizioni.getPosizioniLibere(o.getnPiante());
-                        if (posizioni != null) {
-                            ArrayList<Posizionamento> posizionamenti = new ArrayList<>();
-
-                            operatore.esegui(1);
-
-                            gestionePosizioni.occupa(posizioni);
-                            ArrayList<Pianta> piante = gestionePiante.aggiungi(o.getPiante(), o.getId());
-                            gestioneOrdini.posiziona(o);
-                            for (int i = 0; i < posizioni.size(); i++) {
-                                posizionamenti.add(new Posizionamento(posizioni.get(i).getId(), piante.get(i).getId(), o.getId()));
-                            }
-                            gestionePosizionamenti.creaPosizionamento(posizionamenti);
-
-                            operatore.esegui(-1);
-                        }
-                    }
-                }
-            } else if (index == 3) {
-                //FIXMe le piante non vengono eliminate correttamente
-                //Scelta ordine da preparare
-                Map<String, Object> c1 = new HashMap<>();
-                c1.put("stato", "da preparare");
-                gestioneOrdini.visualizzaOrdini(c1);
-
-                int idOrdine = askForInteger("ID Ordine da preparare: ");
-
-                //Ricerca Operatore libero
-                Operatore operatore = gestioneAttuatori.richiediAttuatoreLibero("Operatore");
-
-                //Eliminazione Posizionamenti (l'operatore prepara ordine...)
-                System.out.println(operatore.esegui(3));
-                ArrayList<Posizionamento> posEliminate = gestionePosizionamenti.eliminaPosizionamentiByOrdine(idOrdine);
-                if (posEliminate != null) {
-                    System.out.println("Posizionamenti eliminati");
-                    //Aggiornare Posizioni e Ordine e Piante
-                    for (Posizionamento p : posEliminate) {
-                        gestionePosizioni.libera(p.getIdPosizione());
-                        //gestionePiante.elimina(p.getIdPianta());
-                    }
-                    gestioneOrdini.prepara(posEliminate.get(0).getIdOrdine());
-                } else {
-                    System.out.println("Posizionamenti non trovati");
-                }
-
-                //L'operatore registra l'operazione
-                System.out.println(operatore.esegui(-1));
-                System.out.println("L'ordine è pronto per essere ritirato dal cliente. ");
-
-            } else if (index == 4) {
-                gestioneOrdini.visualizzaOrdini(new HashMap<>());
-
-                int idOrdine = askForInteger("ID Ordine da modificare: ");
-
-                int index2 = askForChooseMenuOption("Scegli quale parametro modificare", new String[]{"Cliente", "Data Consegna", "Piante", "Totale", "Stato", "Indietro", "Esci"});
-
-                switch (index2) {
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5: {
-                        String[] stati = new String[]{"da posizionare", "posizionato", "da preparare", "da ritirare", "ritirato", "Indietro", "Esci"};
-                        int index3 = askForChooseMenuOption("Scegli quale stato impostare", stati);
-                        if (index3 == 6)
-                            return;
-                        else if (index3 == 7)
-                            System.exit(0);
-                        else {
-                            String stato_scelto = stati[index - 1];
-                            Map<String, Object> mm = new HashMap<>();
-                            mm.put("stato", stato_scelto);
-                            gestioneOrdini.aggiorna(idOrdine, mm);
-                        }
-                    }
-                    case 6:
-                        return;
-                    case 7:
-                        System.exit(0);
-                }
-            } else if (index == 5)
-                return;
-            else if (index == 6)
-                System.exit(0);
-        }
-    }*/
 
     // OPERATORE
     public static void handleOperatoreAction(Operatore operatore) throws Exception {
@@ -386,19 +273,23 @@ public class Main {
             else if (index == 4) {
                 System.out.println(operatore.esegui(2));
 
-                ArrayList<Pianta> pianteDaCurare = operatoreController.checkupPiante(operatore);
+                GestionePiante gestionePiante = new GestionePiante();
+                gestionePiante.generaStatoPiante();
+                ArrayList<Pianta> pianteDaCurare = operatoreController.checkupPiante(operatore, 1000);
                 if(pianteDaCurare != null && !pianteDaCurare.isEmpty()) {
-                    System.out.printf("%d Piante hanno bisogno di cure.", pianteDaCurare.size());
-                    System.out.println("Avvio operazione di CURA");
+                    System.out.printf("%d Piante hanno bisogno di cure.\n", pianteDaCurare.size());
+                    System.out.println("Avvio operazione di cura");
                     for (Pianta pianta : pianteDaCurare) {
                         System.out.println("\nDettagli pianta:");
                         System.out.println("Id: " + pianta.getId());
                         System.out.println("Tipo: " + pianta.getTipoPianta());
-                        System.out.println("Cura pianta in corso");
+                        System.out.print("Cura pianta in corso");
                         for (int i = 0; i < 3; i++) {
+                            sleep(1500);
                             System.out.print(".");
-                            sleep(600);
                         }
+                        sleep(500);
+                        System.out.println();
                         operatoreController.curaPianta(pianta, operatore);
                         System.out.println("Pianta curata!");
                     }
@@ -540,30 +431,27 @@ public class Main {
                 System.out.println("Ordine non accettato!");
         }
         else if (index == 2) {
-            //gestioneOrdini.visualizzaOrdini(Map.of("cliente", cliente.getId()));
             printOrdini(gestioneOrdini.get(Map.of("cliente", cliente.getId())));
         }
         else if (index == 3) {
-            //FIXME aggiorna la funzione in base ai cambiamenti fatti...
-            //if (printOrdini(gestioneOrdini.visualizzaOrdini(Map.of("stato", "da ritirare")))) {
-            ArrayList<Ordine> ordiniDaRitirare = gestioneOrdini.get(Map.of("stato", "da ritirare"));
+            ArrayList<Ordine> ordiniDaRitirare = gestioneOrdini.get(Map.of("stato", "da ritirare", "cliente", cliente.getId()));
             if (!ordiniDaRitirare.isEmpty()) {
                 printOrdini(ordiniDaRitirare);
                 int idOrdine = askForInteger("ID Ordine da ritirare: ");
-                //FIXME CHECK IF VALID ID, Hint: printOrdini potrebbe ritornare un array degli id degli elementi visualizzati
-                //  tra i quali far scegliere
                 Ordine ordine = gestioneOrdini.getById(idOrdine);
-                if(clienteController.pagaEritiraOrdine(ordine)){
-                    System.out.println("Ordine pagato! Può ritirare l'ordine.");
-                }else {
-                    System.out.println("Il pagamento non è andato a buon fine");
+                if (ordine != null && ordine.getCliente() == cliente.getId()) {
+                    if (clienteController.pagaEritiraOrdine(ordine)) {
+                        System.out.println("Ordine pagato! Può ritirare l'ordine.");
+                    } else {
+                        System.out.println("Il pagamento non è andato a buon fine");
+                    }
+                } else {
+                    System.out.println("Nessun ordine trovato con questo id!");
                 }
-
-            } else
-                return;
+            }
         }
-        else if (index == 4)
-            return;
+        else if (index == 4) {
+        }
         else if (index == 5)
             System.exit(0);
     }
@@ -786,9 +674,8 @@ public class Main {
                     posizione.getIgrometroTerra().getValore(),
                     posizione.getIrrigatore().isWorking() ? GreenString("    ON     ") : RedString("    OFF    "));
 
-            System.out.println("+-----------+--------+------------+---------------------+-------------------+-------------+");
-
         }
+        System.out.println("+-----------+--------+------------+---------------------+-------------------+-------------+");
 
     }
 
@@ -813,26 +700,52 @@ public class Main {
     }
 
     public static void printPiante(ArrayList<Pianta> piante) {
-        System.out.println("+------+---------+------------+--------+---------+-------------------------------+");
-        System.out.println("|  ID  | Tipo    | Piantato   | Stato  | Costo   | Descrizione                   |");
+        System.out.println("+------+--------------+------------+-----------------------+---------+-------------------------------+");
+        System.out.println("|  ID  | Tipo         | Piantato   | Stato                 | Costo   | Descrizione                   |");
+        System.out.println("+------+--------------+------------+-----------------------+---------+-------------------------------+");
 
         for (Pianta p : piante) {
-            System.out.println("+------+---------+------------+--------+---------+-------------------------------+");
-            System.out.printf("| %-4d | %-7s | %-10s | %-6s | %-14.1f | %-24s |\n",
+            System.out.printf("| %-4d | %-12s | %-10s | %-21s | %-7.1f | %-29s |\n",
                     p.getId(), p.getTipoPianta(), p.getDataInizio().toString(), p.getStato(), p.getCosto(), p.getDescrizione()
             ); // Stampa la prima riga con i dati principali
 
-            //ArrayList<String> pianteLinee = spezzaStringa(p.getDescrizione(), 24); //TODO RESTORE LOST METHOD "spezzaStringa"
-            ArrayList<String> pianteLinee = new ArrayList<>(); //TODO REMOVE AFTER RESTORE "spezzaStringa"
-            pianteLinee.add(p.getDescrizione()); //TODO REMOVE AFTER RESTORE "spezzaStringa"
+            ArrayList<String> pianteLinee = new ArrayList<>();
+            String descrizione = p.getDescrizione();
+            descrizione = descrizione != null ? descrizione : "";
+            int lunghezzaMax = 24;
+
+            // Suddivide in sottostringhe con lunghezza massima definita
+            int start = 0;
+            while (start < descrizione.length()) {
+                int end = Math.min(start + lunghezzaMax, descrizione.length());
+                pianteLinee.add(descrizione.substring(start, end));
+                start += lunghezzaMax;
+            }
 
             // Stampa le righe successive con le piante spezzate, mantenendo gli altri campi vuoti
             for (int i = 1; i < pianteLinee.size(); i++) {
-                System.out.printf("| %-4s | %-7s | %-10s | %-6s | %-14s | %-24s |\n", "", "", "", "", "", pianteLinee.get(i));
+                System.out.printf("| %-4s | %-12s | %-10s | %-21s | %-7s | %-29s |\n", "", "", "", "", "", pianteLinee.get(i));
             }
         }
         System.out.println("+------+---------+------------+--------+----------------+--------------------------+");
     }
+
+    public static void printClienti(ArrayList<Cliente> clienti) {
+        System.out.println("+------+------------+------------+------------------------------+");
+        System.out.println("|  ID  | Nome       | Cognome    | Email                        |");
+        System.out.println("+------+------------+------------+------------------------------+");
+
+        for (Cliente c : clienti) {
+
+            // Stampa la prima riga con i dati principali del cliente
+            System.out.printf("| %-4d | %-10s | %-10s | %-28s |\n",
+                    c.getId(), c.getNome(), c.getCognome(), c.getEmail()
+            );
+        }
+        System.out.println("+------+------------+------------+------------------------------+");
+
+    }
+
 
     public static void printSpazio(Spazio spazio) {
         GestioneSettori gestioneSettori = new GestioneSettori();
@@ -843,7 +756,7 @@ public class Main {
             System.out.println("  N/A   "); // Se non ci sono settori, stampa N/A
         } else {
             System.out.println("+------------------------------------------------------------------------------------------+");
-            System.out.println("|   ID   | Spazio | Termometro |  Fotosensore | Climatizzatore | Lampada | Igrometro aria |");
+            System.out.println("|   ID   | Spazio | Termometro |  Fotosensore | Climatizzatore  | Lampada | Igrometro aria |");
             System.out.println("|--------|--------|------------|--------------|-----------------|---------|----------------|");
             // Ciclo che continua fino a quando non ci sono più settori
             do {

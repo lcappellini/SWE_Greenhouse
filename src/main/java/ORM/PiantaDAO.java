@@ -1,8 +1,6 @@
 package main.java.ORM;
 
-import main.java.DomainModel.Impianto.Posizionamento;
-import main.java.DomainModel.Ordine;
-import main.java.DomainModel.Pianta.Pianta;
+import main.java.DomainModel.Pianta;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -149,7 +147,6 @@ public class PiantaDAO {
             }
             statement.setInt(paramIndex, id_pianta);
             statement.executeUpdate();
-
         } catch (SQLException e) {
             System.err.println("Errore durante l'aggiornamento della pianta: " + e.getMessage());
         }

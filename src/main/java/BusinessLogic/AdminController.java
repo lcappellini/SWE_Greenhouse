@@ -1,7 +1,7 @@
 package main.java.BusinessLogic;
 
 import main.java.DomainModel.Impianto.*;
-import main.java.DomainModel.Pianta.Pianta;
+import main.java.DomainModel.Pianta;
 import main.java.ORM.*;
 
 import java.time.LocalDateTime;

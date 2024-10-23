@@ -1,11 +1,15 @@
-package main.java.DomainModel.Impianto;
+package main.java.DomainModel;
 
+import main.java.DomainModel.Impianto.Attuatore;
 import main.java.DomainModel.Utente;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Operatore extends Attuatore {
+    private String nome;
+    private String cognome;
+    private String email;
     protected Map<Integer, String> tipoLavoro;
     String ruolo;
 
@@ -46,9 +50,7 @@ public class Operatore extends Attuatore {
     }
 
     // inherits Utente
-    private String nome;
-    private String cognome;
-    private String email;
+
     public int getId() {
         return id;
     }

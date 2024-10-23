@@ -2,7 +2,6 @@ package main.java.BusinessLogic;
 
 import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Ordine;
-import main.java.DomainModel.Pianta.Pianta;
 import main.java.ORM.ClienteDAO;
 import main.java.ORM.OrdineDAO;
 import main.java.ORM.PiantaDAO;
@@ -14,8 +13,8 @@ import java.util.Map;
 public class ClienteController {
     private Cliente cliente;
 
-    public ClienteController(Cliente c) {
-        this.cliente = c;
+    public ClienteController(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     public boolean aggiornaProfilo(String name, String newValue) {
@@ -30,7 +29,10 @@ public class ClienteController {
             PiantaDAO piantaDAO = new PiantaDAO();
 
             if (posizioneDAO.verificaNonAssegnate(o.getnPiante())) {
-                o.setId(ordineDAO.inserisciOrdine(o));
+                int idOrdine = ordineDAO.inserisciOrdine(o);
+                if (idOrdine == -1)
+                    return false;
+                o.setId(idOrdine);
                 piantaDAO.inserisci(o.getPiante(), o.getId());
                 posizioneDAO.assegna(o.getnPiante());
                 return true;

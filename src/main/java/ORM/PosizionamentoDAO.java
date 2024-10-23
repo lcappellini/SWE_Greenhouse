@@ -1,13 +1,9 @@
 package main.java.ORM;
 
 import main.java.DomainModel.Impianto.Posizionamento;
-import main.java.DomainModel.Impianto.Posizione;
-import main.java.DomainModel.Ordine;
-import main.java.DomainModel.Pianta.Pianta;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class PosizionamentoDAO {

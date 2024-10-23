@@ -13,12 +13,3 @@ DROP TABLE IF EXISTS "Admin" CASCADE;
 DROP TABLE IF EXISTS "Sensore" CASCADE;
 DROP TABLE IF EXISTS "Attuatore" CASCADE;
 
-/*
-DROP table if exists "Termometro" cascade ;
-drop table if exists "Irrigatore" cascade ;
-drop table if exists "IgrometroTerreno" cascade ;
-drop table if exists "IgrometroAria" cascade;
-drop table if exists "Climatizzazione" cascade ;
-drop table if exists "Lampada" cascade ;
-drop table if exists "Fotosensore" cascade;
-*/

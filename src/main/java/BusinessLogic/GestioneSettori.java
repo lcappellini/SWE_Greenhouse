@@ -1,18 +1,11 @@
 package main.java.BusinessLogic;
 
 import main.java.DomainModel.Impianto.*;
-import main.java.DomainModel.Pianta.Pianta;
 import main.java.ORM.*;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class GestioneSettori {
     private ScheduledExecutorService executor;// Corrected: Added type declaration here

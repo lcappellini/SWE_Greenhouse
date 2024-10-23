@@ -39,16 +39,33 @@ public class PosizioneDAO {
             ResultSet resultSet = statement.executeQuery();  // Esegui la query e ottieni il ResultSet
             if (resultSet.next()) {  // Sposta il cursore alla prima riga
                 int count = resultSet.getInt(1);  // Ottieni il risultato della colonna COUNT(*)
-                flag = count >= i;  // Verifica se il numero di posizioni non assegnate è almeno i
+                return count >= i;  // Verifica se il numero di posizioni non assegnate è almeno i
             }
         } catch (SQLException e) {
-            System.err.println("Errore durante la visualizzazione delle posizioni: " + e.getMessage());
+            System.err.println("Errore durante la verifica delle posizioni: " + e.getMessage());
         }
 
-        return flag;  // Ritorna true se ci sono abbastanza posizioni non assegnate, altrimenti false
+        return false;  // Ritorna true se ci sono abbastanza posizioni non assegnate, altrimenti false
     }
 
-    public void assegna(int nPiante) {
+    public int getNNonAssegnate() {
+        String query = "SELECT COUNT(*) FROM \"Posizione\" WHERE assegnata = false";
+        boolean flag = false;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count;
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore durante il conteggio delle posizioni: " + e.getMessage());
+        }
+
+        return -1;
+    }
+
+    public int assegna(int nPiante) {
         String query = "UPDATE \"Posizione\" "
                 + "SET assegnata = true "
                 + "WHERE id IN (SELECT id FROM \"Posizione\" WHERE (assegnata, occupata) = (false, false) LIMIT ?)";
@@ -56,18 +73,18 @@ public class PosizioneDAO {
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, nPiante); // Imposta il limite di posizioni da aggiornare
             int rowsUpdated = statement.executeUpdate(); // Esegui l'update
-            System.out.println("Assegnate " + rowsUpdated + " posizioni.");
             connection.commit();
+            return rowsUpdated;
         } catch (SQLException e) {
             System.err.println("Errore durante la sistemazione delle posizioni: " + e.getMessage());
         }
+        return 0;
     }
 
     public Posizione getById(int posizioneId) {
         Map<String, Object> m = new HashMap<>();
         m.put("id", posizioneId);
-        Posizione p = get(m).get(0);
-        return p;
+        return get(m).get(0);
     }
 
     public ArrayList<Posizione> get(Map<String, Object> criteri) {
@@ -109,10 +126,9 @@ public class PosizioneDAO {
         return posizioni;
     }
 
-    public void aggiorna(int id, Map<String, Object> m) {
+    public int aggiorna(int id, Map<String, Object> m) {
         if (m == null || m.isEmpty()) {
-            System.out.println("Nessun dato da aggiornare.");
-            return; // Non ci sono dati da aggiornare
+            return 0;
         }
 
         StringBuilder query = new StringBuilder("UPDATE \"Posizione\" SET ");
@@ -136,15 +152,11 @@ public class PosizioneDAO {
             statement.setInt(paramIndex, id);
 
             // Esegui l'aggiornamento
-            int rowsUpdated = statement.executeUpdate();
-            if (rowsUpdated > 0) {
-                System.out.println("Posizione[" + id+"] aggiornata.");
-            } else {
-                System.out.println("Nessun aggiornamento effettuato per ID: " + id);
-            }
+            return statement.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Errore durante l'aggiornamento della posizione: " + e.getMessage());
         }
+        return -1;
     }
 
 }
