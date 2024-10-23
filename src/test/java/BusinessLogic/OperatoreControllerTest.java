@@ -119,5 +119,4 @@ public class OperatoreControllerTest {
         assertEquals(pianta.getStato(), "Curata, sta crescendo");
         System.out.println("-Test superato!");
     }
-
 }

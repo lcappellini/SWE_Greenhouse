@@ -67,7 +67,7 @@ public class OrdineDAO {
                     paramIndex++;
                 }
             }
-
+            PiantaDAO piantaDAO = new PiantaDAO();
             // Esegui la query e gestisci il ResultSet
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {

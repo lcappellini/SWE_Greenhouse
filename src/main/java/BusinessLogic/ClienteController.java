@@ -46,16 +46,17 @@ public class ClienteController {
         return false;
     }
 
-    public void pagaEritiraOrdine(Ordine ordine) {
+    public boolean pagaEritiraOrdine(Ordine ordine) {
         OrdineDAO ordineDAO = new OrdineDAO();
         PiantaDAO piantaDAO = new PiantaDAO();
-
         try{
             ordineDAO.aggiorna(ordine.getId(), Map.of("stato","ritirato"));
             piantaDAO.elimina(ordine.getId());
+            return true;
         }catch (SQLException ignored) {
 
         }
+        return false;
     }
     public ArrayList<Ordine> getOrdini(Map<String, Object> criteri) {
         OrdineDAO ordineDAO = new OrdineDAO();

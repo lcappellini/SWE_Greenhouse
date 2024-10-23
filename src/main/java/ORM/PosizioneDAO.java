@@ -81,8 +81,8 @@ public class PosizioneDAO {
 
         }
 
-        IgrometroTerraDAO igrometroTerraDAO = new IgrometroTerraDAO();
-        IrrigatoreDAO irrigatoreDAO = new IrrigatoreDAO();
+        AttuatoreDAO attuatoreDAO = new AttuatoreDAO();
+        SensoreDAO sensoreDAO = new SensoreDAO();
 
         ArrayList<Posizione> posizioni = new ArrayList<>();
 
