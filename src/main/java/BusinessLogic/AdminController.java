@@ -37,7 +37,8 @@ public class AdminController {
                 } else {
                     attuatoreAssociato.esegui(1);
                 }
-                attuatoreDAO.registraAzione(attuatoreAssociato, lt.toString());
+                attuatoreDAO.aggiorna(attuatoreAssociato);
+                //FIXME AGGIUNGERE operazioneDAO.registraAzione ?
             }
         }
 
@@ -70,7 +71,8 @@ public class AdminController {
                 irrigatore.esegui(1);
             }
 
-            attuatoreDAO.registraAzione(irrigatore, lt.toString());
+            attuatoreDAO.aggiorna(irrigatore);
+            //FIXME AGGIUNGERE operazioneDAO.registraAzione ?
 
             ArrayList<Posizionamento> posizionamenti = posizionamentoDAO.get(Map.of("posizione", posizione.getId()));
             if (!posizionamenti.isEmpty()){

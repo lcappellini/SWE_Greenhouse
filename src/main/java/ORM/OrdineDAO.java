@@ -126,38 +126,4 @@ public class OrdineDAO {
         return updated;
     }
 
-    public Ordine getById(int idOrdine) {
-        ArrayList<Ordine> ordini = get(Map.of("id", idOrdine));
-        if (ordini.isEmpty())
-            return null;
-        else
-            return ordini.get(0);
-    }
-
-    public void aggiornaOrdine(Ordine ordine) throws SQLException {
-        String query = "UPDATE \"Ordine\" SET cliente = ?, dataConsegna = ?, piante = ?, totale = ?, stato = ? WHERE id = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            // Assegna i parametri alla query
-            statement.setInt(1, ordine.getCliente());
-            //TODO utilizzare logica DATE di Sql in Ordine ecc...
-            statement.setString(2, ordine.getStringDataConsegna());
-            statement.setObject(3, ordine.getPiante());  // Assicurati di usare il tipo giusto, eventualmente serializzando la lista di piante
-            statement.setDouble(4, ordine.getTotale());
-            statement.setString(5, ordine.getStato());
-            statement.setInt(6, ordine.getId());
-
-            int rowsUpdated = statement.executeUpdate();
-             /*
-            if (rowsUpdated > 0) {
-                System.out.println("Ordine aggiornato correttamente. Pagamento effettuato.");
-            } else {
-                System.out.println("Ordine non trovato o non aggiornato.");
-            }*/
-        } catch (SQLException e) {
-            System.err.println("Errore durante l'aggiornamento dell'ordine: " + e.getMessage());
-        }
-        return false;
-    }
-
 }

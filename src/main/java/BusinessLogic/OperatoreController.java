@@ -42,7 +42,7 @@ public class OperatoreController {
             }catch (SQLException e){
                 e.printStackTrace();
             }
-            operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
+            operazioneDAO.registra(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
             return true;
         }
     }
@@ -61,7 +61,7 @@ public class OperatoreController {
                 piantaDAO.aggiorna(posizionamento.getIdPianta(), Map.of("stato", "da ritirare"));
             }
             ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "da ritirare"));
-            operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
+            operazioneDAO.registra(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
             return true;
         }
         return false;
@@ -87,7 +87,7 @@ public class OperatoreController {
                 return new ArrayList<>();
             }
         }
-        operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
+        operazioneDAO.registra(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
         return pianteDaCurare;
     }
 
@@ -97,7 +97,7 @@ public class OperatoreController {
         pianta.cura(operatore.getId(), LocalDateTime.now());
         piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
         piantaDAO.aggiornaDescrizione(pianta.getId(), pianta.getDescrizione());
-        operazioneDAO.registraAzione(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
+        operazioneDAO.registra(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
     }
 
     public ArrayList<Cliente> getClienti(Map<String, Object> criteri) {
@@ -123,7 +123,6 @@ public class OperatoreController {
             piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
         }
     }
-
     public ArrayList<Pianta> getPiante(Map<String, Object> criteri) {
         PiantaDAO piantaDAO = new PiantaDAO();
         return piantaDAO.get(criteri);

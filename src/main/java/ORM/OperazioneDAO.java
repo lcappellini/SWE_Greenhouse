@@ -10,16 +10,14 @@ public class OperazioneDAO {
     private Connection connection;
 
     public OperazioneDAO() {
-
         try {
             this.connection = ConnectionManager.getInstance().getConnection();
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println("Error: " + e.getMessage());
         }
-
     }
 
-    public void registraAzione(Attuatore attuatore, String descrizione, String data) {
+    public void registra(Attuatore attuatore, String descrizione, String data) {
         String query = "INSERT INTO \"Operazione\" (tipoAttuatore, idAttuatore, descrizione, data) VALUES (?,?,?,?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {

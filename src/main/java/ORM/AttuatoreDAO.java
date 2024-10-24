@@ -16,23 +16,13 @@ public class AttuatoreDAO {
         }
     }
 
-    public void registraAzione(Attuatore attuatore, String data) {
+    public void aggiorna(Attuatore attuatore) {
         try {
-            // 1. Aggiorna lo stato dell'attuatore nel database
             String updateAttuatoreSQL = "UPDATE \"Attuatore\" SET working = ? WHERE id = ?";
             PreparedStatement psUpdate = connection.prepareStatement(updateAttuatoreSQL);
             psUpdate.setBoolean(1, attuatore.isWorking());
             psUpdate.setInt(2, attuatore.getId());
             psUpdate.executeUpdate();
-
-            // 2. Inserisci l'operazione nella tabella delle operazioni degli attuatori
-            String insertOperazioneSQL = "INSERT INTO \"Operazione\" (tipoAttuatore, idAttuatore, descrizione, data) VALUES (?, ?, ?, ?)";
-            PreparedStatement psInsert = connection.prepareStatement(insertOperazioneSQL);
-            psInsert.setString(1, attuatore.getTipoAttuatore());
-            psInsert.setInt(2, attuatore.getId());
-            psInsert.setString(3, attuatore.getLavoro());
-            psInsert.setString(4, data);
-            psInsert.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }

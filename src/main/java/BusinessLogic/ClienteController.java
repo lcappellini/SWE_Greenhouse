@@ -58,6 +58,7 @@ public class ClienteController {
         }
         return false;
     }
+
     public ArrayList<Ordine> getOrdini(Map<String, Object> criteri) {
         OrdineDAO ordineDAO = new OrdineDAO();
         if(criteri == null){
