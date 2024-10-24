@@ -4,7 +4,7 @@ import main.java.DomainModel.Operatore;
 
 import java.sql.*;
 
-public class OperatoreDAO extends AttuatoreDAO{
+public class OperatoreDAO {
     private Connection connection;
 
     public OperatoreDAO(){
