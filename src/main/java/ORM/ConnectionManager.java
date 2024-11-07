@@ -22,15 +22,7 @@ public class ConnectionManager {
         return instance;
 
     }
-    // Metodo per ottenere la connessione
 
-    /*public static Connection getConnection() {
-        try {
-            return DriverManager.getConnection(url, username, password);
-        } catch (SQLException e) {
-            throw new RuntimeException("Errore durante la connessione al database", e);
-        }
-    }*/
     public Connection getConnection() throws SQLException, ClassNotFoundException {
 
         Class.forName("org.postgresql.Driver");
@@ -47,3 +39,7 @@ public class ConnectionManager {
     }
 
 }
+
+
+
+

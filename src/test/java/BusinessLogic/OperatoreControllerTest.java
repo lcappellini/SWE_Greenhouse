@@ -30,12 +30,14 @@ public class OperatoreControllerTest {
             adminExtraController.createDatabase();
             adminExtraController.defaultDatabase();
         }catch (SQLException e){
-            e.printStackTrace();
+            System.out.println("Errore durante il reset del database");
         }
 
         OperatoreDAO oDao = new OperatoreDAO();
-        operatore = oDao.accedi("ferrari@email.it","123");
+        operatore = oDao.accedi("ferrari@email.it","123"); //operatore valido
         operatoreController = new OperatoreController();
+
+        //setup: richiesta di un ordine da parte di un cliente (valido)
         LoginClienteController loginClienteController = new LoginClienteController();
         ClienteController clienteController = new ClienteController(
                 loginClienteController.accedi("mario@email.it","123"));
@@ -44,11 +46,6 @@ public class OperatoreControllerTest {
             piante.add(new Pianta("Geranio","da piantare"));
         ordine = new Ordine(1, piante);
         clienteController.richiediNuovoOrdine(ordine);
-    }
-
-    @Test
-    public void piantaOrdineTest(){
-        assertTrue(operatoreController.piantaOrdine(ordine, operatore));
     }
 
     @Test
@@ -118,5 +115,10 @@ public class OperatoreControllerTest {
         operatoreController.curaPianta(pianta, operatore);
         assertEquals(pianta.getStato(), "Curata, sta crescendo");
         System.out.println("-Test superato!");
+    }
+
+    @Test
+    public void piantaOrdineTest(){
+        assertTrue(operatoreController.piantaOrdine(ordine, operatore));
     }
 }

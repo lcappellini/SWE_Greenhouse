@@ -41,9 +41,8 @@ public class PosizionamentoDAO {
     public boolean eliminaPosizionamentiByOrdine(int idOrdine){
         String deleteQuery = "DELETE FROM \"Posizionamento\" WHERE ordine = ?";
 
-        // Gestisci la transazione manualmente
         try (PreparedStatement deleteStmt = connection.prepareStatement(deleteQuery)) {
-            connection.setAutoCommit(false);  // Inizio della transazione
+            connection.setAutoCommit(false);
 
             // Imposta il parametro dell'ordine nella query
             deleteStmt.setInt(1, idOrdine);
@@ -52,7 +51,7 @@ public class PosizionamentoDAO {
             int affectedRows = deleteStmt.executeUpdate();
 
             if (affectedRows > 0) {
-                // Elimina eseguita correttamente
+                // Eliminazione eseguita correttamente
                 System.out.println("Righe eliminate con successo: " + affectedRows);
                 connection.commit();
                 return true; // Imposta isDeleted a true se ci sono state righe eliminate
@@ -65,69 +64,9 @@ public class PosizionamentoDAO {
             System.err.println("Errore durante l'eliminazione dei posizionamenti: " + e.getMessage());
         }
         return false;
-    } /*
-        public boolean eliminaPosizionamentiByOrdine(int idOrdine) {
-            String sql =
-                    "WITH deleted_pos AS ( " +
-                            "   DELETE FROM \"Posizionamento\" " +
-                            "   WHERE ordine = ? " +
-                            "   RETURNING posizione_id, pianta_id, ordine_id " +
-                            ") " +
-                            "-- Aggiornamento della tabella Posizione \n" +
-                            "UPDATE \"Posizione\" " +
-                            "SET assegnata = false, occupata = false " +
-                            "WHERE id = (SELECT posizione_id FROM deleted_pos); " +
+    }
 
-                            "-- Aggiornamento della tabella Pianta \n" +
-                            "UPDATE \"Pianta\" " +
-                            "SET stato = 'pronta' " +
-                            "WHERE id = (SELECT pianta_id FROM deleted_pos); " +
 
-                            "-- Aggiornamento della tabella Ordine \n" +
-                            "UPDATE \"Ordine\" " +
-                            "SET stato = 'da ritirare' " +
-                            "WHERE id = (SELECT ordine_id FROM deleted_pos);";
-
-            // Gestisci la transazione manualmente
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                connection.setAutoCommit(false);  // Inizio della transazione
-
-                // Imposta il parametro dell'ordine nella query
-                preparedStatement.setInt(1, idOrdine);
-
-                // Esegui la query
-                int affectedRows = preparedStatement.executeUpdate();
-
-                if (affectedRows > 0) {
-                    // La query ha avuto successo, commit della transazione
-                    connection.commit();
-                    System.out.println("Posizionamenti eliminati.");
-                    return true;
-                } else {
-                    // Nessun record eliminato, commit comunque per la transazione vuota
-                    connection.commit();
-                    System.out.println("Nessun Posizionamento da eliminare.");
-                    return false;
-                }
-            } catch (SQLException e) {
-                // In caso di errore, fai un rollback della transazione
-                try {
-                    connection.rollback();
-                    System.err.println("Errore durante l'eliminazione e aggiornamento dei posizionamenti: " + e.getMessage());
-                } catch (SQLException rollbackEx) {
-                    System.err.println("Errore durante il rollback della transazione: " + rollbackEx.getMessage());
-                }
-            } finally {
-                try {
-                    connection.setAutoCommit(true);  // Riporta l'auto-commit allo stato originale
-                } catch (SQLException e) {
-                    System.err.println("Errore nel ripristinare l'auto-commit: " + e.getMessage());
-                }
-            }
-            return false;
-        }
-
-*/
     public ArrayList<Posizionamento> get(Map<String, Object> criteria){
         ArrayList<Posizionamento> posizionamenti = new ArrayList<>();
 
@@ -138,7 +77,7 @@ public class PosizionamentoDAO {
             for (String key : criteria.keySet()) {
                 query.append(key).append(" = ? AND ");
             }
-            query.setLength(query.length() - 5);  // Rimuove l'ultimo " AND "
+            query.setLength(query.length() - 5);  // Rimuove l'ultimo AND
         }
 
         try (PreparedStatement statement = connection.prepareStatement(query.toString())) {

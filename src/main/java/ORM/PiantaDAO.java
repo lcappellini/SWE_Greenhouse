@@ -161,7 +161,7 @@ public class PiantaDAO {
             for (String key : criteri.keySet()) {
                 query.append(key).append(" = ? AND ");
             }
-            query.setLength(query.length() - 5);  // Rimuove l'ultimo " AND "
+            query.setLength(query.length() - 5);  // Rimuove l'ultimo AND
         }
 
         ArrayList<Pianta> piante = new ArrayList<>();
@@ -185,9 +185,7 @@ public class PiantaDAO {
                 }
             }
         } catch (SQLException e) {
-            // Logga l'errore
             System.err.println("Errore durante il recupero delle piante: " + e.getMessage());
-            e.printStackTrace(); // Mostra la traccia dello stack per una diagnostica più dettagliata
         }
 
         return piante;

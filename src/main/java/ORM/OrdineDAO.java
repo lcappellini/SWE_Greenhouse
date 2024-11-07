@@ -92,7 +92,6 @@ public class OrdineDAO {
         return ordini;
     }
 
-    //TODO FIX USE ALSO ID_ORDINE TO FILTER QUERY RESULT AND SET ONLY 1 ORDINE
     public boolean aggiorna(int id_ordine, Map<String, Object> criterio) {
         boolean updated = false;
         // Aggiungi condizioni se ci sono criteri
@@ -102,10 +101,12 @@ public class OrdineDAO {
             for (String key : criterio.keySet()) {
                 query.append(key).append(" = ?, ");
             }
-            query.setLength(query.length() - 2);  // Rimuove l'ultimo " AND "
+            query.setLength(query.length() - 2);  // Rimuove l'ultima ", "
         } else {
             return updated;
         }
+
+        query.append(" WHERE id = ?");
 
         try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
             int paramIndex = 1;
@@ -113,6 +114,7 @@ public class OrdineDAO {
                 statement.setObject(paramIndex, value);
                 paramIndex++;
             }
+            statement.setInt(paramIndex, id_ordine);
             int rowsUpdated = statement.executeUpdate();
 
             if (rowsUpdated > 0) {

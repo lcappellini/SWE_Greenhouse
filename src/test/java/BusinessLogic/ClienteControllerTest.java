@@ -1,4 +1,5 @@
 package test.java.BusinessLogic;
+import main.java.BusinessLogic.AdminController;
 import main.java.BusinessLogic.AdminExtraController;
 import main.java.BusinessLogic.ClienteController;
 import main.java.BusinessLogic.LoginClienteController;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,11 +23,8 @@ public class ClienteControllerTest {
 
     @BeforeEach
     public void setUp() {
-
-
         LoginClienteController loginClienteController = new LoginClienteController();
         cliente = loginClienteController.accedi("mario@email.it", "123");
-
         clienteController = new ClienteController(cliente);
 
         AdminExtraController adminExtraController = new AdminExtraController();
@@ -34,10 +33,9 @@ public class ClienteControllerTest {
             adminExtraController.createDatabase();
             adminExtraController.defaultDatabase();
         }catch (SQLException e){
-            e.printStackTrace();
+            System.out.println("Errore durante il reset del database");
         }
     }
-
 
     @Test
     public void testAggiornaProfilo() {
@@ -77,7 +75,7 @@ public class ClienteControllerTest {
         ArrayList<Pianta> piante = new ArrayList<>();
         for (int i = 0; i < posizioniDisponibili+1; i++)  // non ci sono sicuramente 100 posizioni libere
             piante.add(new Pianta("Rosa","da piantare"));
-        Ordine ordine = new Ordine(cliente.getId(),piante);
+        Ordine ordine = new Ordine(cliente.getId(), piante);
 
         boolean result = clienteController.richiediNuovoOrdine(ordine);
         assertFalse(result);
@@ -85,14 +83,22 @@ public class ClienteControllerTest {
     }
 
     @Test
-    public void testPagaEritiraOrdine_Success() {
-        //boolean result = clienteController.pagaEritiraOrdine(ordine);
-        //assertTrue(result);
-    }
+    public void testPagaERitiraOrdine() {
+        System.out.println("--Test Paga e Ritira Ordine--");
+        System.out.println("Paga e ritira un ordine");
 
-    @Test
-    public void testPagaEritiraOrdine_Fail() {
-       // boolean result = clienteController.pagaEritiraOrdine(ordine);
-        //assertTrue(result);
+        ArrayList<Pianta> piante = new ArrayList<>();
+        for (int i = 0; i < 10; i++)
+            piante.add(new Pianta("Rosa", "da piantare"));
+        Ordine ordine = new Ordine(cliente.getId(), piante);
+
+        clienteController.richiediNuovoOrdine(ordine);
+
+        OrdineDAO ordineDAO = new OrdineDAO();
+        ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "da completare"));
+
+        boolean result = clienteController.pagaEritiraOrdine(ordine);
+        assertTrue(result);
+        System.out.println("Test superato!");
     }
 }

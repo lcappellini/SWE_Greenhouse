@@ -19,11 +19,9 @@ public class ClienteDAO {
         }
     }
 
-    public boolean registra(String nome, String cognome, String email, String password) throws SQLException{
-        // Verifica se l'email è già presente nel database
+    public boolean registra(String nome, String cognome, String email, String password) throws SQLException {
         String insertQuery = "INSERT INTO \"Cliente\" (nome, cognome, email, password) VALUES (?, ?, ?, ?) RETURNING id";
         boolean registrato = false;
-        // Inserimento del nuovo cliente
         try (PreparedStatement statement = connection.prepareStatement(insertQuery)) {
             statement.setString(1, nome);
             statement.setString(2, cognome);
@@ -48,10 +46,8 @@ public class ClienteDAO {
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-                    // Estrai i dati del cliente dal result set e costruisci un oggetto Cliente
-                    Cliente cliente = new Cliente(rs.getInt("id"), rs.getString("nome"),
+                    return new Cliente(rs.getInt("id"), rs.getString("nome"),
                             rs.getString("cognome"), rs.getString("email"));
-                    return cliente;
                 }
             }catch (SQLException e) {
                 System.err.println("Errore durante l'accesso del cliente: "+e.getMessage());

@@ -115,15 +115,21 @@ public class Main {
         int index = askForChooseMenuOption("    " + role_string, new String[]{"Accedi", "Indietro", "Esci"});
         if (index == 1) {
             System.out.print("\nEmail: ");
-            //String email = scanner.nextLine(); //TODO REENABLE
-            String email; //TODO REMOVE, DEBUG ONLY
-            if (role == 1) //TODO REMOVE, DEBUG ONLY
-                email = "ferrari@email.it";  //TODO REMOVE, DEBUG ONLY
-            else //TODO REMOVE, DEBUG ONLY
-                email = "lorenzo";  //TODO REMOVE, DEBUG ONLY
+            String email = scanner.nextLine();
             System.out.print("Password: ");
-            //String password = scanner.nextLine(); //TODO REENABLE
-            String password = "123"; //TODO REMOVE, DEBUG ONLY
+            String password = scanner.nextLine();
+
+            /*
+            // BYPASS LOGIN, DEBUG ONLY
+            System.out.print("\nEmail: ");
+            String email;
+            if (role == 1)
+                email = "ferrari@email.it";
+            else
+                email = "lorenzo";
+            System.out.print("Password: ");
+            String password = "123";
+            */
 
             LoginPersonaleController loginPersonaleController = new LoginPersonaleController();
             if (role == 0) {
@@ -299,9 +305,7 @@ public class Main {
             else if (index == 4) {
                 System.out.println(operatore.esegui(2));
 
-                //GestionePiante gestionePiante = new GestionePiante();
                 operatoreController.generaStatoPiante();
-                //gestionePiante.generaStatoPiante();
                 ArrayList<Pianta> pianteDaCurare = operatoreController.checkupPiante(operatore, 1000);
                 if(pianteDaCurare != null && !pianteDaCurare.isEmpty()) {
                     System.out.printf("%d Piante hanno bisogno di cure.\n", pianteDaCurare.size());
@@ -387,11 +391,17 @@ public class Main {
                 System.out.println("Registrazione fallita.");
         } else if (index == 2) {
             System.out.print("\nEmail: ");
-            //String email = scanner.nextLine();
-            String email = "mario@email.it"; //TODO REMOVE, DEBUG ONLY
+            String email = scanner.nextLine();
             System.out.print("Password: ");
-            //String password = scanner.nextLine();
-            String password = "123"; //TODO REMOVE, DEBUG ONLY
+            String password = scanner.nextLine();
+
+            /*
+            // BYPASS LOGIN, DEBUG ONLY
+            System.out.print("\nEmail: ");
+            String email = "mario@email.it";
+            System.out.print("Password: ");
+            String password = "123";
+            */
 
             LoginClienteController loginClienteController = new LoginClienteController();
             Cliente cliente = loginClienteController.accedi(email, password);
@@ -534,131 +544,6 @@ public class Main {
         }
     }
 
-    /*public static void visualizzaOrdini_Posizionamenti() {
-        GestioneOrdini gestioneOrdini = new GestioneOrdini();
-        GestionePosizionamenti gestionePosizionamenti = new GestionePosizionamenti();
-        int index;
-        index = askForChooseMenuOption("VISUALIZZA", new String[]{"Ordini", "Posizionamenti", "Indietro", "Esci"});
-
-        switch (index) {
-            case 1:
-
-            case 2:
-                gestionePosizionamenti.visualizza();
-            case 3:
-                return;
-            case 4:
-                System.exit(0);
-        }
-    }
-
-    private static void handleSpazi() {
-        int index;
-        GestioneSpazi gestioneSpazi = new GestioneSpazi();
-        index = askForChooseMenuOption("SPAZI", new String[]{"Visualizza", "Gestisci Settori di uno Spazio", "Indietro", "Esci"});
-
-        switch (index) {
-            case 1: {
-                gestioneSpazi.visualizzaSpazi();
-            }
-            case 2: {
-                gestioneSpazi.visualizzaSpazi();
-
-                int idSpazio = askForInteger("ID Spazio del quale gestire i settori: ");
-
-                Spazio spazio = gestioneSpazi.getSpazio(idSpazio);
-                if (spazio != null) {
-                    handleSettori(spazio);
-                }
-            }
-            case 3:
-                return;
-            case 4:
-                System.exit(0);
-        }
-    }
-
-    private static void handleSettori(Spazio spazio) {
-        GestioneSettori gestioneSettori = new GestioneSettori();
-
-        int index = askForChooseMenuOption("SETTORI", new String[]{"Visualizza", "Monitora", "Gestisci Posizioni di un Settore (FIXME)", "Indietro", "Esci"});
-
-        switch (index) {
-            case 1: {
-                gestioneSettori.visualizzaSettori(spazio.getId());
-            }
-            case 2: {
-                Settore settore = gestioneSettori.richiediSettore(spazio);
-                if (settore != null) {
-                    gestioneSettori.avviaMonitoraggio(settore);
-                } else {
-                    System.out.println("Settore non trovato");
-                }
-            }
-            case 3: {
-                Settore settore = gestioneSettori.richiediSettore(spazio);
-                if (settore != null) {
-                    handlePozioni(settore);
-                }
-            }
-            case 4:
-                return;
-            case 5:
-                System.exit(0);
-        }
-    }
-
-    private static void handlePosizioni(Settore settore) {
-        GestionePosizioni gestionePosizioni = new GestionePosizioni();
-        settore.setPosizioni(gestionePosizioni.getPosizioniBySettore(settore.getId()));
-        int index = askForChooseMenuOption("POSIZIONI", new String[]{"Visualizza", "Monitora Posizone (TBD)", "Modifica Posizione (TBD)", "Indietro", "Esci"});
-
-        switch (index) {
-            case 1: {
-                gestionePosizioni.visualizzaPosizioni(settore.getId());
-            }
-            case 2: {
-                int idPosizione = askForInteger("Inserire ID della posizione da monitorare: ");
-                gestionePosizioni.monitoraPosizone(idPosizione);
-            }
-            case 3: {
-                //FIXME
-                int idPosizione = askForInteger("ID Posizione da modificare: ");
-
-                StringBuilder queryBuilder = new StringBuilder("UPDATE \"Posizione\" SET ");
-
-                int index_attributo = askForChooseMenuOption("Quale attributo vuoi modificare?", new String[]{"assegnata", "settore", "irrigatore", "igrometroTerreno"});
-
-                System.out.println("Inserisci il nuovo valore:");
-                String valore = scanner.nextLine();
-
-                switch (index_attributo) {
-                    case 1: {
-                        queryBuilder.append("assegnata").append(" = ? ");
-                    }
-                    case 2: {
-                        queryBuilder.append("settore").append(" = ? ");
-                    }
-                    case 3: {
-                        queryBuilder.append("irrigatore").append(" = ? ");
-                    }
-                    case 4: {
-                        queryBuilder.append("igrometroTerreno").append(" = ? ");
-                    }
-                }
-
-                queryBuilder.append("WHERE id = ?");
-
-                String query = queryBuilder.toString();
-                gestionePosizioni.modificaPosizione(idPosizione, query, valore, index_attributo);
-            }
-            case 4:
-                return;
-            case 5:
-                System.exit(0);
-        }
-    }*/
-
     public static void printSettore(Settore settore) {
 
         System.out.println("+-----+---------+---------+----------+---------+---------+");
@@ -686,7 +571,6 @@ public class Main {
             Posizione posizione = posizione_pianta.getKey();
             Pianta pianta = posizione_pianta.getValue();
 
-
             // Valori corrispondenti
             System.out.printf("| %-9d | %-6d | %-10s | %-19s | %-15.1f %% | %-11s |\n",
                     posizione.getId(),
@@ -695,10 +579,8 @@ public class Main {
                     pianta.getStato(),
                     posizione.getIgrometroTerra().getValore(),
                     posizione.getIrrigatore().isWorking() ? GreenString("    ON     ") : RedString("    OFF    "));
-
         }
         System.out.println("+-----------+--------+------------+---------------------+-------------------+-------------+");
-
     }
 
     public static void printOrdini(ArrayList<Ordine> ordini) {
@@ -721,7 +603,7 @@ public class Main {
         System.out.println("+------+---------+------------+--------+----------------+--------------------------+");
     }
 
-    //TODO FIX PRINT FORMAT AND DESCRIZIONE SPLIT
+    //FIXME PRINT FORMAT AND DESCRIZIONE SPLIT
     public static void printPiante(ArrayList<Pianta> piante) {
         System.out.println("+------+--------------+------------+-----------------------+---------+-------------------------------+");
         System.out.println("|  ID  | Tipo         | Piantato   | Stato                 | Costo   | Descrizione                   |");
@@ -766,43 +648,11 @@ public class Main {
         System.out.println("+------+------------+------------+------------------------------+");
 
         for (Cliente c : clienti) {
-
             // Stampa la prima riga con i dati principali del cliente
             System.out.printf("| %-4d | %-10s | %-10s | %-28s |\n",
                     c.getId(), c.getNome(), c.getCognome(), c.getEmail()
             );
         }
         System.out.println("+------+------------+------------+------------------------------+");
-
     }
-
-
-    /*public static void printSpazio(Spazio spazio) {
-        GestioneSettori gestioneSettori = new GestioneSettori();
-        int i = 1;
-        Settore s = gestioneSettori.getSettoreBySpazio(spazio.getId(), i);
-
-        if (s == null) {
-            System.out.println("  N/A   "); // Se non ci sono settori, stampa N/A
-        } else {
-            System.out.println("+------------------------------------------------------------------------------------------+");
-            System.out.println("|   ID   | Spazio | Termometro |  Fotosensore | Climatizzatore  | Lampada | Igrometro aria |");
-            System.out.println("|--------|--------|------------|--------------|-----------------|---------|----------------|");
-            // Ciclo che continua fino a quando non ci sono più settori
-            do {
-                System.out.printf("| %-6d | %-6d | %-10s | %-12s | %-15s | %-7s | %-14s |\n",
-                        s.getId(), spazio.getId(),
-                        (s.getTermometro() != null ? s.getTermometro().getId() : "N/A"),
-                        (s.getFotosensore() != null ? s.getFotosensore().getId() : "N/A"),
-                        (s.getClimatizzatore() != null ? (s.getClimatizzatore().isWorking() ? "ON" : "OFF") : "N/A"),
-                        (s.getLampada() != null ? (s.getLampada().isWorking() ? "ON" : "OFF") : "N/A"),
-                        (s.getIgrometroAria() != null ? s.getIgrometroAria().getId() : "N/A")
-                );
-                i++;
-                s = gestioneSettori.getSettoreBySpazio(spazio.getId(), i); // Ottiene il settore successivo dello spazio specificato
-            } while (s != null);
-        }
-
-        System.out.println("+------------------------------------------------------------------------------------------+");
-    }*/
 }
