@@ -91,3 +91,61 @@ public class LoginClienteControllerTest {
 }
 
 
+/*public class LoginClienteControllerTest {
+
+    @BeforeEach
+    public void setUp() {
+        AdminExtraController adminExtraController = new AdminExtraController();
+        try{
+            adminExtraController.resetDatabase();
+            adminExtraController.createDatabase();
+            adminExtraController.defaultDatabase();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        loginClienteController = new LoginClienteController();
+    }
+
+    LoginClienteController loginClienteController;
+    String nome, cognome, email, password;
+
+    @Test
+    public void registrationTest_Success() { //Nuovo cliente non presente nel db
+        nome = "Giuseppe";
+        cognome = "Verdi";
+        email = "giuseppe@email.it";
+        password = "123";
+        assertTrue(loginClienteController.registrati(nome, cognome, email, password));
+    }
+
+    @Test
+    public void registrationTest_Fail(){ //Cliente già presente nel db
+        nome = "Mario";
+        cognome = "Rossi";
+        email = "mario@email.it";
+        password = "123";
+        assertFalse(loginClienteController.registrati(nome, cognome, email, password));
+    }
+
+    @Test
+    public void loginTest_Success() { //Cliente presente nel db, credenziali corrette
+        email = "mario@email.it";
+        password = "123";
+        assertNotNull(loginClienteController.accedi(email, password));
+    }
+
+    @Test
+    public void loginTest_Fail1() { //Cliente presente nel db, password errata
+        email = "mario@email.it";
+        password = "abc";
+        assertNull(loginClienteController.accedi(email, password));
+    }
+
+    @Test
+    public void loginTest_Fail2() { //Cliente non presente nel db
+        email = "luigi.conti@gmail.com";
+        password = "1234567890";
+        assertNull(loginClienteController.accedi(email, password));
+    }
+}*/

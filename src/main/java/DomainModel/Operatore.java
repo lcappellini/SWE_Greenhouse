@@ -15,11 +15,10 @@ public class Operatore extends Attuatore {
     public Operatore(int id, String nome, String cognome, String email, boolean working) {
         super(id, working);
         tipoLavoro = new HashMap<>();
-        tipoLavoro.put(0,"posizionamento");
-        tipoLavoro.put(1, "liberazione");
-        tipoLavoro.put(2, "controllo");
-        tipoLavoro.put(3, "cura della pianta");
-        tipoLavoro.put(4, "semina delle piante");
+        tipoLavoro.put(0, "Semina delle piante");
+        tipoLavoro.put(1, "Completamento Ordine");
+        tipoLavoro.put(2, "Check-up piante");
+        tipoLavoro.put(3, "Cura delle piante");
         tipoLavoro.put(-1, "");
         this.nome = nome;
         this.cognome = cognome;

@@ -52,7 +52,7 @@ public class PosizionamentoDAO {
 
             if (affectedRows > 0) {
                 // Eliminazione eseguita correttamente
-                System.out.println("Righe eliminate con successo: " + affectedRows);
+                //System.out.println("Righe eliminate con successo: "+affectedRows);
                 connection.commit();
                 return true; // Imposta isDeleted a true se ci sono state righe eliminate
             } else {

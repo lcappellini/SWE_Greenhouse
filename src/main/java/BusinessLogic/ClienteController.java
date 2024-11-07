@@ -61,10 +61,13 @@ public class ClienteController {
 
     public ArrayList<Ordine> getOrdini(Map<String, Object> criteri) {
         OrdineDAO ordineDAO = new OrdineDAO();
-        if(criteri == null){
-            criteri = new HashMap<>();
+        Map<String, Object> criteriMut;
+        if (criteri == null){
+            criteriMut = new HashMap<>();
+        } else {
+            criteriMut = new HashMap<>(criteri);
         }
-        criteri.put("cliente", cliente.getId());
-        return ordineDAO.get(criteri);
+        criteriMut.put("cliente", cliente.getId());
+        return ordineDAO.get(criteriMut);
     }
 }

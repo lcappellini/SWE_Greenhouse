@@ -22,7 +22,6 @@ public class LoginPersonaleControllerTest {
         assertNotNull(loginPersonaleController.loginAdmin("elion", "123"));
         System.out.println("-Test superato!");
     }
-
     @Test
     public void loginAdmin_Fail1() {
         System.out.println("--Test Login Admin (Fail 1)--");
@@ -30,7 +29,6 @@ public class LoginPersonaleControllerTest {
         assertNull(loginPersonaleController.loginAdmin("elion", "abc"));
         System.out.println("-Test superato!");
     }
-
     @Test
     public void loginAdmin_Fail2(){
         System.out.println("--Test Login Admin (Fail 2)--");
@@ -45,7 +43,6 @@ public class LoginPersonaleControllerTest {
         assertNotNull(loginPersonaleController.loginOperatore("ferrari@email.it", "123"));
         System.out.println("-Test superato!");
     }
-
     @Test
     public void loginOperatore_Fail1() {
         System.out.println("--Test Login Operatore (Fail 1)--");
@@ -53,14 +50,46 @@ public class LoginPersonaleControllerTest {
         assertNull(loginPersonaleController.loginOperatore("ferrari@email.it", "abc"));
         System.out.println("-Test superato!");
     }
-
     @Test
     public void loginOperatore_Fail2(){
         System.out.println("--Test Login Operatore (Fail 2)--");
         System.out.println("-Login Operatore non presente nel db");
         assertNull(loginPersonaleController.loginOperatore("verdi@email.it","456"));
         System.out.println("-Test superato!");
+    }
+}
 
+/*public class LoginPersonaleControllerTest {
+
+    private LoginPersonaleController loginPersonaleController;
+
+    @BeforeEach
+    public void setUp(){
+        loginPersonaleController = new LoginPersonaleController();
     }
 
-}
+    @Test
+    public void loginAdmin_Success() { // Login Admin presente nel db con credenziali corrette
+        assertNotNull(loginPersonaleController.loginAdmin("elion", "123"));
+    }
+    @Test
+    public void loginAdmin_Fail1() { // Login Admin presente nel db con credenziali errate
+        assertNull(loginPersonaleController.loginAdmin("elion", "abc"));
+    }
+    @Test
+    public void loginAdmin_Fail2(){ // Login Admin non presente nel db
+        assertNull(loginPersonaleController.loginAdmin("giacomo","456"));
+    }
+    @Test
+    public void loginOperatore_Success() { // Login Operatore presente nel db con credenziali corrette
+        assertNotNull(loginPersonaleController.loginOperatore("ferrari@email.it", "123"));
+    }
+    @Test
+    public void loginOperatore_Fail1() { // Login Operatore presente nel db con credenziali errate
+        assertNull(loginPersonaleController.loginOperatore("ferrari@email.it", "abc"));
+    }
+    @Test
+    public void loginOperatore_Fail2(){ // Login Operatore non presente nel db
+        assertNull(loginPersonaleController.loginOperatore("verdi@email.it","456"));
+    }
+}*/

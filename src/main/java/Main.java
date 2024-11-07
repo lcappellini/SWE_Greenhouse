@@ -3,6 +3,7 @@ package main.java;
 import main.java.BusinessLogic.*;
 import main.java.DomainModel.*;
 import main.java.DomainModel.Impianto.*;
+import main.java.ORM.OrdineDAO;
 
 
 import java.io.IOException;
@@ -152,14 +153,58 @@ public class Main {
     // ADMIN
     public static void handleAdminAction() {
         while (true) { //Loop, una volta effettuata l'operazione scelta, ritorna qui. Esce solo con logout
-            int index = askForChooseMenuOption("    ADMIN DASHBOARD", new String[]{"Visualizza", "Monitora Settore", "Logout", "Esci"});
+            int index = askForChooseMenuOption("    ADMIN DASHBOARD", new String[]{"Visualizza", "Modifica Stato Ordine (DEBUG)", "Monitora Settore", "Logout", "Esci"});
             if (index == 1)
                 handleViewTables(true);
-            else if (index == 2)
-                handleMonitoraSettore();
+            else if (index == 2) {
+
+                AdminController adminController = new AdminController();
+                ArrayList<Ordine> ordini = adminController.getOrdini(null);
+
+                if (ordini.isEmpty()) {
+                    System.out.println("Non ci sono ordini!");
+                    continue;
+                }
+
+                printOrdini(ordini);
+                Ordine ordine = null;
+
+                while (true) {
+                    int idOrdine = askForInteger("ID Ordine da modificare: ");
+
+                    boolean selected = false;
+                    for (Ordine ord : ordini) {
+                        if (ord.getId() == idOrdine){
+                            ordine = ord;
+                            selected = true;
+                            break;
+                        }
+                    }
+                    if (selected)
+                        break;
+                    else
+                        System.out.println("Nessun ordine trovato con questo id!");
+                }
+
+                ordini = new ArrayList<>();
+                ordini.add(ordine);
+                printOrdini(ordini);
+
+                String[] stati = new String[]{"da piantare", "posizionato", "da completare", "da ritirare", "ritirato"};
+                int index2 = askForChooseMenuOption("Scegliere lo stato da impostare:", stati);
+
+                OrdineDAO ordineDAO = new OrdineDAO();
+                boolean result = ordineDAO.aggiorna(ordine.getId(), Map.of("stato", stati[index2-1]));
+                if (result)
+                    System.out.printf("Stato Ordine %d aggiornato a \"%s\"!\n", ordine.getId(), stati[index2-1]);
+                else
+                    System.out.println("Errore durante la modifica dello stato dell'ordine!");
+            }
             else if (index == 3)
-                return;
+                handleMonitoraSettore();
             else if (index == 4)
+                return;
+            else if (index == 5)
                 System.exit(0);
         }
     }
@@ -221,7 +266,7 @@ public class Main {
                         System.out.println("Monitoraggio terminato.");
                         break;
                     }
-                    Thread.sleep(2500);
+                    sleep(2500);
                     System.out.println();
                 }
             } catch (InterruptedException | IOException ignored) {}
@@ -287,7 +332,7 @@ public class Main {
             else if (index == 2) {
                 Ordine ordine = handleSceltaOrdineDaPiantare(operatoreController);
                 if (ordine != null) {
-                    System.out.println(operatore.esegui(2));
+                    System.out.println(operatore.esegui(0));
                     if (operatoreController.piantaOrdine(ordine, operatore))
                         System.out.println("Ordine piantato con successo!");
                     else
@@ -298,18 +343,22 @@ public class Main {
             else if (index == 3) {
                 Ordine ordine = handleSceltaOrdineDaCompletare(operatoreController);
                 if (ordine != null) {
-                    System.out.println(operatore.esegui(4));
-                    operatoreController.completaOrdine(ordine, operatore);
+                    System.out.println(operatore.esegui(1));
+                    if (operatoreController.completaOrdine(ordine, operatore))
+                        System.out.println("Ordine completato con successo!");
+                    else
+                        System.out.println("C'è stato un problema nel completare l'ordine.");
+                    System.out.println(operatore.esegui(-1));
                 }
             }
             else if (index == 4) {
                 System.out.println(operatore.esegui(2));
-
                 operatoreController.generaStatoPiante();
                 ArrayList<Pianta> pianteDaCurare = operatoreController.checkupPiante(operatore, 1000);
                 if(pianteDaCurare != null && !pianteDaCurare.isEmpty()) {
                     System.out.printf("%d Piante hanno bisogno di cure.\n", pianteDaCurare.size());
                     System.out.println("Avvio operazione di cura");
+                    System.out.println(operatore.esegui(3));
                     for (Pianta pianta : pianteDaCurare) {
                         System.out.println("\nDettagli pianta:");
                         System.out.println("Id: " + pianta.getId());
@@ -325,6 +374,7 @@ public class Main {
                         System.out.println("Pianta curata!");
                     }
                 }
+                System.out.println(operatore.esegui(-1));
             }
             else if (index == 5)
                 return;
@@ -345,12 +395,10 @@ public class Main {
             Ordine ord = operatoreController.getOrdineById(idOrdine);
             if (ord == null) {
                 System.out.println("Nessun ordine trovato con questo id!");
-            } else {
-                if (ord.getStato().equals("da piantare"))
-                    return ord;
-                else
-                    System.out.println("Quest'ordine non è da piantare!");
-            }
+            } else if (ord.getStato().equals("da piantare"))
+                return ord;
+            else
+                System.out.println("Quest'ordine non è da piantare!");
         }
     }
 
@@ -364,8 +412,12 @@ public class Main {
             printOrdini(ordiniDaCompletare);
             int idOrdine = askForInteger("ID Ordine da completare: ");
             Ordine ord = operatoreController.getOrdineById(idOrdine);
-            if (ord.getStato().equals("da completare"))
+            if (ord == null)
+                System.out.println("Nessun ordine trovato con questo id!");
+            else if (ord.getStato().equals("da completare"))
                 return ord;
+            else
+                System.out.println("Quest'ordine non è da completare!");
         }
     }
 
@@ -480,6 +532,8 @@ public class Main {
                 } else {
                     System.out.println("Nessun ordine trovato con questo id!");
                 }
+            } else {
+                System.out.println("Nessun ordine da ritirare trovato!");
             }
         }
         else if (index == 4) {
@@ -639,7 +693,7 @@ public class Main {
                 System.out.printf("| %-4s | %-12s | %-10s | %-21s | %-7s | %-29s |\n", "", "", "", "", "", pianteLinee.get(i));
             }
         }
-        System.out.println("+------+---------+------------+--------+----------------+--------------------------+");
+        System.out.println("+------+--------------+------------+-----------------------+---------+-------------------------------+");
     }
 
     public static void printClienti(ArrayList<Cliente> clienti) {

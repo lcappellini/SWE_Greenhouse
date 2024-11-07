@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class OperatoreControllerTest {
+/*public class OperatoreControllerTest {
 
     OperatoreController operatoreController;
     Operatore operatore;
@@ -117,6 +117,90 @@ public class OperatoreControllerTest {
         System.out.println("-Test superato!");
     }
 
+    @Test
+    public void piantaOrdineTest(){
+        assertTrue(operatoreController.piantaOrdine(ordine, operatore));
+    }
+}*/
+
+public class OperatoreControllerTest {
+
+    OperatoreController operatoreController;
+    Operatore operatore;
+    Ordine ordine;
+
+    @BeforeEach
+    public void setUp(){
+
+        AdminExtraController adminExtraController = new AdminExtraController();
+        try{
+            adminExtraController.resetDatabase();
+            adminExtraController.createDatabase();
+            adminExtraController.defaultDatabase();
+        }catch (SQLException e){
+            System.out.println("Errore durante il reset del database");
+        }
+
+        OperatoreDAO oDao = new OperatoreDAO();
+        operatore = oDao.accedi("ferrari@email.it","123"); //operatore valido
+        operatoreController = new OperatoreController();
+
+        //setup: richiesta di un ordine da parte di un cliente (valido)
+        LoginClienteController loginClienteController = new LoginClienteController();
+        ClienteController clienteController = new ClienteController(
+                loginClienteController.accedi("mario@email.it","123"));
+        ArrayList<Pianta> piante = new ArrayList<>();
+        for (int i = 0; i < 10; i++)
+            piante.add(new Pianta("Geranio","da piantare"));
+        ordine = new Ordine(1, piante);
+        clienteController.richiediNuovoOrdine(ordine);
+    }
+
+    @Test
+    public void completaOrdineTest_Success(){ // Completa un ordine
+        operatoreController.piantaOrdine(ordine, operatore);
+        OrdineDAO ordineDAO = new OrdineDAO();
+        ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "da completare"));
+        ordine.setStato("da completare");
+        assertTrue(operatoreController.completaOrdine(ordine, operatore));
+    }
+    @Test
+    public void completaOrdineTest_Fail(){ // Completa un ordine (non ancora piantato)
+        assertFalse(operatoreController.completaOrdine(ordine, operatore));
+    }
+    @Test
+    public void checkupPianteTest_Success(){ // Esegue un Check-Up dello stato delle piante
+        operatoreController.piantaOrdine(ordine, operatore);
+        ArrayList<Pianta> piante = ordine.getPiante();
+        PiantaDAO piantaDAO = new PiantaDAO();
+        for (Pianta pianta : piante) {
+            pianta.setStatoHaBisogno(); // Alcune piante hanno bisogno di cure
+            piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
+        }
+        ArrayList<Pianta> pianteDaCurare = operatoreController.checkupPiante(operatore, 0);
+        assertEquals(pianteDaCurare.size(), piante.size());
+    }
+    @Test
+    public void checkupPianteTest_Fail(){ // Esegue un Check-Up dello stato delle piante
+        operatoreController.piantaOrdine(ordine, operatore);
+        ArrayList<Pianta> piante = ordine.getPiante();
+        PiantaDAO piantaDAO = new PiantaDAO();
+        for (Pianta pianta : piante) {
+            pianta.setStatoNonHaBisogno(); // Nessuna pianta ha bisogno di cure
+            piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
+        }
+        ArrayList<Pianta> pianteDaCurare = operatoreController.checkupPiante(operatore, 0);
+        assertEquals(pianteDaCurare.size(), 0);
+    }
+    @Test
+    public void curaPiantaTest(){ // Cura una pianta
+        Pianta pianta = ordine.getPiante().get(0);
+        PiantaDAO piantaDAO = new PiantaDAO();
+        pianta.setStatoHaBisogno();
+        piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
+        operatoreController.curaPianta(pianta, operatore);
+        assertEquals(pianta.getStato(), "Curata, sta crescendo");
+    }
     @Test
     public void piantaOrdineTest(){
         assertTrue(operatoreController.piantaOrdine(ordine, operatore));
