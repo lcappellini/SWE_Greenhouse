@@ -17,7 +17,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-/*public class ClienteControllerTest {
+public class ClienteControllerTest {
     private ClienteController clienteController;
     Cliente cliente;
 
@@ -100,66 +100,5 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
         boolean result = clienteController.pagaEritiraOrdine(ordine);
         assertTrue(result);
         System.out.println("Test superato!");
-    }
-}*/
-
-
-public class ClienteControllerTest {
-
-    @BeforeEach
-    public void setUp() {
-        LoginClienteController loginClienteController = new LoginClienteController();
-        cliente = loginClienteController.accedi("mario@email.it", "123");
-        clienteController = new ClienteController(cliente);
-
-        AdminExtraController adminExtraController = new AdminExtraController();
-        try {
-            adminExtraController.resetDatabase();
-            adminExtraController.createDatabase();
-            adminExtraController.defaultDatabase();
-        } catch (SQLException e) {
-            System.out.println("Errore durante il reset del database");
-        }
-    }
-
-    private ClienteController clienteController;
-    Cliente cliente;
-
-    @Test
-    public void testAggiornaProfilo() { // Modifica un dato del profilo di un Utente
-        boolean result = clienteController.aggiornaProfilo("nome", "Sergio");
-        assertTrue(result);
-    }
-    @Test
-    public void testRichiediNuovoOrdine_Success() { // Crea un nuovo Ordine e lo richiede
-        ArrayList<Pianta> piante = new ArrayList<>();
-        for (int i = 0; i < 10; i++)
-            piante.add(new Pianta("Rosa", "da piantare"));
-        Ordine ordine = new Ordine(cliente.getId(), piante);
-        boolean result = clienteController.richiediNuovoOrdine(ordine);
-        assertTrue(result);
-    }
-    @Test
-    public void testRichiediNuovoOrdine_Fail() { // Crea un nuovo Ordine e lo richiede
-        PosizioneDAO posizioneDAO = new PosizioneDAO();
-        int posizioniDisponibili = posizioneDAO.getNNonAssegnate();
-        ArrayList<Pianta> piante = new ArrayList<>();
-        for (int i = 0; i < posizioniDisponibili + 1; i++) // non ci sono 100 posizioni libere
-            piante.add(new Pianta("Rosa", "da piantare"));
-        Ordine ordine = new Ordine(cliente.getId(), piante);
-        boolean result = clienteController.richiediNuovoOrdine(ordine);
-        assertFalse(result);
-    }
-    @Test
-    public void testPagaERitiraOrdine() { // Paga e ritira un ordine
-        ArrayList<Pianta> piante = new ArrayList<>();
-        for (int i = 0; i < 10; i++)
-            piante.add(new Pianta("Rosa", "da piantare"));
-        Ordine ordine = new Ordine(cliente.getId(), piante);
-        clienteController.richiediNuovoOrdine(ordine);
-        OrdineDAO ordineDAO = new OrdineDAO();
-        ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "da completare"));
-        boolean result = clienteController.pagaEritiraOrdine(ordine);
-        assertTrue(result);
     }
 }
