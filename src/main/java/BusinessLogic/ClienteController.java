@@ -2,6 +2,7 @@ package main.java.BusinessLogic;
 
 import main.java.DomainModel.Cliente;
 import main.java.DomainModel.Ordine;
+import main.java.DomainModel.StatoOrdine;
 import main.java.ORM.ClienteDAO;
 import main.java.ORM.OrdineDAO;
 import main.java.ORM.PiantaDAO;
@@ -50,7 +51,7 @@ public class ClienteController {
         OrdineDAO ordineDAO = new OrdineDAO();
         PiantaDAO piantaDAO = new PiantaDAO();
         try{
-            ordineDAO.aggiorna(ordine.getId(), Map.of("stato","ritirato"));
+            ordineDAO.aggiorna(ordine.getId(), Map.of("stato", StatoOrdine.ritirato.getId()));
             piantaDAO.elimina(ordine.getId());
             return true;
         }catch (SQLException ignored) {

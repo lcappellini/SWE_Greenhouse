@@ -9,18 +9,18 @@ public class Ordine {
     private int cliente;
     private ArrayList<Pianta> piante;
     private LocalDate dataConsegna;
-    private String stato;
+    private StatoOrdine stato;
     private double totale;
 
     public Ordine(int cliente, ArrayList<Pianta> piante) {
         this.cliente = cliente;
         this.piante = piante;
         this.dataConsegna = LocalDate.now().plusDays(maxGiorniRichiesti());
-        this.stato = "da piantare";
+        this.stato = StatoOrdine.da_piantare;
         this.totale = setTotale();
     }
 
-    public Ordine(int id, int cliente, ArrayList<Pianta> piante, String stato, String dataConsegna, double totale) {
+    public Ordine(int id, int cliente, ArrayList<Pianta> piante, StatoOrdine stato, String dataConsegna, double totale) {
         this.id = id;
         this.piante = piante;
         this.stato = stato;
@@ -58,8 +58,16 @@ public class Ordine {
         return dataConsegna.toString();
     }
 
-    public String getStato() {
+    public StatoOrdine getStato() {
         return stato;
+    }
+
+    public int getStatoId() {
+        return stato.getId();
+    }
+
+    public String getStatoString() {
+        return stato.name().replace("_", " ");
     }
 
     public double getTotale() {
@@ -70,7 +78,7 @@ public class Ordine {
         this.id = id;
     }
 
-    public void setStato(String stato) {
+    public void setStato(StatoOrdine stato) {
         this.stato = stato;
     }
 

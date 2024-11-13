@@ -13,7 +13,7 @@ public class Pianta {
 
     private LocalDate dataInizio;
     private String descrizione = "";
-    private String stato;
+    private StatoPianta stato;
     private double costo;
     private int giorni_crescita;
 
@@ -29,7 +29,7 @@ public class Pianta {
         }
     }
 
-    public Pianta(int id, String tipoPianta, String descrizione, String dataInizio, String stato) {
+    public Pianta(int id, String tipoPianta, String descrizione, String dataInizio, StatoPianta stato) {
         this.id = id;
         this.tipoPianta = tipoPianta;
         System.out.println(descrizione);
@@ -39,7 +39,7 @@ public class Pianta {
         setCosto(tipoPianta);
     }
 
-    public Pianta(String tipoPianta, String stato) {
+    public Pianta(String tipoPianta, StatoPianta stato) {
         this.tipoPianta = tipoPianta;
         this.stato = stato;
         this.setGiorni_crescitaDaTipo(tipoPianta);
@@ -65,18 +65,18 @@ public class Pianta {
     public void generaStato(){
         float probabilita = 0.80f;
         if (Math.random() < probabilita) {
-            this.stato = "sta crescendo";
+            this.stato = StatoPianta.sta_crescendo;
         } else {
-            this.stato = "ha bisogno di cure";
+            this.stato = StatoPianta.ha_bisogno_di_cure;
         }
     }
 
     public void setStatoHaBisogno() {
-        this.stato = "ha bisogno di cure";
+        this.stato = StatoPianta.ha_bisogno_di_cure;
     }
 
     public void setStatoNonHaBisogno() {
-        this.stato = "sta crescendo";
+        this.stato = StatoPianta.sta_crescendo;
     }
 
     public String getTipoPianta() {
@@ -85,13 +85,13 @@ public class Pianta {
 
     public int getId() {return this.id;}
 
-    public String getStato() {return this.stato;}
+    public StatoPianta getStato() {return this.stato;}
+
+    public String getStatoString() {return this.stato.name().replace("_", " ");}
+
+    public int getStatoId() {return this.stato.getId();}
 
     public void setId(int id) {this.id = id;}
-
-    public boolean haBisogno() {
-        return this.stato.equals("ha bisogno di cure");
-    }
 
     public String cura(int id_operatore, LocalDateTime lt) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -101,7 +101,7 @@ public class Pianta {
         }else{
             this.descrizione += c;
         }
-        this.stato = "Curata, sta crescendo";
+        this.stato = StatoPianta.curata_sta_crescendo;
         return c;
     }
 }

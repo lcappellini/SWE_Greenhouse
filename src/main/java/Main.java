@@ -190,11 +190,13 @@ public class Main {
                 ordini.add(ordine);
                 printOrdini(ordini);
 
-                String[] stati = new String[]{"da piantare", "posizionato", "da completare", "da ritirare", "ritirato"};
+                //String[] stati = new String[]{"da piantare", "posizionato", "da completare", "da ritirare", "ritirato"};
+                String[] stati = Arrays.stream(StatoOrdine.values()).map(enumValue -> enumValue.name().replace("_", " ")).toArray(String[]::new);
+
                 int index2 = askForChooseMenuOption("Scegliere lo stato da impostare:", stati);
 
                 OrdineDAO ordineDAO = new OrdineDAO();
-                boolean result = ordineDAO.aggiorna(ordine.getId(), Map.of("stato", stati[index2-1]));
+                boolean result = ordineDAO.aggiorna(ordine.getId(), Map.of("stato", index2-1));
                 if (result)
                     System.out.printf("Stato Ordine %d aggiornato a \"%s\"!\n", ordine.getId(), stati[index2-1]);
                 else
@@ -385,7 +387,7 @@ public class Main {
 
     private static Ordine handleSceltaOrdineDaPiantare(OperatoreController operatoreController){
         while (true) {
-            ArrayList<Ordine> ordiniDaPiantare = operatoreController.getOrdini(Map.of("stato", "da piantare"));
+            ArrayList<Ordine> ordiniDaPiantare = operatoreController.getOrdini(Map.of("stato", StatoOrdine.da_piantare.getId()));
             if (ordiniDaPiantare.isEmpty()) {
                 System.out.println("Non ci sono ordini da piantare!");
                 return null;
@@ -395,7 +397,7 @@ public class Main {
             Ordine ord = operatoreController.getOrdineById(idOrdine);
             if (ord == null) {
                 System.out.println("Nessun ordine trovato con questo id!");
-            } else if (ord.getStato().equals("da piantare"))
+            } else if (ord.getStato() == StatoOrdine.da_piantare)
                 return ord;
             else
                 System.out.println("Quest'ordine non è da piantare!");
@@ -404,7 +406,7 @@ public class Main {
 
     private static Ordine handleSceltaOrdineDaCompletare(OperatoreController operatoreController) {
         while (true) {
-            ArrayList<Ordine> ordiniDaCompletare = operatoreController.getOrdini(Map.of("stato", "da completare"));
+            ArrayList<Ordine> ordiniDaCompletare = operatoreController.getOrdini(Map.of("stato", StatoOrdine.da_completare.getId()));
             if (ordiniDaCompletare.isEmpty()) {
                 System.out.println("Non ci sono ordini da completare!");
                 return null;
@@ -414,7 +416,7 @@ public class Main {
             Ordine ord = operatoreController.getOrdineById(idOrdine);
             if (ord == null)
                 System.out.println("Nessun ordine trovato con questo id!");
-            else if (ord.getStato().equals("da completare"))
+            else if (ord.getStato() == StatoOrdine.da_completare)
                 return ord;
             else
                 System.out.println("Quest'ordine non è da completare!");
@@ -495,7 +497,7 @@ public class Main {
 
         ArrayList<Pianta> piante = new ArrayList<>();
         for(int i = 0; i < nPiante; i++){
-            piante.add(new Pianta(tipoPianta, "da piantare"));
+            piante.add(new Pianta(tipoPianta, StatoPianta.da_piantare));
         }
 
         if (askForSorN("Vuoi aggiungere altre piante?"))
@@ -518,7 +520,7 @@ public class Main {
             printOrdini(clienteController.getOrdini(new HashMap<>()));
         }
         else if (index == 3) {
-            ArrayList<Ordine> ordiniDaRitirare = clienteController.getOrdini(Map.of("stato", "da ritirare"));
+            ArrayList<Ordine> ordiniDaRitirare = clienteController.getOrdini(Map.of("stato", StatoOrdine.da_ritirare.getId()));
             if (!ordiniDaRitirare.isEmpty()) {
                 printOrdini(ordiniDaRitirare);
                 int idOrdine = askForInteger("ID Ordine da ritirare: ");
@@ -630,7 +632,7 @@ public class Main {
                     posizione.getId(),
                     pianta.getId(),
                     pianta.getTipoPianta(),
-                    pianta.getStato(),
+                    pianta.getStatoString(),
                     posizione.getIgrometroTerra().getValore(),
                     posizione.getIrrigatore().isWorking() ? GreenString("    ON     ") : RedString("    OFF    "));
         }
@@ -646,7 +648,7 @@ public class Main {
             String[] pianteLinee = o.getPianteString().split("\n");
 
             System.out.printf("| %-4d | %-7d | %-10s | %-6.1f | %-14s | %-24s |\n",
-                    o.getId(), o.getCliente(), o.getStringDataConsegna(), o.getTotale(), o.getStato(), pianteLinee[0]
+                    o.getId(), o.getCliente(), o.getStringDataConsegna(), o.getTotale(), o.getStatoString(), pianteLinee[0]
             ); // Stampa la prima riga con i dati principali
 
             // Stampa le righe successive con le piante spezzate, mantenendo gli altri campi vuoti
@@ -685,7 +687,7 @@ public class Main {
                 firstLine = pianteLinee.get(0);
 
             System.out.printf("| %-4d | %-12s | %-10s | %-21s | %-7.1f | %-29s |\n",
-                    p.getId(), p.getTipoPianta(), p.getDataInizio().toString(), p.getStato(), p.getCosto(), firstLine
+                    p.getId(), p.getTipoPianta(), p.getDataInizio().toString(), p.getStatoString(), p.getCosto(), firstLine
             ); // Stampa la prima riga con i dati principali
 
             // Stampa le righe successive con le piante spezzate, mantenendo gli altri campi vuoti

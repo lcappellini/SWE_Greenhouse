@@ -2,9 +2,7 @@ package test.java.BusinessLogic;
 import main.java.BusinessLogic.AdminExtraController;
 import main.java.BusinessLogic.ClienteController;
 import main.java.BusinessLogic.LoginClienteController;
-import main.java.DomainModel.Cliente;
-import main.java.DomainModel.Ordine;
-import main.java.DomainModel.Pianta;
+import main.java.DomainModel.*;
 import main.java.ORM.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +52,7 @@ public class ClienteControllerTest {
 
         ArrayList<Pianta> piante = new ArrayList<>();
         for (int i = 0; i < 10; i++)
-            piante.add(new Pianta("Rosa","da piantare"));
+            piante.add(new Pianta("Rosa", StatoPianta.da_piantare));
         Ordine ordine = new Ordine(cliente.getId(),piante);
 
         boolean result = clienteController.richiediNuovoOrdine(ordine);
@@ -73,7 +71,7 @@ public class ClienteControllerTest {
 
         ArrayList<Pianta> piante = new ArrayList<>();
         for (int i = 0; i < posizioniDisponibili+1; i++)  // non ci sono 100 posizioni libere
-            piante.add(new Pianta("Rosa","da piantare"));
+            piante.add(new Pianta("Rosa", StatoPianta.da_piantare));
         Ordine ordine = new Ordine(cliente.getId(), piante);
 
         boolean result = clienteController.richiediNuovoOrdine(ordine);
@@ -88,13 +86,13 @@ public class ClienteControllerTest {
 
         ArrayList<Pianta> piante = new ArrayList<>();
         for (int i = 0; i < 10; i++)
-            piante.add(new Pianta("Rosa", "da piantare"));
+            piante.add(new Pianta("Rosa", StatoPianta.da_piantare));
         Ordine ordine = new Ordine(cliente.getId(), piante);
 
         clienteController.richiediNuovoOrdine(ordine);
 
         OrdineDAO ordineDAO = new OrdineDAO();
-        ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "da completare"));
+        ordineDAO.aggiorna(ordine.getId(), Map.of("stato", StatoOrdine.da_completare.getId()));
 
         boolean result = clienteController.pagaEritiraOrdine(ordine);
         assertTrue(result);

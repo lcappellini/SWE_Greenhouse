@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "Ordine" (
                                         dataConsegna VARCHAR(50),
                                         piante VARCHAR(300),
                                         totale DECIMAL(6,2),
-                                        stato VARCHAR(50),
+                                        stato INT,
                                         FOREIGN KEY (cliente) REFERENCES "Cliente"(id)
 );
 CREATE TABLE IF NOT EXISTS "Pianta" (
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS "Pianta" (
                                         tipo VARCHAR(50),
                                         descrizione VARCHAR(200),
                                         dataInizio VARCHAR(50),
-                                        stato VARCHAR(100),
+                                        stato INT,
                                         costo DECIMAL(10, 2),
                                         ordine int references "Ordine"(id)
 );

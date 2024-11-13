@@ -1,9 +1,7 @@
 package test.java.BusinessLogic;
 
 import main.java.BusinessLogic.*;
-import main.java.DomainModel.Operatore;
-import main.java.DomainModel.Ordine;
-import main.java.DomainModel.Pianta;
+import main.java.DomainModel.*;
 import main.java.ORM.OperatoreDAO;
 import main.java.ORM.OrdineDAO;
 import main.java.ORM.PiantaDAO;
@@ -43,7 +41,7 @@ public class OperatoreControllerTest {
                 loginClienteController.accedi("mario@email.it","123"));
         ArrayList<Pianta> piante = new ArrayList<>();
         for (int i = 0; i < 10; i++)
-            piante.add(new Pianta("Geranio","da piantare"));
+            piante.add(new Pianta("Geranio", StatoPianta.da_piantare));
         ordine = new Ordine(1, piante);
         clienteController.richiediNuovoOrdine(ordine);
     }
@@ -55,8 +53,8 @@ public class OperatoreControllerTest {
         System.out.println("-Ordine da completare");
         operatoreController.piantaOrdine(ordine, operatore);
         OrdineDAO ordineDAO = new OrdineDAO();
-        ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "da completare"));
-        ordine.setStato("da completare");
+        ordineDAO.aggiorna(ordine.getId(), Map.of("stato", StatoOrdine.da_completare.getId()));
+        ordine.setStato(StatoOrdine.da_completare);
         assertTrue(operatoreController.completaOrdine(ordine, operatore));
         System.out.println("-Test superato!");
     }
@@ -80,7 +78,7 @@ public class OperatoreControllerTest {
         PiantaDAO piantaDAO = new PiantaDAO();
         for (Pianta pianta : piante) {
             pianta.setStatoHaBisogno();
-            piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
+            piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStatoId()));
         }
         ArrayList<Pianta> pianteDaCurare = operatoreController.checkupPiante(operatore, 0);
         assertEquals(pianteDaCurare.size(), piante.size());
@@ -97,7 +95,7 @@ public class OperatoreControllerTest {
         PiantaDAO piantaDAO = new PiantaDAO();
         for (Pianta pianta : piante) {
             pianta.setStatoNonHaBisogno();
-            piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
+            piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStatoId()));
         }
         ArrayList<Pianta> pianteDaCurare = operatoreController.checkupPiante(operatore, 0);
         assertEquals(pianteDaCurare.size(), 0);
@@ -111,9 +109,9 @@ public class OperatoreControllerTest {
         Pianta pianta = ordine.getPiante().get(0);
         PiantaDAO piantaDAO = new PiantaDAO();
         pianta.setStatoHaBisogno();
-        piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
+        piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStatoId()));
         operatoreController.curaPianta(pianta, operatore);
-        assertEquals(pianta.getStato(), "Curata, sta crescendo");
+        assertEquals(pianta.getStato(), StatoPianta.curata_sta_crescendo);
         System.out.println("-Test superato!");
     }
 

@@ -2,6 +2,7 @@ package main.java.ORM;
 
 import main.java.DomainModel.Ordine;
 import main.java.DomainModel.Pianta;
+import main.java.DomainModel.StatoOrdine;
 
 
 import java.sql.*;
@@ -30,7 +31,7 @@ public class OrdineDAO {
             preparedStatement.setString(2, ordine.getStringDataConsegna());  // Assuming you have this method
             preparedStatement.setString(3, ordine.getPianteforDB());        // Assuming this returns the right format
             preparedStatement.setDouble(4, ordine.getTotale());
-            preparedStatement.setString(5, ordine.getStato());
+            preparedStatement.setInt(5, ordine.getStatoId());
 
             // Execute the insert operation
             ResultSet rs = preparedStatement.executeQuery();
@@ -46,14 +47,12 @@ public class OrdineDAO {
 
     public ArrayList<Ordine> get(Map<String, Object> criteri) {
         StringBuilder query = new StringBuilder("SELECT * FROM \"Ordine\"");
-
-        // Aggiungi condizioni se ci sono criteri
-        if (criteri != null && !criteri.isEmpty()) {
+        if (criteri != null && !criteri.isEmpty()) { // Aggiungi condizioni se ci sono criteri
             query.append(" WHERE ");
             for (String key : criteri.keySet()) {
                 query.append(key).append(" = ? AND ");
             }
-            query.setLength(query.length() - 5);  // Rimuove l'ultimo " AND "
+            query.setLength(query.length() - 5);  // Rimuove l'ultimo AND
         }
 
         ArrayList<Ordine> ordini = new ArrayList<>();
@@ -63,8 +62,7 @@ public class OrdineDAO {
             if (criteri != null && !criteri.isEmpty()) {
                 int paramIndex = 1;
                 for (Object value : criteri.values()) {
-                    statement.setObject(paramIndex, value);
-                    paramIndex++;
+                    statement.setObject(paramIndex++, value);
                 }
             }
             PiantaDAO piantaDAO = new PiantaDAO();
@@ -72,23 +70,21 @@ public class OrdineDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     int idOrdine = resultSet.getInt("id");
+                    // chiama PiantaDAO per inizializzare le piante
                     ArrayList<Pianta> piante = piantaDAO.get(Map.of("ordine", idOrdine));
                     ordini.add(new Ordine(
                             idOrdine,
                             resultSet.getInt("cliente"),
                             piante,
-                            resultSet.getString("stato"),
+                            StatoOrdine.values()[resultSet.getInt("stato")],
                             resultSet.getString("dataConsegna"),
                             resultSet.getDouble("totale")
                     ));
                 }
             }
         } catch (SQLException e) {
-            // Logga l'errore
             System.err.println("Errore durante il recupero degli ordini: " + e.getMessage());
-            e.printStackTrace(); // Mostra la traccia dello stack per una diagnostica più dettagliata
         }
-
         return ordini;
     }
 

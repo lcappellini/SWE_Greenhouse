@@ -1,6 +1,7 @@
 package main.java.ORM;
 
 import main.java.DomainModel.Pianta;
+import main.java.DomainModel.StatoPianta;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -32,7 +33,7 @@ public class PiantaDAO {
                     // Estrai i dati dell'ordine dal result set e costruisci un oggetto Ordine
                     return new Pianta(resultSet.getInt("id"),
                             resultSet.getString("tipo"), resultSet.getString("descrizione"), resultSet.getString("dataInizio"),
-                            resultSet.getString("stato"));
+                            StatoPianta.values()[resultSet.getInt("stato")]);
                 }
             }
             return null;
@@ -95,7 +96,7 @@ public class PiantaDAO {
                 statementInserimento.setString(1, p.getTipoPianta());
                 statementInserimento.setString(2, p.getDescrizione());
                 statementInserimento.setString(3, LocalDate.now().toString());  // Data di oggi
-                statementInserimento.setString(4, p.getStato());
+                statementInserimento.setInt(4, p.getStatoId());
                 statementInserimento.setDouble(5, p.getCosto());
                 statementInserimento.setInt(6, id_ordine);
 
@@ -181,7 +182,7 @@ public class PiantaDAO {
                 while (resultSet.next()) {
                     piante.add(new Pianta(resultSet.getInt("id"),
                             resultSet.getString("tipo"), resultSet.getString("descrizione"), resultSet.getString("dataInizio"),
-                            resultSet.getString("stato")));
+                            StatoPianta.values()[resultSet.getInt("stato")]));
                 }
             }
         } catch (SQLException e) {

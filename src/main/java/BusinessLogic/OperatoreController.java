@@ -33,10 +33,10 @@ public class OperatoreController {
 
             for (int i = 0; i < ordine.getnPiante(); i++) {
                 pos.add(new Posizionamento(libere.get(i).getId(), ordine.getPiante().get(i).getId(), ordine.getId()));
-                piantaDAO.aggiorna(ordine.getPiante().get(i).getId(), Map.of("stato", "sta crescendo"));
+                piantaDAO.aggiorna(ordine.getPiante().get(i).getId(), Map.of("stato", StatoPianta.sta_crescendo.getId()));
                 posizioneDAO.aggiorna(libere.get(i).getId(), Map.of("occupata", true));
             }
-            ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "posizionato"));
+            ordineDAO.aggiorna(ordine.getId(), Map.of("stato", StatoOrdine.posizionato.getId()));
             try{
                 posizionamentoDAO.inserisciPosizionamenti(pos);
             }catch (SQLException e){
@@ -58,9 +58,9 @@ public class OperatoreController {
         if (pos != null && !pos.isEmpty() && posizionamentoDAO.eliminaPosizionamentiByOrdine(ordine.getId())){
             for(Posizionamento posizionamento : pos){
                 posizioneDAO.aggiorna(posizionamento.getIdPosizione(), Map.of("occupata", false,"assegnata", false));
-                piantaDAO.aggiorna(posizionamento.getIdPianta(), Map.of("stato", "da ritirare"));
+                piantaDAO.aggiorna(posizionamento.getIdPianta(), Map.of("stato", StatoPianta.da_ritirare.getId()));
             }
-            ordineDAO.aggiorna(ordine.getId(), Map.of("stato", "da ritirare"));
+            ordineDAO.aggiorna(ordine.getId(), Map.of("stato", StatoOrdine.da_ritirare.getId()));
             operazioneDAO.registra(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
             return true;
         }
@@ -76,9 +76,9 @@ public class OperatoreController {
 
         for (Posizionamento p : posizionamenti){
             Pianta pianta = piantaDAO.get(Map.of("id", p.getIdPianta())).get(0);
-            String stato = pianta.getStato();
+            StatoPianta stato = pianta.getStato();
             System.out.printf("Stato %s [%d] -> %s\n", pianta.getTipoPianta(), pianta.getId(), stato);
-            if(pianta.getStato().equals("ha bisogno di cure")) {
+            if(stato == StatoPianta.ha_bisogno_di_cure) {
                 pianteDaCurare.add(pianta);
             }
             try {
@@ -95,7 +95,7 @@ public class OperatoreController {
         PiantaDAO piantaDAO = new PiantaDAO();
         OperazioneDAO operazioneDAO = new OperazioneDAO();
         pianta.cura(operatore.getId(), LocalDateTime.now());
-        piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
+        piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStatoId()));
         piantaDAO.aggiornaDescrizione(pianta.getId(), pianta.getDescrizione());
         operazioneDAO.registra(operatore, operatore.getLavoro(), LocalDateTime.now().toString());
     }
@@ -109,7 +109,7 @@ public class OperatoreController {
         return ordineDAO.get(criteri);
     }
     public Ordine getOrdineById(int idOrdine) {
-        ArrayList<Ordine> ordini = getOrdini(Map.of("id",idOrdine));
+        ArrayList<Ordine> ordini = getOrdini(Map.of("id", idOrdine));
         if (ordini.isEmpty())
             return null;
         else
@@ -120,7 +120,7 @@ public class OperatoreController {
         ArrayList<Pianta> piante = piantaDAO.get(null);
         for (Pianta pianta : piante) {
             pianta.generaStato();
-            piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStato()));
+            piantaDAO.aggiorna(pianta.getId(), Map.of("stato", pianta.getStatoId()));
         }
     }
     public ArrayList<Pianta> getPiante(Map<String, Object> criteri) {
