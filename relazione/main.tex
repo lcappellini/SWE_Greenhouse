@@ -7,6 +7,7 @@
 \usepackage{float}
 \usepackage{hyperref}
 \usepackage{caption}
+\usepackage{subcaption}
 
 % \newcommand{\code}[1]{\textbf{\textcolor{cyan}{#1}}}
 \newcommand{\code}[1]{\texttt{#1}}
@@ -36,7 +37,7 @@ Elaborato per il superamento dell’esame di Ingegneria del Software, appartenen
 Il progetto modella un sistema di controllo e gestione di serre, e in particolare si occupa della cura e crescita delle piante in esse, al fine ultimo di venderle a clienti. 
 I 3 spazi delle serre sono divisi in 4 settori in cui è presente un sistema di areazione, di illuminazione e controllo della temperatura, luce e umidità, e contengono 5 posizioni ciascuna nelle quali mettere le piante che saranno irrigate e monitorate. \\
 La gestione delle piante è in gran parte automatizzata e possono essere monitorati sia i settori che le posizioni per ottenere un controllo \textit{real-time} da parte dell'Admin.\\ Ci sono operazioni che dovranno essere effettuate manualmente come la cura e il posizionamento delle piante nelle posizioni designate, che saranno eseguite da operatori. Tale sistema è adottato da un'azienda che permette ai clienti di acquistare e commissionare un certo numero di piante con consegna prevista entro un certo periodo.
-\subsection{Struttura e pratiche utilizzate}
+\subsection{Archiettura e pratiche utilizzate}
 Il software è stato sviluppato in Java, mentre per la gestione e il salvataggio dei dati è stato connesso un database PostgreSQL ed è stata utilizzata la libreria JDBC (Java DataBase Connectivity).
 \\
 
@@ -50,227 +51,259 @@ Per utilizzare il software è stata creata un’interfaccia da riga di comando (
 \\
 
 \noindent Gli Use Case Diagram e i Class Diagram seguono lo standard UML (Unified Modeling Language) e sono stati realizzati con il software StarUML. Infine, per la parte di testing è stato utilizzato JUnit.
+\\
+
+\noindent Questa architettura prevede che l'utente esegua un'azione tramite l'interfaccia; questa richiama direttamente i metodi esposti nei controller della Business Logic; quest'ultima delega la creazione degli oggetti all'ORM che richiede i dati al database tramite JDBC e RDBMS; creati gli oggetti (definiti nel Domain Model), la Business Logic può usarli direttamente e portare a termine l'esecuzione della funzione desiderata. Vedi Figura \ref{fig:diagram_packagedependency}.
+
 \begin{figure}[H]
     \centering
-    \fbox{\includegraphics[scale=0.3]{resources/images/Diagrams/diagram_packagedependency.png}}
+    \fbox{\includegraphics[scale=0.3]{resources/images/Diagrams/diagram_packagedependency.jpg}}
     \caption{Package Dependency Diagram}
     \label{fig:diagram_packagedependency}
 \end{figure}
 
-\newpage\section{Progettazione}
+\section{Progettazione}
 
 \subsection{Use Case Diagram}
-Come descritto in precedenza, il sistema è stato progettato per permettere a clienti di ordinare e ritirare le piante desiderate, le quali sono gestite da operatori e monitorate da un Admin. La Figura \ref{fig:diagram_usecases} illustra il diagramma dei casi d'uso del sistema, includendo quelli relativi ai Clienti, agli Operatori e agli Admin.
+Come descritto in precedenza, il sistema è stato progettato per permettere a clienti di ordinare e ritirare le piante desiderate, le quali sono gestite da operatori e monitorate da un Admin. Le Figure \ref{fig:diagram_usecases_client} e \ref{fig:diagram_usecases_worker} illustra il diagramma dei casi d'uso del sistema, includendo quelli relativi ai Clienti, agli Operatori e agli Admin.
+\\
+
+
 
 \begin{figure}[H]
     \centering
-    \fbox{\includegraphics[scale=0.5]{resources/images/Diagrams/diagram_usecases.png}}
-    \caption{Diagramma degli Use Cases}
-    \label{fig:diagram_usecases}
+    \fbox{\includegraphics[scale=0.27]{resources/images/Diagrams/use_Case_cliente.jpg}}
+    \caption{Diagramma degli Use Cases del Cliente}
+    \label{fig:diagram_usecases_client}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[scale=0.27]{resources/images/Diagrams/use_case_personale.jpg}}
+    \caption{Diagramma degli Use Cases del Personale lavorativo}
+    \label{fig:diagram_usecases_worker}
 \end{figure}
 
 \subsection{Use Case Template}
 Qui di seguito sono elencati i template di alcuni casi d'uso implementati. Per ciascuno sono specificati dei dettagli: una breve descrizione, il livello del caso d'uso, gli attori coinvolti, le precondizioni, le post-condizioni, il flusso principale e i flussi alternativi.
+\\
 
-\renewcommand{\arraystretch}{1.5}
+    \renewcommand{\arraystretch}{1.5}
+    
+    \begin{table}[h]
+        \begin{tabularx}{\textwidth}{ | l  X | }
+            \rowcolor{lightgray!70}
+            \hline
+            \textbf{Use Case \#1} & \textbf{Accedi al Sistema (Sign-in)}\\[0.5ex]
+            \textbf{Brief Description} & L'utente accede al sistema tramite le proprie credenziali \\
+            \rowcolor{blue!10}
+            \textbf{Level} & User Goal \\
+            \textbf{Actors} & Admin, Cliente, Operatore \\
+            \rowcolor{blue!10}
+            \textbf{Pre-Conditions} & L'utente deve essere nella pagina dedicata al proprio accesso (\hyperref[fig:mockup_1]{Mockup \#1}) \\
+            \textbf{Basic Flow} & 1) L'utente inserisce le proprie credenziali\\
+            & 2) L'utente invia le proprie credenziali\\
+            & 3) Il sistema verifica le credenziali\\
+            & 4) Il sistema autentica l'utente (Test \hyperref[test_3]{\#3}, \hyperref[test_6]{\#6} e \hyperref[test_9]{\#9})  \\        
+            \rowcolor{blue!10}
+            \textbf{Alternative Flow} & 3a) Se le credenziali sono errate o l'utente non è registrato, il sistema restituisce un messaggio di errore e permette di ritentare (Test \hyperref[test_4]{\#4}, \hyperref[test_5]{\#5}, \hyperref[test_7]{\#7}, \hyperref[test_8]{\#8}, \hyperref[test_10]{\#10}, \hyperref[test_11]{\#11})\\
+            \textbf{Post-Conditions} & L'utente è autenticato nel sistema e ha accesso alle sue funzioni \\
+            \hline
+        \end{tabularx}
+        \label{use_case_1}
+        \caption{Use Case \#1 (Accedi al Sistema)}
+    \end{table}
+    
+    
+    \begin{table}[p]
+        \begin{tabularx}{\textwidth}{ | l  X | }
+            \hline
+            \rowcolor{lightgray!70}
+            \textbf{Use Case \#2} & \textbf{Registrati nel Sistema (Sign-up)}\\ [0.5ex]
+            \textbf{Brief Description} & Il cliente si registra nel sistema creando un nuovo account \\
+            \rowcolor{blue!10}
+            \textbf{Level} & User Goal \\
+            \textbf{Actors} & Cliente \\
+            \rowcolor{blue!10}
+            \textbf{Pre-Conditions} & Il cliente deve essere nella pagina di registrazione del cliente (Mockup \hyperref[fig:mockup_2]{\#2})\\
+            \textbf{Basic Flow} & 1) Il cliente fornisce le informazioni richieste\\
+            & 2) Il cliente conferma la registrazione\\
+            & 3) Il sistema verifica i dati\\
+            & 4) Il sistema crea un nuovo account per il cliente\\  
+            \rowcolor{blue!10}
+            \textbf{Alternative Flow} & 3a) Se il cliente fornisce dati non validi o già presenti (di un altro account), il sistema mostra un messaggio di errore\\
+            \textbf{Post-Conditions} & Il cliente deve comunque effettuare il login per accedere al sistema\\
+            \hline
+        \end{tabularx}
+        \label{use_case_2}
+        \caption{Use Case \#2 (Registrati  al Sistema)}
+    \end{table}
+    
+    
+    \begin{table}[p]
+        \begin{tabularx}{\textwidth}{ | l  X | }
+            \rowcolor{lightgray!70}
+            \hline
+            \textbf{Use Case \#3} & \textbf{Richiedi nuovo Ordine} \\[0.5ex]
+            \textbf{Brief Description} & Il cliente crea un nuovo Ordine \\
+            \rowcolor{blue!10}
+            \textbf{Level} & User Goal \\
+            \textbf{Actors} & Cliente \\
+            \rowcolor{blue!10}
+            \textbf{Pre-Conditions} & Il cliente deve aver fatto l'accesso e essere nella pagina "Ordini" \\
+            \textbf{Basic Flow} & 1) Il cliente seleziona l'opzione per creare un nuovo ordine\\
+            & 2) Il cliente sceglie il tipo di pianta e la quantità desiderata (Mockup \hyperref[fig:mockup_3]{\#3})\\
+            & 3) Il cliente sceglie se aggiungere altre piante o se concludere l'ordine\\
+            & 4) Il sistema registra il nuovo ordine (Test \hyperref[test_12]{\#12})\\
+            \rowcolor{blue!10}
+            \textbf{Alternative Flow} & 2a) Se il cliente inserisce valori non validi, il sistema mostra un messaggio di errore e richiede l'input  \\
+            \rowcolor{blue!10}
+            & 4a) Se l'ordine non può essere preso in carico, il sistema restituisce un messaggio (Test \hyperref[test_13]{\#13})\\
+            \textbf{Post-Conditions} & Il nuovo ordine è stato registrato nel sistema \\
+            \hline
+        \end{tabularx}
+        \label{use_case_3}
+        \caption{Use Case \#3 (Richiedi nuovo Ordine)}
+    \end{table}
+    
+    
+    \begin{table}[p]
+        \begin{tabularx}{\textwidth}{ | l  X | }
+            \rowcolor{lightgray!70}
+            \hline
+            \textbf{Use Case \#4} & \textbf{Paga e Ritira Ordine }\\[0.5ex]
+            \textbf{Brief Description} & Il cliente paga e ritira il proprio Ordine\\
+            \rowcolor{blue!10}
+            \textbf{Level} & User Goal \\
+            \textbf{Actors} & Cliente \\
+            \rowcolor{blue!10}
+            \textbf{Pre-Conditions} & Il cliente è autenticato ed è nella sua pagina "Ordini" \\
+            \textbf{Basic Flow} & 1) Il cliente seleziona l'opzione per pagare e ritirare l'ordine\\
+            & 2) Il sistema mostra una lista di ordini pronti per essere ritirati\\
+            & 3) Il cliente inserisce l'id dell'ordine scelto\\
+            & 4) Il sistema conferma il pagamento e il ritiro di tale ordine (Test \hyperref[test_14]{\#14})\\
+            \rowcolor{blue!10}
+            \textbf{Alternative Flow} & 3a) Se l'utente fornisce un id sconosciuto o l'id di un ordine non pronto, il sistema mostra un messaggio di errore\\
+            \textbf{Post-Conditions} & Il sistema libera le posizioni associate e rimuove le piante ritirate \\
+            \hline
+        \end{tabularx}
+        \label{use_case_4}
+        \caption{Use Case \#4 (Paga e Ritira Ordine)}
+    \end{table}
+    
+    
+    \begin{table}[p]
+        \begin{tabularx}{\textwidth}{ | l  X | }
+            \rowcolor{lightgray!70}
+            \hline
+            \textbf{Use Case \#5} & \textbf{Pianta Ordine }\\[0.5ex]
+            \textbf{Brief Description} & L'Operatore semina le piante associate a un Ordine \\
+            \rowcolor{blue!10}
+            \textbf{Level} & User Goal\\
+            \textbf{Actors} & Operatore \\
+            \rowcolor{blue!10}
+            \textbf{Pre-Conditions} & L'Operatore deve essere sulla sua dashboard\\
+            \textbf{Basic Flow} & 1) L'Operatore sceglie l'opzione "Pianta Ordine"\\
+            & 2) Il sistema mostra una lista di Ordini da piantare (Mockup      \hyperref[fig:mockup_4]{\#4})\\
+            & 3) L'Operatore sceglie l'id dell'Ordine che vuole piantare\\
+            & 4) Il sistema segnala all'operatore di posizionare le piante dell'ordine in posizioni disponibili (Test \hyperref[test_20]{\#20})\\
+            \rowcolor{blue!10}
+            \textbf{Alternative Flow} & 3a) Se il sistema non trova l'ordine con tale id o l'ordine è già stato posizionato, mostra un messaggio di errore\\
+            \textbf{Post-Conditions} & Il sistema genera i Posizionamenti dell'ordine e modifica lo stato dell'Ordine\\
+            \hline
+        \end{tabularx}
+        \label{use_case_5}
+        \caption{Use Case \#5 (Pianta Ordine)}
+    \end{table}
+    
+    
+    \begin{table}[p]
+        \begin{tabularx}{\textwidth}{ | l  X | }
+            \rowcolor{lightgray!70}
+            \hline
+            \textbf{Use Case \#6} & \textbf{Completa Ordine} \\[0.5ex]
+            \textbf{Brief Description} & Completa un Ordine (le piante sono cresciute e pronte alla consegna)\\
+            \rowcolor{blue!10}
+            \textbf{Level} & User Goal \\
+            \textbf{Actors} & Operatore \\
+            \rowcolor{blue!10}
+            \textbf{Pre-Conditions} & L'Operatore deve essere sulla sua dashboard\\
+            \textbf{Basic Flow} & 1) L'Operatore sceglie l'opzione "Completa Ordine"\\
+            & 2) Il sistema mostra una lista di Ordini da completare\\
+            & 3) L'Operatore inserisce l'id dell'Ordine da completare\\
+            & 4) Il sistema imposta l'Ordine come completato e quindi pronto al ritiro (Test \hyperref[test_15]{\#15})\\
+            \rowcolor{blue!10}
+           \textbf{Alternative Flow} & 3a) Se il sistema non trova l'ordine con tale id o l'ordine è già stato completato, mostra un messaggio di errore (Test \hyperref[test_16]{\#16})\\
+            \textbf{Post-Conditions} & Il cliente adesso può pagare e ritirare l'ordine\\
+            \hline
+        \end{tabularx}
+        \label{use_case_6}
+        \caption{Use Case \#6 (Completa Ordine)}
+    \end{table}
+    
+    
+    
+    \begin{table}[p]
+        \begin{tabularx}{\textwidth}{ | l  X | }
+            \rowcolor{lightgray!70}
+            \hline
+            \textbf{Use Case \#7} & \textbf{Check-Up Piante }\\[0.5ex]
+            \textbf{Brief Description} & L'Operatore verifica lo stato delle piante\\
+            \rowcolor{blue!10}
+            \textbf{Level} & User Goal\\
+            \textbf{Actors} & Operatore \\
+            \rowcolor{blue!10}
+            \textbf{Pre-Conditions} & L'Operatore deve essere sulla dashboard\\
+            \textbf{Basic Flow} & 1) L'Operatore sceglie l'opzione "Check-Up Piante"\\
+            & 2) Per ogni Pianta del sistema viene eseguito un controllo che valuta se la pianta ha bisogno di cure (Test \hyperref[test_17]{\#17})\\
+            & 3) Se sono presenti piante che hanno bisogno, queste vengono curate (Test \hyperref[test_19]{\#19})\\
+            & 4) Il Check-Up è terminato\\
+            & 5) Il sistema salva l'operazione effettuata dall'operatore nel database \\
+            \rowcolor{blue!10}
+            \textbf{Alternative Flow} & 2a) Se non sono presenti piante su cui è possibile fare il check-up, il sistema mostra un errore (Test \hyperref[test_18]{\#18})\\
+            \textbf{Post-Conditions} & Le Piante sono in salute e possono continuare a crescere\\
+            \hline
+        \end{tabularx}
+        \label{use_case_7}
+        \caption{Use Case \#7 (Check-Up Piante)}
+    \end{table}
+    
+    
+    \begin{table}[h]
+        \begin{tabularx}{\textwidth}{ | l  X | }
+            \rowcolor{lightgray!70}
+            \hline
+            \textbf{Use Case \#8} & \textbf{Monitora Settore }\\[0.5ex]
+            \textbf{Brief Description} & L'Admin visualizza i parametri dei Sensori e degli Attuatori in tempo reale \\
+            \rowcolor{blue!10}
+            \textbf{Level} & User Goal \\
+            \textbf{Actors} & Admin \\
+            \rowcolor{blue!10}
+            \textbf{Pre-Conditions} & L'Admin deve essere autenticato e sulla dashboard dell'admin\\
+            \textbf{Basic Flow} & 1) L'Admin sceglie l'opzione "Monitora Settore"\\
+            & 2) Il sistema mostra una lista di settori monitorabili\\
+            & 3) L'Admin inserisce l'id del Settore desiderato\\
+            & 4) Il sistema restituisce i valori dei sensori in tempo reale e lo stato ON/OFF dei rispettivi attuatori\\
+            & 5) L'Admin interrompe il monitoraggio\\
+            \rowcolor{blue!10}
+            \textbf{Alternative Flow} & 4a) Il sistema non trova il Settore con l'id richiesto e mostra un messaggio di errore\\
+            \textbf{Post-Conditions} & L'Admin ritorna alla dashboard \\
+            \hline
+        \end{tabularx}
+        \label{use_case_8}
+        \caption{Use Case \#8 (Monitora Settore)}
+    \end{table}
 
-\begin{table}[p]
-    \begin{tabularx}{\textwidth}{ | l  X | }
-        \rowcolor{lightgray!70}
-        \hline
-        \textbf{Use Case \#1} & \textbf{Accedi al Sistema (Sign-in)}\\[0.5ex]
-        \textbf{Brief Description} & L'utente accede al sistema tramite le proprie credenziali (\hyperref[fig:mockup_1]{Mockup \#1})\\
-        \rowcolor{blue!10}
-        \textbf{Level} & User Goal \\
-        \textbf{Actors} & Admin, Cliente, Operatore \\
-        \rowcolor{blue!10}
-        \textbf{Pre-Conditions} & L'utente deve essere nella pagina dedicata al proprio accesso \\
-        \textbf{Basic Flow} & 1) L'utente inserisce le proprie credenziali\\
-        & 2) L'utente invia le proprie credenziali\\
-        & 3) Il sistema verifica le credenziali\\
-        & 4) Il sistema autentica l'utente \\        
-        \rowcolor{blue!10}
-        \textbf{Alternative Flow} & 3a) Se le credenziali sono errate, il sistema restituisce un messaggio di errore e permette di ritentare \\
-        \textbf{Post-Conditions} & L'utente è autenticato nel sistema e ha accesso alle sue funzioni \\
-        \hline
-    \end{tabularx}
-    \caption{Use Case \#1 (Accedi al Sistema)}
-\end{table}
 
-
-\begin{table}[p]
-    \begin{tabularx}{\textwidth}{ | l  X | }
-        \hline
-        \rowcolor{lightgray!70}
-        \textbf{Use Case \#2} & \textbf{Registrati nel Sistema (Sign-up)}\\ [0.5ex]
-        \textbf{Brief Description} & Il cliente si registra nel sistema creando un nuovo account (\hyperref[fig:mockup_2]{Mockup \#2})\\
-        \rowcolor{blue!10}
-        \textbf{Level} & User Goal \\
-        \textbf{Actors} & Cliente \\
-        \rowcolor{blue!10}
-        \textbf{Pre-Conditions} & Il cliente deve essere nella pagina di accesso del cliente\\
-        \textbf{Basic Flow} & 1) Il cliente fornisce le informazioni richieste\\
-        & 2) Il cliente conferma la registrazione\\
-        & 3) Il sistema verifica i dati\\
-        & 4) Il sistema crea un nuovo account per il cliente\\  
-        \rowcolor{blue!10}
-        \textbf{Alternative Flow} & 3a) Se il cliente fornisce dati non validi o già presenti (di un altro account), il sistema mostra un messaggio di errore\\
-        \textbf{Post-Conditions} & Il cliente deve comunque effettuare il login per accedere al sistema\\
-        \hline
-    \end{tabularx}
-    \caption{Use Case \#2 (Registrati  al Sistema)}
-\end{table}
-
-
-\begin{table}[p]
-    \begin{tabularx}{\textwidth}{ | l  X | }
-        \rowcolor{lightgray!70}
-        \hline
-        \textbf{Use Case \#3} & \textbf{Richiedi nuovo Ordine} \\[0.5ex]
-        \textbf{Brief Description} & Il cliente crea un nuovo Ordine (\hyperref[fig:mockup_3]{Mockup \#3})\\
-        \rowcolor{blue!10}
-        \textbf{Level} & User Goal \\
-        \textbf{Actors} & Cliente \\
-        \rowcolor{blue!10}
-        \textbf{Pre-Conditions} & Il cliente deve aver fatto l'accesso e essere nella pagina "Ordini" \\
-        \textbf{Basic Flow} & 1) Il cliente seleziona l'opzione per creare un nuovo ordine\\
-        & 2) Il cliente sceglie il tipo di pianta e la quantità desiderata\\
-        & 3) Il cliente sceglie se aggiungere altre piante o se concludere l'ordine\\
-        & 4) Il sistema registra il nuovo ordine\\
-        \rowcolor{blue!10}
-        \textbf{Alternative Flow} & 2a) Se il cliente inserisce valori non validi, il sistema mostra un messaggio di errore e richiede l'input\\
-        \rowcolor{blue!10}
-        & 4a) Se l'ordine non può essere preso in carico, il sistema restituisce un messaggio\\
-        \textbf{Post-Conditions} & Il nuovo ordine è stato registrato nel sistema \\
-        \hline
-    \end{tabularx}
-    \caption{Use Case \#3 (Richiedi nuovo Ordine)}
-\end{table}
-
-
-\begin{table}[p]
-    \begin{tabularx}{\textwidth}{ | l  X | }
-        \rowcolor{lightgray!70}
-        \hline
-        \textbf{Use Case \#4} & \textbf{Paga e Ritira Ordine }\\[0.5ex]
-        \textbf{Brief Description} & Il cliente paga e ritira il proprio Ordine\\
-        \rowcolor{blue!10}
-        \textbf{Level} & User Goal \\
-        \textbf{Actors} & Cliente \\
-        \rowcolor{blue!10}
-        \textbf{Pre-Conditions} & Il cliente è autenticato ed è nella sua pagina "Ordini" \\
-        \textbf{Basic Flow} & 1) Il cliente seleziona l'opzione per pagare e ritirare l'ordine\\
-        & 2) Il sistema mostra una lista di ordini pronti per essere ritirati\\
-        & 3) Il cliente inserisce l'id dell'ordine scelto\\
-        & 4) Il sistema conferma il pagamento e il ritiro di tale ordine\\
-        \rowcolor{blue!10}
-        \textbf{Alternative Flow} & 3a) Se l'utente fornisce un id sconosciuto o l'id di un ordine non pronto, il sistema mostra un messaggio di errore\\
-        \textbf{Post-Conditions} & Il sistema libera le posizioni associate e rimuove le piante ritirate \\
-        \hline
-    \end{tabularx}
-    \caption{Use Case \#4 (Paga e Ritira Ordine)}
-\end{table}
-
-
-\begin{table}[p]
-    \begin{tabularx}{\textwidth}{ | l  X | }
-        \rowcolor{lightgray!70}
-        \hline
-        \textbf{Use Case \#5} & \textbf{Pianta Ordine }\\[0.5ex]
-        \textbf{Brief Description} & L'Operatore semina le piante associate a un Ordine (\hyperref[fig:mockup_4]{Mockup \#4})\\
-        \rowcolor{blue!10}
-        \textbf{Level} & User Goal\\
-        \textbf{Actors} & Operatore \\
-        \rowcolor{blue!10}
-        \textbf{Pre-Conditions} & L'Operatore deve essere sulla sua dashboard\\
-        \textbf{Basic Flow} & 1) L'Operatore sceglie l'opzione "Pianta Ordine"\\
-        & 2) Il sistema mostra una lista di Ordini da piantare\\
-        & 3) L'Operatore inserisce l'id dell'Ordine scelto\\
-        & 4) Il sistema segnala all'operatore di posizionare le piante dell'ordine in posizioni disponibili\\
-        \rowcolor{blue!10}
-        \textbf{Alternative Flow} & 3a) Se il sistema non trova l'ordine con tale id o l'ordine è già stato posizionato, mostra un messaggio di errore\\
-        \textbf{Post-Conditions} & Il sistema genera i Posizionamenti dell'ordine e modifica lo stato dell'Ordine\\
-        \hline
-    \end{tabularx}
-    \caption{Use Case \#5 (Pianta Ordine)}
-\end{table}
-
-
-\begin{table}[p]
-    \begin{tabularx}{\textwidth}{ | l  X | }
-        \rowcolor{lightgray!70}
-        \hline
-        \textbf{Use Case \#6} & \textbf{Completa Ordine} \\[0.5ex]
-        \textbf{Brief Description} & Completa un Ordine (le piante sono cresciute e pronte alla consegna)\\
-        \rowcolor{blue!10}
-        \textbf{Level} & User Goal \\
-        \textbf{Actors} & Operatore \\
-        \rowcolor{blue!10}
-        \textbf{Pre-Conditions} & L'Operatore deve essere sulla sua dashboard\\
-        \textbf{Basic Flow} & 1) L'Operatore sceglie l'opzione "Completa Ordine"\\
-        & 2) Il sistema mostra una lista di Ordini da completare\\
-        & 3) L'Operatore inserisce l'id dell'Ordine da completare\\
-        & 4) Il sistema imposta l'Ordine come completato e quindi pronto al ritiro\\
-        \rowcolor{blue!10}
-       \textbf{Alternative Flow} & 3a) Se il sistema non trova l'ordine con tale id o l'ordine è già stato completato, mostra un messaggio di errore\\
-        \textbf{Post-Conditions} & Il cliente adesso può pagare e ritirare l'ordine\\
-        \hline
-    \end{tabularx}
-    \caption{Use Case \#6 (Completa Ordine)}
-\end{table}
-
-
-
-\begin{table}[p]
-    \begin{tabularx}{\textwidth}{ | l  X | }
-        \rowcolor{lightgray!70}
-        \hline
-        \textbf{Use Case \#7} & \textbf{Check-Up Piante }\\[0.5ex]
-        \textbf{Brief Description} & L'Operatore verifica lo stato delle piante\\
-        \rowcolor{blue!10}
-        \textbf{Level} & User Goal\\
-        \textbf{Actors} & Operatore \\
-        \rowcolor{blue!10}
-        \textbf{Pre-Conditions} & L'Operatore deve essere sulla dashboard\\
-        \textbf{Basic Flow} & 1) L'Operatore sceglie l'opzione "Check-Up Piante"\\
-        & 2) Per ogni Pianta del sistema viene eseguito un controllo che valuta se la pianta ha bisogno di cure\\
-        & 3) Se sono presenti piante che hanno bisogno, queste vengono curate\\
-        & 4) Il Check-Up è terminato\\
-        & 5) Il sistema salva l'operazione effettuata dall'operatore nel database \\
-        \rowcolor{blue!10}
-        \textbf{Alternative Flow} & 2a) Se non sono presenti piante su cui è possibile fare il check-up, il sistema mostra un errore\\
-        \textbf{Post-Conditions} & Le Piante sono in salute e possono continuare a crescere\\
-        \hline
-    \end{tabularx}
-    \caption{Use Case \#7 (Check-Up Piante)}
-\end{table}
-
-
-\begin{table}[p]
-    \begin{tabularx}{\textwidth}{ | l  X | }
-        \rowcolor{lightgray!70}
-        \hline
-        \textbf{Use Case \#8} & \textbf{Monitora Settore }\\[0.5ex]
-        \textbf{Brief Description} & L'Admin visualizza i parametri dei Sensori e degli Attuatori in tempo reale \\
-        \rowcolor{blue!10}
-        \textbf{Level} & User Goal \\
-        \textbf{Actors} & Admin \\
-        \rowcolor{blue!10}
-        \textbf{Pre-Conditions} & L'Admin deve essere autenticato e sulla dashboard dell'admin\\
-        \textbf{Basic Flow} & 1) L'Admin sceglie l'opzione "Monitora Settore"\\
-        & 2) Il sistema mostra una lista di settori monitorabili\\
-        & 3) L'Admin inserisce l'id del Settore desiderato\\
-        & 4) Il sistema restituisce i valori dei sensori in tempo reale e lo stato ON/OFF dei rispettivi attuatori\\
-        & 5) L'Admin interrompe il monitoraggio\\
-        \rowcolor{blue!10}
-        \textbf{Alternative Flow} & 4a) Il sistema non trova il Settore con l'id richiesto e mostra un messaggio di errore\\
-        \textbf{Post-Conditions} & L'Admin ritorna alla dashboard \\
-        \hline
-    \end{tabularx}
-    \caption{Use Case \#8 (Monitora Settore)}
-\end{table} 
 \subsection{Mock-ups}
-Ecco di seguito alcuni possibili Mock-ups relativi alle interfacce grafiche del sistema.
+Ecco di seguito alcuni possibili Mock-ups relativi alle interfacce grafiche del sistema, realizzati mediante il sito web \href{https://www.figma.com}{figma.com} . \
+Di seguito è una breve spiegazione per ogni Mock-up:
+\begin{itemize}
+    \item Mockup \#1 (Prototipo della pagina di Sign in): Permette di inserire Email e Password e di scegliere se l'utente è un cliente o fa parte del personale, per effettuare il login;
+    \item Mockup \#2 (Prototipo della pagina di Sign up): Permette di inserire i dati necessari alla registrazione di un cliente nel sistema;
+    \item Mockup \#3 (Prototipo della pagina per richiedere nuovi ordini): Mostra al cliente le piante disponibili per essere scelte (tramite i pulsanti "+" e "-") e aggiunte ad un ordine;
+    \item Mockup \#4 (Prototipo della pagina per piantare gli ordini): Mostra all'operatore gli ordini da piantare, in particolare i dati dell'ordine mostrati sono la data di consegna prevista, le piante e l'id del cliente.
+\end{itemize}
+
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.37]{resources/images/Mockups/mockup_1.png}
@@ -296,33 +329,61 @@ Ecco di seguito alcuni possibili Mock-ups relativi alle interfacce grafiche del 
     \label{fig:mockup_4}
 \end{figure}
 
+\subsection{Navigation Diagram}
+\label{subsec:nav-diagram}
+Il seguente diagramma (Figura \ref{fig:diagram_navigation}) rappresenta quelle che sono le pagine principali del sistema e le possibili azioni che l’utente può compiere nell'interfaccia CLI proposta. Sono anche rappresentati i modi con cui si può navigare tra le varie pagine.
+Alcune delle pagine sono:
+\begin{itemize}
+    \item \textbf{Greenhouse}: l'utente sceglie la propria area di appartenenza.
+    \item \textbf{Cliente Dashboard}: il cliente può scegliere se entrare nella pagina degli Ordini e quindi crearne uno nuovo, pagarne uno pronto o controllarli, oppure nella pagina Profilo dove può visualizzare o modificare i dati del proprio profilo.
+    \item \textbf{Operatore Dashboard}: L'operatore può eseguire i suoi compiti tra quelli elencati quindi piantare un ordine, completarlo per poter essere ritirato dal cliente oppure può eseguire un controllo sullo stato delle piante.
+    \item \textbf{Admin Dashboard}: L'admin ha come funzione principale quella di monitorare i settori e le relative posizioni occupate grazie ai sensori e attuatori. Inoltre può visualizzare, come l'operatore, le tabelle di ordini, piante e clienti.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[scale=0.4]{resources/images/Diagrams/diagram_navigation.jpg}}
+    \caption{Navigation Diagram}
+    \label{fig:diagram_navigation}
+\end{figure}
+
 \subsection{Class Diagram}
 Vista la divisione strutturale in 3 packages, sono stati realizzati 3 diagrammi delle classi distinti, uno per ogni package:
 
 \begin{itemize}
-    \item \textbf{Business Logic} (Figura \ref{fig:diagram_businesslogic}): contiene le classi che implementano la logica di business del sistema, ovvero i seguenti controller: quello che gestisce l’accesso e la registrazione dei nuovi Clienti (LoginClienteController), degli Admin e degli Operatori (LoginPersonaleController), quello che permette ai Clienti di richiedere nuovi ordini, visualizzarli e di ritirarli (ClienteController), quello che gestisce il monitoraggio e visualizzazione dell'impianto da parte dell'Admin (AdminController), infine il controller che segnala le operazioni dell'operatore come piantare un ordine, completarlo o fare il checkup delle piante (OperatoreController).
+    \item \textbf{Business Logic} (Figura \ref{fig:diagram_businesslogic}): contiene le classi che implementano la logica di business del sistema. Ad ogni utente è stato associato un "Controller", che espone i metodi che esso può utilizzare. Qundi sono presenti i seguenti controller: quello che gestisce l’accesso e la registrazione dei nuovi Clienti (LoginClienteController), degli Admin e degli Operatori (LoginPersonaleController), quello che permette ai Clienti di richiedere nuovi ordini, visualizzarli e di ritirarli (ClienteController), quello che gestisce il monitoraggio e visualizzazione dell'impianto da parte dell'Admin (AdminController), infine il controller che segnala le operazioni dell'operatore come piantare un ordine, completarlo o fare il checkup delle piante (OperatoreController). \
+    È presente anche \code{AdminExtraController} che contiene metodi ausiliari al reset del database (utilizzati soprattutto nei test).\\
+    Una descrizione più dettagliata di ogni controller è presente nella sezione \ref{subsec:business-logic}.
+        
+    
     \item \textbf{Domain Model} (Figura \ref{fig:diagram_domainmodel}): contiene le classi che rappresentano le entità del sistema ovvero: Ordine, Utente, Cliente, Operatore, Admin, Pianta e il Posizionamento (quest'ultimo funge da Mapper tra Pianta, Ordine e Posizione). In più contiene anche un altro package chiamato Impianto nel quale sono presenti le classi delle entità che compongono la struttura dell'azienda quali: Spazio, Settore e Settore che ne rappresentano l'entità immobile, Attuatore e Sensori che ne rappresentano le entità operative (nello specifico Climatizzatore, Lampada, Irrigatore sono attuatori; IgrometroAria, IgrometroTerra, Termometro e Fotosensore sono sensori).
-    \item \textbf{ORM} (Figura \ref{fig:diagram_orm}): contiene le classi che implementano l’Object-Relational Mapping, quindi contiene una classe per ogni entità del sistema: ClienteDAO, OperatoreDAO, AdminDAO, OrdineDAO, PiantaDAO, PosizionamentoDAO, SettoreDAO, PosizioneDAO, AttuatoreDAO e SensoreDAO. In piu` contiene anche la classe ConnectionManager che si occupa di gestire la connessione al database.
+        
+    
+    \item \textbf{ORM} (Figura \ref{fig:diagram_orm}): contiene le classi che implementano l’Object-Relational Mapping, quindi contiene una classe per ogni entità del sistema: \code{ClienteDAO}, \code{OperatoreDAO}, \code{AdminDAO}, \code{OrdineDAO}, \code{PiantaDAO}, \code{PosizionamentoDAO}, \code{SettoreDAO}, \code{PosizioneDAO}, \code{AttuatoreDAO} e \code{SensoreDAO}. In più contiene anche la classe \code{ConnectionManager} che si occupa di gestire la connessione al database.\
+    È importante notare che \code{OrdineDAO} usa al suo interno (nel metodo \code{get}) \code{PiantaDAO} in quanto è stata affidata a lui la responsabilità di inizializzare anche la lista di piante (attributo della classe \code{Ordine}) e quindi le piante in essa contenute.
+        
 \end{itemize}
 \begin{figure}[H]
     \centering
-    \fbox{\includegraphics[scale=0.35]{resources/images/Diagrams/diagram_businesslogic.png}}
+    \fbox{\includegraphics[scale=0.4]{resources/images/Diagrams/class_diagram_businesslogic.jpg}}
     \caption{Class Diagram - BusinessLogic}
     \label{fig:diagram_businesslogic}
 \end{figure}
 \begin{figure}[H]
     \hspace{-1cm}
-    \fbox{\includegraphics[scale=0.62]{resources/images/Diagrams/diagram_domainmodel.png}}
+    \fbox{\includegraphics[scale=0.5]{resources/images/Diagrams/class_diagram_domainmodel.jpg}}
     \caption{Class Diagram - DomainModel}
     \label{fig:diagram_domainmodel}
 \end{figure}
 \begin{figure}[H]
     \centering
     %\hspace{-1.7cm}
-    \fbox{\includegraphics[scale=0.5]{resources/images/Diagrams/diagram_orm.png}}
+    \fbox{\includegraphics[scale=0.37]{resources/images/Diagrams/class_diagram_orm.jpg}}
     \caption{Class Diagram - ORM}
     \label{fig:diagram_orm}
 \end{figure}
+
+
+
 \subsection{ER Diagram e modello relazionale}
 Il database è stato progettato seguendo il modello relazionale e facendo attenzione alle relazioni che legano le entità (Figura \ref{fig:diagram_er}).\\
 Sono state quindi definite le seguenti tabelle:
@@ -342,7 +403,7 @@ Sono state quindi definite le seguenti tabelle:
 \end{itemize}
 \begin{figure}[H]
     \centering
-    \fbox{\includegraphics[scale=0.4]{resources/images/Diagrams/diagram_er.png}}
+    \fbox{\includegraphics[scale=0.3]{resources/images/Diagrams/diagram_er.jpg}}
     \caption{ER Diagram}
     \label{fig:diagram_er}
 \end{figure}
@@ -353,24 +414,6 @@ Sono state quindi definite le seguenti tabelle:
     \caption{Modello Relazionale}
     \label{fig:diagram_modellorelazionale}
 \end{figure}
-
-\subsection{Navigation Diagram}
-\label{subsec:nav-diagram}
-Il seguente diagramma (Figura \ref{fig:diagram_navigation}) rappresenta quelle che sono le pagine principali del sistema e le possibili azioni che l’utente può compiere. Sono anche rappresentati i modi con cui si può navigare tra le varie pagine.
-Alcune delle pagine sono:
-\begin{itemize}
-    \item \textbf{Greenhouse}: l'utente sceglie la propria area di appartenenza.
-    \item \textbf{Cliente Dashboard}: il cliente può scegliere se entrare nella pagina degli Ordini e quindi crearne uno nuovo, pagarne uno pronto o controllarli, oppure nella pagina Profilo dove può visualizzare o modificare i dati del proprio profilo.
-    \item \textbf{Operatore Dashboard}: L'operatore può eseguire i suoi compiti tra quelli elencati quindi piantare un ordine, completarlo per poter essere ritirato dal cliente oppure può eseguire un controllo sullo stato delle piante.
-    \item \textbf{Admin Dashboard}: L'admin ha come funzione principale quella di monitorare i settori e le relative posizioni occupate grazie ai sensori e attuatori. Inoltre può visualizzare, come l'operatore, le tabelle di ordini, piante e clienti.
-\end{itemize}
-\begin{figure}[H]
-    \centering
-    \fbox{\includegraphics[scale=0.4]{resources/images/Diagrams/diagram_navigation.jpg}}
-    \caption{Navigation Diagram}
-    \label{fig:diagram_navigation}
-\end{figure}
-
 
 \section{Implementazione}
 Il codice è suddiviso in 3 "packages", che suddividono le classi in base alle loro funzionalità:
@@ -412,7 +455,7 @@ Qui di seguito sono elencate le 3 classi che ereditano Utente e rappresentano gl
 
     \begin{figure}[H]
         \centering
-        \fbox{\includegraphics[scale=0.5]{resources/images/Diagrams/diagram_statiordine.png}}
+        \fbox{\includegraphics[scale=0.2]{resources/images/Diagrams/stati_ordini.jpg}}
         \caption{Diagramma degli Stati di un Ordine}
         \label{fig:diagram_statiordine}
     \end{figure}
@@ -423,7 +466,8 @@ Qui di seguito sono elencate le 3 classi che ereditano Utente e rappresentano gl
     \item \textbf{Spazio:}
     Rappresenta uno \code{Spazio} presente nella GreenHouse.
     È identificato da un \code{id} e contiene un insieme di Settori.
-    \item \textbf{Settore:} Rappresenta una zona chiusa e isolata (fisicamente) avente al suo interno un \code{Termometro}, \code{IgrometroAria} e un \code{Fotosensore} che rilevano il "clima" all'interno. Sono presenti quindi i sensori e attuatori relativi a temperatura, umidità e luce. Contiene anche una \code{lista di Posizioni} e un \code{id}.
+    \item \textbf{Settore:}
+    Rappresenta una zona chiusa e isolata (fisicamente) avente al suo interno un \code{Termometro}, \code{IgrometroAria} e un \code{Fotosensore} che rilevano il "clima" all'interno e degli attuatori come il \code{Climatizzatore} e la \code{Lampada}. Contiene anche una lista di \code{Posizioni} e un \code{id}.
     \item \textbf{Posizione:}
     Identifica una \code{Posizione} in cui è stata piantata una singola \code{Pianta}.
     Contiene un proprio \code{Irrigatore} e un \code{IgrometroTerra}, un \code{id} univoco e due "flag" boolean \code{assegnata} e \code{occupata} che indicano lo stato della Posizione.\\
@@ -434,7 +478,7 @@ Qui di seguito sono elencate le 3 classi che ereditano Utente e rappresentano gl
 \end{itemize}
 
 \subsubsection{Sensori}
-Classe astratta che definisce le proprietà e funzioni che deve avere un Sensore, ovvero un dispositivo capace di misurare certe grandezze fisiche di un Settore o di una Posizione (Pianta). Ha un \code{id} e misura un certo \code{valore}.\\
+Classe astratta che definisce le proprietà e funzioni che deve avere un Sensore di qualunque tipo, ovvero un dispositivo capace di misurare certe grandezze fisiche di un Settore o di una Posizione (Pianta), con appositi metodi. Ha un \code{id} e misura un certo \code{valore}.\\
 Le classi che ereditano questa classe astratta dovranno implementare il metodo \code{misura}.
 
 \begin{itemize}
@@ -451,7 +495,8 @@ Le classi che ereditano questa classe astratta dovranno implementare il metodo \
 \subsubsection{Attuatori}
     Classe astratta che identifica un dispositivo in grado di effettuare azioni al fine di modificare parametri fisici del Settore o Posizione in cui esso è situato.
     Può essere attivato e disattivato con appositi metodi.\\
-    Come per Sensore, le sottoclassi dovranno implementare il metodo astratto \code{esegui}.
+    Come per Sensore, è creata come classe astratta per impostare un' "interfaccia" comune di riferimento a tutte le sottoclassi e permette una gestione più semplice dei diversi attuatori.\\
+    Le sottoclassi dovranno implementare il metodo astratto \code{esegui}.
     \begin{itemize}
         \item \textbf{Climatizzatore:}
         Attuatore che regola la temperatura e l'umidità dell'aria. È sufficiente un Climatizzatore per ogni settore.
@@ -464,6 +509,7 @@ Le classi che ereditano questa classe astratta dovranno implementare il metodo \
 \newpage
 
 \subsection{Business Logic}
+\label{subsec:business-logic}
 Contiene tutte le classi e le relative funzionalità che hanno lo scopo di gestione delle varie entità del sistema.
 
 \subsubsection{LoginClienteController}
@@ -541,24 +587,26 @@ Inoltre questa classe contiene le informazioni esatte su l'URL, username e passw
 \end{figure}
 
 \subsubsection{ClienteDAO}
-La classe è preposta all'accesso al sistema tramite la funzione \hyperref[fig:snippet_clienteDAO]{\code{accedi(email, password)}} e alla registrazione (\hyperref[fig:snippet_clienteDAO]{\code{registra(...)}}) di un nuovo cliente. In più sono presenti i metodi per la modifica delle informazioni (\code{modificaAttributo(id\_cliente, ...)}) e per restituire un cliente presente in database in base a criteri specificati (\code{get(criteri)}).
+La classe è preposta all'accesso al sistema tramite la funzione \hyperref[fig:snippet_clienteDAO]{\code{accedi(email, password)}} e alla registrazione (\hyperref[fig:snippet_clienteDAO]{\code{registra(...)}}) di un nuovo cliente. In più sono presenti i metodi per la modifica delle informazioni (\code{modificaAttributo(id\_cliente, ...)}) e per restituire un cliente presente in database in base a criteri specificati (\code{get(criteri)}). \\
+Per fare ciò (come visibile dallo \hyperref[fig:snippet_clienteDAO]{Snippet 5}) viene creata una stringa con i comandi in linguaggio SQL (\code{insertQuery}), creato il relativo \code{statement} e popolato con i valori delle variabili corrispondenti. Una volta eseguita la query e constatato che è andata a buon fine, è possibile ottenere eventuali dati e informazioni dal \code{ResultSet} della query.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.5]{resources/images/Snippets/snippet_clienteDAO.png}
+    \includegraphics[scale=0.65]{resources/images/Snippets/snippet_clienteDAO.png}
     \captionsetup{labelformat=empty,labelsep=none}
     \caption{Snippet 5: metodi \code{registra()} e \code{accedi()} nella classe \code{ClienteDAO}}
     \label{fig:snippet_clienteDAO}
 \end{figure}
 
 \subsubsection{AdminDAO}
-La classe svolge la funzione di accesso per l'admin come per il cliente ma ha anche i metodi   \\ \code{resetDatabase(sql), createDatabase(ql)} e \code{generateDefaultDatabase(sql)} che eseguono il reset.sql, schema.sql e defaul.sql tali da pulire e resettare il database.
+La classe svolge la funzione di accesso per l'admin come per il cliente ma ha anche i metodi   \\ \code{resetDatabase(sql), createDatabase(sql)} e \code{generateDefaultDatabase(sql)} che eseguono il reset.sql, schema.sql e defaul.sql tali da pulire e resettare il database.
 
 \subsubsection{OperatoreDAO}
-\code{OperatoreDAO} permette anch'esso l'accesso al sistema con funzione \code{accedi(email,password} con valore di ritorno un booleano. Ha anche un metodo \code{getById(id)} per restituire l'operatore a partire dall'Id richiesto.
+\code{OperatoreDAO} permette anch'esso l'accesso al sistema con funzione \code{accedi(email,password)} con valore di ritorno un booleano. Ha anche un metodo \code{getById(id)} per restituire l'operatore a partire dall'Id richiesto.
 
 \subsubsection{SensoreDAO, AttuatoreDAO e OperazioneDAO}
-Le classi \code{SensoreDAO} e \code{AttuatoreDAO} restituiscono i rispettivi oggetti tramtie \code{getById(id)} e hanno anche il metodo \hyperref[fig:snippet_sensoreDAOaggiorna]{\code{aggiorna(sensore)}} (e \code{aggiorna(attuatore)}) utilizzato per aggiornare i parametri delle tabelle. La classe \code{OperazioneDAO} permette di tenere un record delle azioni degli attuatori tramite la funzione \code{registra(attuatore, descrizione, data)}.
+Le classi \code{SensoreDAO} e \code{AttuatoreDAO} restituiscono i rispettivi oggetti tramtie \code{getById(id)} e hanno anche il metodo \hyperref[fig:snippet_sensoreDAOaggiorna]{\code{aggiorna(sensore)}} (e \code{aggiorna(attuatore)}) utilizzato per aggiornare i parametri delle tabelle. La classe \code{OperazioneDAO} permette di tenere un record delle azioni degli attuatori tramite la funzione \code{registra(attuatore, descrizione, data)}. \\
+Nello \hyperref[fig:snippet_sensoreDAOaggiorna]{Snippet 6} è possibile vedere l'implementazione del metodo \code{aggiorna} di un \code{Sensore}: viene creato uno statement con la stringa della query, viene popolata con i dati e poi viene eseguito l'aggiornamento (\code{executeUpdate}) del database.
 
 \begin{figure}[H]
     \centering
@@ -572,7 +620,8 @@ Le classi \code{SensoreDAO} e \code{AttuatoreDAO} restituiscono i rispettivi ogg
 Mentre \code{SettoreDAO} ha solo due metodi per la creazione del settore (\code{getById(id)} e\code{get(criteri)}), \code{PosizioneDAO} non sono ha questi metodi ma anche metodi per assegnare , aggiornare e verificare se ci sono posizioni non assegnate.
 
 \subsubsection{OrdineDAO e PiantaDAO}
-\code{OrdineDAO} e \code{PiantaDAO}, come le altre DAO, hanno i metodi per inserire, aggiornare e restituire gli oggetti associati, inoltre \code{PiantaDAO} ha metodi per eliminare elementi, usato quando l'ordine è espletato.
+\code{OrdineDAO} e \code{PiantaDAO}, come le altre DAO, hanno i metodi per inserire, aggiornare e restituire gli oggetti associati, inoltre \code{PiantaDAO} ha metodi per eliminare elementi, usato quando l'ordine è espletato.\\
+Le due DAO sono direttamente collegate in quanto nel momento di richiesta di dati di un \code{Ordine} a \code{OrdineDAO}, il suo metodo \hyperref[fig:snippet_OrdineDAOget]{\code{get}} invoca il metodo \hyperref[fig:snippet_piantaDAOget]{\code{get}} di un \code{PiantaDAO} in modo da inizializzare anche la lista di \code{Piante}, attributo della classe \code{Ordine}.
 
 \begin{figure}[H]
     \centering
@@ -580,6 +629,14 @@ Mentre \code{SettoreDAO} ha solo due metodi per la creazione del settore (\code{
     \captionsetup{labelformat=empty,labelsep=none}
     \caption{Snippet 7: metodo \code{get()} nella classe \code{PiantaDAO}}
     \label{fig:snippet_piantaDAOget}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{resources/images/Snippets/snippet_OrdineDAOget.png}
+    \captionsetup{labelformat=empty,labelsep=none}
+    \caption{Snippet 8: metodo \code{get()} nella classe \code{OrdineDAO}}
+    \label{fig:snippet_OrdineDAOget}
 \end{figure}
 
 \newpage
@@ -591,7 +648,7 @@ La classe \code{PosizionamentoDAO} permette di ottenere i Posizionamenti richies
     \centering
     \includegraphics[scale=0.5]{resources/images/Snippets/snippet_eliminaposizionamentibyordine.png}
     \captionsetup{labelformat=empty,labelsep=none}
-    \caption{Snippet 8: metodo \code{eliminaPosizionamentiByOrdine} della classe \code{PosizionamentoDAO}}
+    \caption{Snippet 9: metodo \code{eliminaPosizionamentiByOrdine} della classe \code{PosizionamentoDAO}}
     \label{fig:snippet_eliminaposizionamentibyordine}
 \end{figure}
 
@@ -610,7 +667,7 @@ Questi 3 file sono stati eseguiti, grazie ai metodi presenti in AdminController,
     \centering
     \includegraphics[scale=0.5]{resources/images/Snippets/snippet_createtable.png}
     \captionsetup{labelformat=empty,labelsep=none}
-    \caption{Snippet 9: creazione tabelle \code{Cliente}, \code{Ordine} e \code{Pianta} nel file \code{schema.sql}}
+    \caption{Snippet 10: creazione tabelle \code{Cliente}, \code{Ordine} e \code{Pianta} nel file \code{schema.sql}}
     \label{fig:snippet_createtable}
 \end{figure}
 
@@ -625,7 +682,7 @@ Il diagramma dei menu disponibili si trova nella sezione \ref{subsec:nav-diagram
     \centering
     \includegraphics[scale=0.5]{resources/images/Snippets/snippet_handleclienteaction.png}
     \captionsetup{labelformat=empty,labelsep=none}
-    \caption{Snippet 10: metodo \code{handleClienteAction} che mostra il menu principale del \code{Cliente}}
+    \caption{Snippet 11: metodo \code{handleClienteAction} che mostra il menu principale del \code{Cliente}}
     \label{fig:snippet_handleclienteaction}
 \end{figure}
 
@@ -633,48 +690,54 @@ Il diagramma dei menu disponibili si trova nella sezione \ref{subsec:nav-diagram
     \centering
     \includegraphics[scale=0.5]{resources/images/Snippets/snippet_handlesceltaordinedapiantare.png}
     \captionsetup{labelformat=empty,labelsep=none}
-    \caption{Snippet 11: metodo \code{handleSceltaOrdineDaPiantare}}
+    \caption{Snippet 12: metodo \code{handleSceltaOrdineDaPiantare}}
     \label{fig:snippet_handlesceltaordinedapiantare}
 \end{figure}
 
 
 \section{Testing}
 Per verificare la correttezza e funzionalità del programma sono stati realizzati dei test (vedi cartella \code{test} in \code{/src}). Questi riguardano quelle funzioni associate agli use cases obiettivo del progetto, quindi principalmente la BusinessLogic, che è la parte più "ad alto livello" del programma e che contiene le funzioni direttamente chiamate dall'interfaccia. \\
-È presente anche un test per il DomainModel.\\
-La sezione di ORM non presenta test in quanto si occupa "soltanto" di comunicare con il Database.
+
+\noindent Le funzioni-test sono collegate gli Use Cases che rappresentano, alcuni in solo uno e più passaggi e altri totalmente.\\
+
 
 \subsection{Business Logic Test}
 Molti di questi test presentano più variazioni, in quanto verificano sia il caso in cui le condizioni per una certa funzione siano favorevoli, quindi è atteso un esito positivo ("Success"), sia il caso in cui vengano riscontrati problemi e quindi ci si aspetta un esito negativo ("Fail").\\
-I test sono suddivisi in più classi (rispettando la suddivisione che hanno le relative funzioni): \\
-\code{LoginClienteControllerTest}, \code{LoginPersonaleControllerTest}, \code{ClienteControllerTest}, \code{OperatoreControllerTest}.
+
+\noindent I test sono suddivisi in più classi (rispettando la suddivisione che hanno le relative funzioni): \\
+\code{LoginClienteControllerTest}, \code{LoginPersonaleControllerTest}, 
+\code{ClienteControllerTest},\\ 
+\code{OperatoreControllerTest}.
 
 \subsubsection{LoginClienteControllerTest}
+Si effettuano i test delle funzioni utilizzate dal cliente per l'accesso e la registrazione al sistema quali:  
 \begin{itemize}
     \item \code{setUp}: reimposta il database a uno stato iniziale default;
-    \item \code{registrationTest\_Success}: esegue il test del metodo \code{registrati} di \code{loginClienteController}, utilizzata per la registrazione di un nuovo cliente;
-    \item \code{registrationTest\_Fail}: come \code{registrationTest\_Success}, ma l'\code{email} con il quale si tenta di registrarsi appartiene a un cliente già presente nel database, quindi il test di aspetta un fallimento nella procedura;
-    \item \code{loginTest\_Success}: verifica la corretta funzionalità del metodo \code{accedi} che permette al cliente di accedere al sistema;
-    \item \code{loginTest\_Fail1} e \code{loginTest\_Fail2}: verifica l'effettivo fallimento del login nel caso in cui la \code{password} o l'\code{email} non siano corrette;    
+    \item \code{registrationTest\_Success}: esegue il test del metodo \code{registrati} di \code{loginClienteController}, utilizzata per la registrazione di un nuovo cliente (Use Case \hyperref[use_case_1]{\#1});
+    \item \code{registrationTest\_Fail}: come \code{registrationTest\_Success}, ma l'\code{email} con il quale si tenta di registrarsi appartiene a un cliente già presente nel database, quindi il test di aspetta un fallimento nella procedura (Use Case  \hyperref[use_case_1]{\#1});
+    \item \code{loginTest\_Success}: verifica la corretta funzionalità del metodo \code{accedi} che permette al cliente di accedere al sistema (Use Case \hyperref[use_case_2]{\#2});
+    \item \code{loginTest\_Fail1} e \code{loginTest\_Fail2}: verifica l'effettivo fallimento del login nel caso in cui la \code{password} o l'\code{email} non siano corrette (Use Case \hyperref[use_case_2]{\#2});    
 \end{itemize}
 
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.5]{resources/images/Snippets/snippet_LoginClienteControllerTest.png}
     \captionsetup{labelformat=empty,labelsep=none}
-    \caption{Snippet 12: test di \code{LoginClienteControllerTest}}
+    \caption{Snippet 13: test di \code{LoginClienteControllerTest}}
     \label{fig:snippet_LoginClienteControllerTest}
 \end{figure}
 
 \newpage
 
 \subsubsection{LoginPersonaleControllerTest}
-Analogo a \code{LoginClienteControllerTest}, effettua i test di accesso nel sistema, ma da parte del personale lavorativo (\code{Admin} e \code{Operatore}) e contiene i seguenti test: \code{registrationTest\_Fail}, \code{loginAdmin\_Fail1}, \code{loginAdmin\_Fail2}, \code{loginOperatore\_Success}, \code{loginOperatore\_Fail1} e \code{loginOperatore\_Fail2}.
+Analogo a \code{LoginClienteControllerTest}, effettua i test di accesso nel sistema, ma da parte del personale lavorativo (\code{Admin} e \code{Operatore}) e contiene i seguenti test: \code{registrationTest\_Fail}, \code{loginAdmin\_Fail1}, \code{loginAdmin\_Fail2}, \code{loginOperatore\_Success}, \code{loginOperatore\_Fail1} e \code{loginOperatore\_Fail2}
+(vedi Use Case \hyperref[use_case_1]{\#1} e \hyperref[use_case_2]{\#2}).
 
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.5]{resources/images/Snippets/snippet_LoginPersonaleControllerTest.png}
     \captionsetup{labelformat=empty,labelsep=none}
-    \caption{Snippet 13: test di \code{LoginPersonaleControllerTest}}
+    \caption{Snippet 14: test di \code{LoginPersonaleControllerTest}}
     \label{fig:snippet_LoginPersonaleControllerTest}
 \end{figure}
 
@@ -682,34 +745,34 @@ Analogo a \code{LoginClienteControllerTest}, effettua i test di accesso nel sist
 Verifica il corretto funzionamento dei metodi di \code{ClienteController}, quindi delle funzionalità a disposizione dei Clienti. Sono testate le funzioni di aggiornamento dei dati del profilo, richiesta nuovo ordine (Success e Fail), pagamento e ritiro di un ordine (Success e Fail);
 \begin{itemize}
     \item \code{testAggiornaProfilo}: chiama il metodo \code{aggiornaProfilo} di \code{ClienteController}, e modifica il \code{nome} del cliente;
-    \item \code{testRichiediNuovoOrdine\_Success}: crea un nuovo ordine e invia la richiesta al sistema. Si aspetta che tale ordine sia accettato senza problemi;
-    \item \code{testRichiediNuovoOrdine\_Fail}: come il precedente, ma il numero di piante richiesto è superiore alla capacità dell'impianto, quindi la richiesta fallisce;
-    \item \code{testPagaERitiraOrdine}: verifica che il metodo \code{pagaERitiraOrdine} di \code{ClienteController} funzioni correttamente.
+    \item \hypertarget{testRichiediNuovoOrdine\_Success}{\code{testRichiediNuovoOrdine\_Success}}: crea un nuovo ordine e invia la richiesta al sistema. Si aspetta che tale ordine sia accettato senza problemi (Use Case \hyperref[use_case_3]{\#3});
+    \item \hypertarget{testRichiediNuovoOrdine\_Fail}{\code{testRichiediNuovoOrdine\_Fail}}: come il precedente, ma il numero di piante richiesto è superiore alla capacità dell'impianto, quindi la richiesta fallisce (Use Case \hyperref[use_case_3]{\#3});
+    \item \hypertarget{testPagaERitiraOrdine}{\code{testPagaERitiraOrdine}}: verifica che il metodo \code{pagaERitiraOrdine} di \code{ClienteController} funzioni correttamente Use Case \hyperref[use_case_4]{\#4}).
 \end{itemize}
 
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.5]{resources/images/Snippets/snippet_ClienteControllerTest.png}
     \captionsetup{labelformat=empty,labelsep=none}
-    \caption{Snippet 14: test di \code{ClienteControllerTest}}
+    \caption{Snippet 15: test di \code{ClienteControllerTest}}
     \label{fig:snippet_ClienteControllerTest}
 \end{figure}
 
 \subsubsection{OperatoreControllerTest}
 \begin{itemize}
-    \item \code{completaOrdineTest\_Success}: verifica che il completamento di un ordine venga eseguito correttamente;
-    \item \code{completaOrdineTest\_Fail}: prova ad eseguire il completamento di un ordine che non è ancora stato piantato, perciò si aspetta un fallimento;
-    \item \code{checkupPianteTest\_Success}: test del check-up delle piante eseguito da parte di un operatore. Alcune piante vengono (forzatamente) impostate come bisognose di cure e si verifica che queste vengano tutte rilevate durante il check-up;
-    \item \code{checkupPianteTest\_Fail}: nessuna pianta ha bisogno di cure (in base a questo setup), quindi il check-up non rileva piante bisognose;
-    \item \code{curaPiantaTest}: chiama il metodo \code{curaPianta} di \code{OperatoreController} e ne verifica il funzionamento;
-    \item \code{piantaOrdineTest}: testa la funzione utilizzata per piantare un ordine.
+    \item \code{completaOrdineTest\_Success}: verifica che il completamento di un ordine venga eseguito correttamente (Use Case \hyperref[use_case_6]{\#6});
+    \item \code{completaOrdineTest\_Fail}: prova ad eseguire il completamento di un ordine che non è ancora stato piantato, perciò si aspetta un fallimento (Use Case \hyperref[use_case_7]{\#7});
+    \item \code{checkupPianteTest\_Success}: test del check-up delle piante eseguito da parte di un operatore. Alcune piante vengono (forzatamente) impostate come bisognose di cure e si verifica che queste vengano tutte rilevate durante il check-up (Use Case \hyperref[use_case_7]{\#7});
+    \item \code{checkupPianteTest\_Fail}: nessuna pianta ha bisogno di cure (in base a questo setup), quindi il check-up non rileva piante bisognose (Use Case \hyperref[use_case_7]{\#7});
+    \item \code{curaPiantaTest}: chiama il metodo \code{curaPianta} di \code{OperatoreController} e ne verifica il funzionamento (Use Case \hyperref[use_case_7]{\#7});
+    \item \code{piantaOrdineTest}: testa la funzione utilizzata per piantare un ordine (Use Case \hyperref[use_case_5]{\#5}).
 \end{itemize}
 
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.65]{resources/images/Snippets/snippet_OperatoreControllerTest.png}
     \captionsetup{labelformat=empty,labelsep=none}
-    \caption{Snippet 15: test di \code{OperatoreControllerTest}}
+    \caption{Snippet 16: test di \code{OperatoreControllerTest}}
     \label{fig:snippet_OperatoreControllerTest}
 \end{figure}
 
@@ -722,8 +785,93 @@ Nel caso in cui l'\code{Irrigatore} sia acceso (\hyperref[fig:snippet_IgrometroT
     \centering
     \includegraphics[scale=0.5]{resources/images/Snippets/snippet_IgrometroTerraTest.png}
     \captionsetup{labelformat=empty,labelsep=none}
-    \caption{Snippet 16: test di \code{IgrometroTerra}}
+    \caption{Snippet 17: test di \code{IgrometroTerra}}
     \label{fig:snippet_IgrometroTerraTest}
 \end{figure}
+
+\subsection{ORM Test}
+È stato inserito un test che riguarda la classe \code{OrdineDAO}, nel package ORM.\\
+Questa classe, che si occupa della gestione degli Ordini nel database, invoca un'altra classe "DAO" al suo interno, in quanto ha la responsabilità di inizializzare l'oggetto della classe \code{Ordine}, che contiene l'attributo \code{piante}, una arraylist di \code{Piante}. \\
+Quindi, come visibile nello \hyperref[fig:snippet_testInitPianteOrdineDAO]{Snippet 18}, questo test inserisce un ordine (\code{ordineRichiesto}) nel database tramite \code{OrdineDAO} e le relative piante con \code{PiantaDAO}; poi chiama il metodo \code{get} di \code{OrdineDAO} e verifica che i due ordini corrispondano.\\
+In particolare verifica che le piante contenute nei due ordini siano dello stesso tipo e in quantità uguale (attraverso dei "contatori").\\
+Se il test è superato, \code{OrdineDAO} ha inizializzato correttamente le piante.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{resources/images/Snippets/snippet_testInitPianteOrdineDAO.png}
+    \captionsetup{labelformat=empty,labelsep=none}
+    \caption{Snippet 18: test di inizializzazione piante in \code{OrdineDAO}}
+    \label{fig:snippet_testInitPianteOrdineDAO}
+\end{figure}
+
+\newpage\subsection*{Legenda dei Test}
+Di seguito è presentata una legenda per i test che sono riconducibili agli Use Case analizzati.
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{>{\raggedright}p{0.3\textwidth} p{0.6\textwidth}}
+        \textbf{Test ID} & \textbf{Descrizione Test} \\
+        \hline
+        Test \#1 & \hyperref[fig:snippet_LoginClienteControllerTest]{\code{registrationTest\_Success()}}
+        \label{test_1}\\
+        
+        Test \#2 & \hyperref[fig:snippet_LoginClienteControllerTest]{\code{registrationTest\_Fail()}}
+        \label{test_2}\\
+        
+        Test \#3 & \hyperref[fig:snippet_LoginClienteControllerTest]{\code{loginTest\_Success()}}
+        \label{test_3}\\
+        
+        Test \#4 & \hyperref[fig:snippet_LoginClienteControllerTest]{\code{loginTest\_Fail1()}}
+        \label{test_4}\\
+        
+        Test \#5 & \hyperref[fig:snippet_LoginClienteControllerTest]{\code{loginTest\_Fail2()}}
+        \label{test_5}\\
+        
+        Test \#6 & \hyperref[fig:snippet_LoginPersonaleControllerTest]{\code{loginAdmin\_Success()}}
+        \label{test_6}\\
+        
+        Test \#7 & \hyperref[fig:snippet_LoginPersonaleControllerTest]{\code{loginAdmin\_Fail1()}}
+        \label{test_7}\\
+        
+        Test \#8 & \hyperref[fig:snippet_LoginPersonaleControllerTest]{\code{loginAdmin\_Fail2()}}
+        \label{test_8}\\
+
+        Test \#9 & \hyperref[fig:snippet_LoginPersonaleControllerTest]{\code{loginOperatore\_Success()}}
+        \label{test_9}\\
+        
+        Test \#10 & \hyperref[fig:snippet_LoginPersonaleControllerTest]{\code{loginOperatore\_Fail1()}}
+        \label{test_10}\\
+        
+        Test \#11 & \hyperref[fig:snippet_LoginPersonaleControllerTest]{\code{loginOperatore\_Fail2()}}
+        \label{test_11}\\
+        
+        Test \#12 & \hyperref[fig:snippet_ClienteControllerTest]{\code{testRichiediNuovoOrdine\_Success()}}
+        \label{test_12}\\
+        
+        Test \#13 & \hyperref[fig:snippet_ClienteControllerTest]{\code{testRichiediNuovoOrdine\_Fail()}}
+        \label{test_13}\\
+
+        Test \#14 & \hyperref[fig:snippet_ClienteControllerTest]{\code{testPagaERitiraOrdine()}}
+        \label{test_14}\\
+
+        Test \#15 & \hyperref[fig:snippet_OperatoreControllerTest]{\code{completaOrdineTest\_Success()}}
+        \label{test_15}\\
+
+        Test \#16 & \hyperref[fig:snippet_OperatoreControllerTest]{\code{completaOrdineTest\_Fail()}}
+        \label{test_16}\\
+
+        Test \#17 & \hyperref[fig:snippet_ClienteControllerTest]{\code{checkupPianteTest\_Success()}}
+        \label{test_16}\\
+
+        Test \#18 & \hyperref[fig:snippet_OperatoreControllerTest]{\code{checkupPianteTest\_Fail()}}
+        \label{test_18}\\
+
+        Test \#19 & \hyperref[fig:snippet_OperatoreControllerTest]{\code{curaPiantaTest()}}
+        \label{test_19}\\
+
+        Test \#20 & \hyperref[fig:snippet_OperatoreControllerTest]{\code{piantaOrdineTest()}}
+        \label{test_20}\\
+    \end{tabular}
+    \caption{Legenda dei Test}
+\end{table}
 
 \end{document}
