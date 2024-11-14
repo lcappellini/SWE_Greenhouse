@@ -507,7 +507,7 @@ public class Main {
     }
 
     public static void handleClientOrders(Cliente cliente) {
-        ClienteController clienteController = new ClienteController(cliente);
+        ClienteController clienteController = new ClienteController();
         int index = askForChooseMenuOption("    ORDINI", new String[]{"Richiedi nuovo ordine", "Controlla i miei ordini", "Paga e ritira ordine", "Indietro", "Esci"});
 
         if (index == 1){
@@ -517,22 +517,26 @@ public class Main {
                 System.out.println("Ordine non accettato!");
         }
         else if (index == 2) {
-            printOrdini(clienteController.getOrdini(new HashMap<>()));
+            printOrdini(clienteController.getOrdini(cliente, new HashMap<>()));
         }
         else if (index == 3) {
-            ArrayList<Ordine> ordiniDaRitirare = clienteController.getOrdini(Map.of("stato", StatoOrdine.da_ritirare.getId()));
+            ArrayList<Ordine> ordiniDaRitirare = clienteController.getOrdini(cliente, Map.of("stato", StatoOrdine.da_ritirare.getId()));
             if (!ordiniDaRitirare.isEmpty()) {
                 printOrdini(ordiniDaRitirare);
-                int idOrdine = askForInteger("ID Ordine da ritirare: ");
-                Ordine ordine = clienteController.getOrdini(Map.of("id",idOrdine)).get(0);
-                if (ordine != null && ordine.getCliente() == cliente.getId()) {
-                    if (clienteController.pagaEritiraOrdine(ordine)) {
-                        System.out.println("Ordine pagato! Può ritirare l'ordine.");
+                while (true) {
+                    int idOrdine = askForInteger("ID Ordine da ritirare: ");
+                    ArrayList<Ordine> ordini = clienteController.getOrdini(cliente, Map.of("id", idOrdine));
+                    if (!ordini.isEmpty()) {
+                        Ordine ordine = ordini.get(0);
+                        if (clienteController.pagaEritiraOrdine(ordine)) {
+                            System.out.println("Ordine pagato! Può ritirare l'ordine.");
+                        } else {
+                            System.out.println("Il pagamento non è andato a buon fine");
+                        }
+                        break;
                     } else {
-                        System.out.println("Il pagamento non è andato a buon fine");
+                        System.out.println("Nessun ordine trovato con questo id!");
                     }
-                } else {
-                    System.out.println("Nessun ordine trovato con questo id!");
                 }
             } else {
                 System.out.println("Nessun ordine da ritirare trovato!");
@@ -562,9 +566,9 @@ public class Main {
             System.out.print("Inserire nuovo valore: ");
             String newValue = scanner.nextLine();
 
-            ClienteController clienteController = new ClienteController(cliente);
+            ClienteController clienteController = new ClienteController();
             if (index2 < 5) {
-                boolean result = clienteController.aggiornaProfilo(new String[]{"nome", "cognome", "email", "password"}[index2-1], newValue);
+                boolean result = clienteController.aggiornaProfilo(cliente, new String[]{"nome", "cognome", "email", "password"}[index2-1], newValue);
                 if (result) {
                     if (index2 == 1) {
                         cliente.setNome(newValue);

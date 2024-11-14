@@ -22,7 +22,7 @@ public class ClienteControllerTest {
     public void setUp() {
         LoginClienteController loginClienteController = new LoginClienteController();
         cliente = loginClienteController.accedi("mario@email.it", "123");
-        clienteController = new ClienteController(cliente);
+        clienteController = new ClienteController();
 
         AdminExtraController adminExtraController = new AdminExtraController();
         try{
@@ -39,7 +39,7 @@ public class ClienteControllerTest {
         System.out.println("--Test Aggiornamento Dati Profilo Utente--");
         System.out.println("Modifica un dato del profilo di un Utente");
         System.out.println("nome -> Sergio");
-        boolean result = clienteController.aggiornaProfilo("nome", "Sergio");
+        boolean result = clienteController.aggiornaProfilo(cliente, "nome", "Sergio");
         assertTrue(result);
         System.out.println("Test superato!");
     }

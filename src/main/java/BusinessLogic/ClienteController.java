@@ -14,13 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClienteController {
-    private Cliente cliente;
 
-    public ClienteController(Cliente cliente) {
-        this.cliente = cliente;
-    }
+    public ClienteController() {}
 
-    public boolean aggiornaProfilo(String name, String newValue) {
+    public boolean aggiornaProfilo(Cliente cliente, String name, String newValue) {
         ClienteDAO clienteDAO = new ClienteDAO();
         return clienteDAO.modificaAttributo(cliente.getId(), name, newValue);
     }
@@ -60,7 +57,7 @@ public class ClienteController {
         return false;
     }
 
-    public ArrayList<Ordine> getOrdini(Map<String, Object> criteri) {
+    public ArrayList<Ordine> getOrdini(Cliente cliente, Map<String, Object> criteri) {
         OrdineDAO ordineDAO = new OrdineDAO();
         Map<String, Object> criteriMut;
         if (criteri == null){

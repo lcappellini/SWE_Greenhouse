@@ -32,7 +32,6 @@ public class Pianta {
     public Pianta(int id, String tipoPianta, String descrizione, String dataInizio, StatoPianta stato) {
         this.id = id;
         this.tipoPianta = tipoPianta;
-        System.out.println(descrizione);
         this.descrizione = descrizione == null ? "" : descrizione;
         this.dataInizio = LocalDate.parse(dataInizio);
         this.stato = stato;

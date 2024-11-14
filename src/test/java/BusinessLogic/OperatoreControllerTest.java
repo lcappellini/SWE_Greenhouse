@@ -37,12 +37,12 @@ public class OperatoreControllerTest {
 
         //setup: richiesta di un ordine da parte di un cliente (valido)
         LoginClienteController loginClienteController = new LoginClienteController();
-        ClienteController clienteController = new ClienteController(
-                loginClienteController.accedi("mario@email.it","123"));
+        Cliente cliente = loginClienteController.accedi("mario@email.it","123");
+        ClienteController clienteController = new ClienteController();
         ArrayList<Pianta> piante = new ArrayList<>();
         for (int i = 0; i < 10; i++)
             piante.add(new Pianta("Geranio", StatoPianta.da_piantare));
-        ordine = new Ordine(1, piante);
+        ordine = new Ordine(cliente.getId(), piante);
         clienteController.richiediNuovoOrdine(ordine);
     }
 
